@@ -54,7 +54,7 @@ Roles.create = (RolesObj,result)=>{
             return;
         }
         result(null, {id:res.insertId, ...RolesObj});
-        console.log("Cart:", {id:res.insertId, ...RolesObj});
+        console.log("Roles:", {id:res.insertId, ...RolesObj});
     })
 }
 
