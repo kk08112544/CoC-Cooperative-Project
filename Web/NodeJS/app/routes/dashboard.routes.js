@@ -7,6 +7,6 @@ module.exports = (app)=>{
     router.get("/zone",authJwt,dashboard_controller.getAllTotalZone);
     router.get("/day_zone",authJwt,dashboard_controller.getThisDayZone);
     router.get("/amount",authJwt,dashboard_controller.getThisAmount);
-    router.post("/addNotify",authJwt,dashboard_controller.addNotify);
+    router.post("/addNotify",dashboard_controller.addNotify);
     app.use("/api/dashboard", router);
 };

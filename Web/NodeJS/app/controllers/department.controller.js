@@ -2,8 +2,17 @@ const Department = require("../models/department.model")
 const bcrypt = require("bcryptjs");
 
 const getAllDepartment = (req,res) => {
-    const id =req.params.id;
-    Department.getDepartment(id,(err,data)=>{
+    const role_id =req.params.role_id;
+    Department.getDepartment(role_id,(err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
+const getRoleById = (req,res) => {
+    const id = req.params.id;
+    Department.getRoleId(id,(err,data)=>{
         if(err){
             res.status(500).send({message: err.message || "Some error ocurred."});
         }else res.send(data);
@@ -67,6 +76,7 @@ const deleteToDepartment = (req,res)=>{
 
 module.exports = {
     getAllDepartment,
+    getRoleById,
     updateToDepartment,
     addToDepartment,
     deleteToDepartment,

@@ -6,7 +6,7 @@ module.exports = (app)=>{
     router.post("/addToAlcohol",authJwt,alcohol_controller.addToAlcohol);
     router.put("/updateToAlcohol/:id",authJwt,alcohol_controller.updateToAlcohol);
     router.delete("/deleteToAlcohol/:id",authJwt,alcohol_controller.deleteToAlcohol);
-    router.put("/updateStatusToAlcohol/:id",authJwt,alcohol_controller.updateStatusToAlcohol);
-    router.put("/updateDetectDataAlcohol/:id",authJwt,alcohol_controller.updateDetectDataAlcohol);
+    router.put("/updateStatusToAlcohol/:id",alcohol_controller.updateStatusToAlcohol);
+    router.put("/updateDetectDataAlcohol/:id",alcohol_controller.updateDetectDataAlcohol);
     app.use("/api/alcohol", router);
 };
