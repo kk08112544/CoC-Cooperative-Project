@@ -33,7 +33,7 @@ Department.getRoleId = (id,result) => {
     })
 }
 
-Department.updateDepartment = (id,newDepartName,result)=>{
+Department.updateByDepartmentId = (id,newDepartName,result)=>{
     sql.query('SELECT * FROM department WHERE id=?',[id],
     (err,res)=>{
         if(err){
@@ -52,8 +52,8 @@ Department.updateDepartment = (id,newDepartName,result)=>{
                     result({ kind: "not_found" }, null);
                     return;
                 }
-                console.log("Updated Department Id: ", { id: id, Department:newDepartmentName });
-                result(null, { id: id, Department:newDepartmentName });
+                console.log("Updated Role Id: ", { id: id, Department:newDepartName });
+                result(null, { id: id, Department:newDepartName });
             })
         }
     })
@@ -71,20 +71,22 @@ Department.addDepartment = (DepartmentObj,result) => {
     })
 }
 
-Department.deleteDepartment = (id,result) => {
-    sql.query("DELETE FROM department WHERE id=?",[id],(err,res)=>{
-        if(err){
-            console.log("Query error: " + err);
-            result(err, null);
-            return;
-        }
-        if(res.affectedRows == 0){
-            result({kind: "not_found"}, null);
-            return;
-        }
-        console.log("Deleted Department id: " + id);
-        result(null, {id: id});
-    })
-}
+Department.deleteDepartmentById = (id, result) => {
+    sql.query("DELETE FROM department WHERE id = ?", [id],
+        (err, res) => {
+            if (err) {
+                console.log("Query error: " + err);
+                result(err, null);
+                return;
+            }
+
+            if (res.affectedRows === 0) {
+                result({ kind: "not_found" }, null);
+                return;
+            }
+
+            result(null, { id: id }); // แก้ไขให้ส่งข้อมูลเป็น Object
+        });
+};
 
 module.exports = Department;

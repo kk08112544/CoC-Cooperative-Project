@@ -10,10 +10,12 @@ const getAllRoles = (req,res) => {
 }
 
 const updateToRoles = (req,res) => {
-    if(req.body.role_name){
+    const id = req.params.id;
+    if(!req.body.role_name){
         res.status(400).send({message: "Content can not be empty."});
     }
-    newRoleName=req.body.role_name
+ 
+    const newRoleName=req.body.role_name
     Roles.updateByRolesId( id, newRoleName,(err,result)=>{
         if(err) {
             if (err.kind == "not_found") {
@@ -26,7 +28,7 @@ const updateToRoles = (req,res) => {
                 });
             }
         }
-        else res.send(data);
+        else res.send(result);
     })
 }
 
@@ -35,7 +37,8 @@ const addToRoles = (req,res) => {
         res.status(400).send({message: "Content can not be empty."});
     }
     const RolesObj = new Roles({
-        role_name: req.body.role_name
+        role_name: req.body.role_name,
+    
     });
 
     Roles.create(RolesObj,(err,data)=>{

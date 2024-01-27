@@ -58,34 +58,70 @@ Roles.create = (RolesObj,result)=>{
     })
 }
 
-Roles.deleteRolesById = (id,result)=>{
-    sql.query("DELETE FROM department WHERE role_id = ?",[id],
-    (err,res)=>{
-        if(err){
-            console.log("Query error: " + err);
-            result(err, null);
-            return;
-        }
-        if(res.affectedRows == 0) {
-            result({ kind: "not_found"},null);
-            return;
-        }
-        sql.query("DELETE FROM role WHERE id = ?",[id],
-        (err,res)=>{
-            if (err){
-                console.log("Query error:" +err);
-                result(err,null);
+Roles.deleteRolesById = (id, result) => {
+    sql.query("SELECT * FROM department WHERE role_id = ?", [id],
+        (err, res) => {
+            if (err) {
+                console.log("Query err: " + err);
+                result(err, null);
                 return;
             }
-            if (res.affectedRows == 0){
-                result({ kind: "not_found"},null);
-                return;
+
+            // Check if res is not null and is an array with at least one element
+            if (res && res.length > 0 && res[0].role_id) {
+                // Role exists in department, delete department first
+                sql.query("DELETE FROM department WHERE role_id = ?", [id],
+                    (err, res) => {
+                        if (err) {
+                            console.log("Query error: " + err);
+                            result(err, null);
+                            return;
+                        }
+
+                        if (res.affectedRows === 0) {
+                            result({ kind: "not_found" }, null);
+                            return;
+                        }
+
+                        // Department deleted, now delete role
+                        sql.query("DELETE FROM role WHERE id = ?", [id],
+                            (err, res) => {
+                                if (err) {
+                                    console.log("Query error:" + err);
+                                    result(err, null);
+                                    return;
+                                }
+
+                                if (res.affectedRows === 0) {
+                                    result({ kind: "not_found" }, null);
+                                    return;
+                                }
+
+                                console.log("Delete Roles Id: ", { id: id });
+                                result(null, { id: id });
+                            });
+                    });
+            } else {
+                // Role does not exist in department, delete role directly
+                sql.query("DELETE FROM role WHERE id = ?", [id],
+                    (err, res) => {
+                        if (err) {
+                            console.log("Query error: " + err);
+                            result(err, null);
+                            return;
+                        }
+
+                        if (res.affectedRows === 0) {
+                            result({ kind: "not_found" }, null);
+                            return;
+                        }
+
+                        console.log("Deleted Role id: " + id);
+                        result(null, { id: id });
+                    });
             }
-            console.log("Delete Roles Id: ", { id: id});
-            result(null, { id: id});
-        })
-    })
-}
+        });
+};
 
 
 module.exports = Roles

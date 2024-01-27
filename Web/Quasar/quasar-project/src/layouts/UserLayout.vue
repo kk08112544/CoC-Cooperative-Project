@@ -47,32 +47,13 @@
         />
 
         <!-- Use q-btn instead of q-icon for clickable behavior -->
-        <q-btn @click="handleLogin" to="/login" style="background: #F24C65; color: white" label="Login" class="q-mr-md" />
-        <q-btn @click="handleRegister" to="/register" style="background: #F24C65; color: white" label="Register" class="q-mr-md" />
-
+          <q-btn @click="handleRegister" to="/" style="background: #F24C65; color: white" label="Logout" class="q-mr-md" />
       </q-toolbar>
-       
+       <q-toolbar class="bg-primary text-white">
+       </q-toolbar>
     </q-header>
 
-    <!-- <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list> -->
-        <!-- <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label> -->
-
-        <!-- <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        /> -->
-      <!-- </q-list>
-    </q-drawer> -->
+   
 
     <q-page-container>
       <router-view />
@@ -89,7 +70,7 @@ const linksList = [
 ]
 
 export default defineComponent({
-  name: 'MainLayout',
+  name: 'UserLayout',
 
   // components: {
   //   EssentialLink

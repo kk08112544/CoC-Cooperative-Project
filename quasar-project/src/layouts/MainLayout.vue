@@ -51,7 +51,6 @@
         <q-btn @click="handleRegister" to="/register" style="background: #F24C65; color: white" label="Register" class="q-mr-md" />
 
       </q-toolbar>
-       
     </q-header>
 
     <!-- <q-drawer
