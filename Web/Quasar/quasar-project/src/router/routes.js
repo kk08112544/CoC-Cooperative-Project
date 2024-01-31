@@ -14,8 +14,8 @@ const routes = [
     component: () => import('layouts/DirectorLayout.vue'),
     children: [
       {path: 'dashboard',component: () => import('pages/Director/DashboardPage.vue')},
-      {path: 'management',component: () => import('pages/Director/Management.vue')},
-      {path: 'notify',component: () => import('pages/Director/Notify.vue')},
+      {path: 'management',component: () => import('pages/Director/ManagementPage.vue')},
+      {path: 'notify',component: () => import('pages/Director/NotifyPage.vue')},
     ]
   },
   {

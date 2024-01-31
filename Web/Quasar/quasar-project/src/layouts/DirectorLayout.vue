@@ -47,15 +47,24 @@
         />
 
         <!-- Use q-btn instead of q-icon for clickable behavior -->
+        <q-icon
+           name="notifications"
+           class="q-mr-md"
+           style="font-size: 30px; position: relative;"
+           color="black"
+        />
         <q-btn @click="handleRegister" to="/" style="background: #F24C65; color: white" label="Logout" class="q-mr-md" />
 
       </q-toolbar>
        <q-toolbar class="bg-primary text-white">
-     
+        <q-btn @click="handleDashboard" style="color: white" label="Dashboard" class="q-mr-md" />
+        <q-btn @click="handleManagement" style="color: white" label="Management" class="q-mr-md" />
+
+        
      
 
      
-    </q-toolbar>
+      </q-toolbar>
     </q-header>
 
     <!-- <q-drawer

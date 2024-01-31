@@ -32,7 +32,7 @@
          <!-- <q-btn
           flat
           dense
-          round
+          roundหหห
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
@@ -49,7 +49,7 @@
         <!-- Use q-btn instead of q-icon for clickable behavior -->
         <q-btn @click="handleLogin" to="/login" style="background: #F24C65; color: white" label="Login" class="q-mr-md" />
         <q-btn @click="handleRegister" to="/register" style="background: #F24C65; color: white" label="Register" class="q-mr-md" />
-
+        &nbsp;&nbsp;
       </q-toolbar>
        
     </q-header>

@@ -3,61 +3,61 @@
     <h4 class="text-center">Dashboard</h4>
     <div class="q-pa-md row items-start q-gutter-md">
       <q-card class="my-card">
-        <q-card-section class="bg-primary text-white" style="width: 250px;">
+        <q-card-section class="bg-primary text-white" style="width: 300px;">
         <div class="text-h6">Total User</div>
         <div class="text-subtitle2">{{ totalUsers }} Person</div>
       </q-card-section>
       </q-card>
       <q-card class="my-card">
-        <q-card-section class="bg-negative text-white" style="width: 250px;">
+        <q-card-section class="bg-negative text-white" style="width: 300px;">
           <div class="text-h6">User Today</div>
           <div class="text-subtitle2">{{ usersToday }} Person</div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
-        <q-card-section class="bg-warning text-white" style="width: 250px;">
+        <q-card-section class="bg-warning text-white" style="width: 300px;">
           <div class="text-h6">User Zone A Total</div>
           <div class="text-subtitle2">{{ zoneATotal }} Person</div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
-        <q-card-section class="bg-info text-white" style="width: 250px;">
+        <q-card-section class="bg-info text-white" style="width: 300px;">
           <div class="text-h6">User Zone B Total</div>
           <div class="text-subtitle2">{{ zoneBTotal }} Person</div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
-        <q-card-section class="bg-accent text-white" style="width: 250px;">
+        <q-card-section class="bg-accent text-white" style="width: 300px;">
           <div class="text-h6">User Zone C Total</div>
           <div class="text-subtitle2">{{ zoneCTotal }} Person</div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
-        <q-card-section class="bg-positive text-white" style="width: 250px;">
+        <q-card-section class="bg-positive text-white" style="width: 300px;">
           <div class="text-h6">User Zone D Total</div>
           <div class="text-subtitle2">{{ zoneDTotal }} Person</div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
-        <q-card-section class="bg-secondary text-white" style="width: 250px;">
+        <q-card-section class="bg-secondary text-white" style="width: 300px;">
           <div class="text-h6">User Zone A Today</div>
           <div class="text-subtitle2">{{ zoneAToday }} Person</div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
-        <q-card-section class="bg-negative text-white" style="width: 250px;">
+        <q-card-section class="bg-negative text-white" style="width: 300px;">
           <div class="text-h6">User Zone B Today</div>
           <div class="text-subtitle2">{{ zoneBToday }} Person</div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
-        <q-card-section class="bg-info text-white" style="width: 250px;">
+        <q-card-section class="bg-info text-white" style="width: 300px;">
           <div class="text-h6">User Zone C Today</div>
           <div class="text-subtitle2">{{ zoneCToday }} Person</div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
-        <q-card-section class="bg-warning text-white" style="width: 250px;">
+        <q-card-section class="bg-warning text-white" style="width: 300px;">
           <div class="text-h6">User Zone D Today</div>
           <div class="text-subtitle2">{{ zoneDToday }} Person</div>
         </q-card-section>
