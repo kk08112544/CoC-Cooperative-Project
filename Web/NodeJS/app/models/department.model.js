@@ -10,7 +10,18 @@ const Department = function(department){
     this.role_id = department.role_id;
 }
 
-Department.getDepartment = (role_id,result) => {
+Department.getAllDepartment = (result) =>{
+    sql.query("SELECT * FROM department",(err,res)=>{
+        if(err){
+            console.log("Query err: " + err);
+            result(err,null);
+            return;
+        }
+        result(null, res);
+    })
+}
+
+Department.getDepartmentById  = (role_id,result) => {
     sql.query("SELECT * FROM department WHERE role_id = ?",[role_id],(err,res)=>{
         if(err){
             console.log("Query err: " + err);
