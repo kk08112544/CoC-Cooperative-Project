@@ -85,6 +85,9 @@ export default defineComponent({
       // toggleLeftDrawer () {
       //   leftDrawerOpen.value = !leftDrawerOpen.value
       // }
+      handleLogout() {
+        localStorage.removeItem("accessToken");
+      },
     }
   }
 })

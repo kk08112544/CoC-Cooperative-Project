@@ -67,42 +67,50 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref, onMounted } from "vue";
+import axios from "axios";
 
 export default defineComponent({
   name: 'DashboardPage',
   data() {
     return {
-      totalUsers: 0,
-      usersToday: 0,
-      zoneATotal: 0,
-      zoneBTotal: 0,
-      zoneCTotal: 0,
-      zoneDTotal: 0,
-      zoneAToday: 0,
-      zoneBToday: 0,
-      zoneCToday: 0,
-      zoneDToday: 0,
-    }
+      dashboard:[],
+      loading:true,
+    };
   },
   methods: {
-    fetchData() {
-      // Fetch data from API or database
-      this.totalUsers = 1000;
-      this.usersToday = 150;
-      this.zoneATotal = 200;
-      this.zoneBTotal = 300;
-      this.zoneCTotal = 400;
-      this.zoneDTotal = 800;
-      this.zoneAToday = 10;
-      this.zoneBToday = 30;
-      this.zoneCToday = 50;
-      this.zoneDToday = 70;
+    async fetchDataTotal() {
+      const token = localStorage.getItem("accessToken");
+      try{
+        const response = await axios.get('http://localhost:3000/api/dashboard/total',
+            {
+              headers: {
+                "x-access-token": token,
+              },
+            }
+        );
+        this.dashboard = response.data;
+        this.loading = false;
+      }catch(error){
+        console.error("Error fetching data:", error);
+        this.loading = false;
+      }
+    },
+    async fetchDataDay(){
+      const token = localStorage.getItem("accessToken");
+      try{
+        const response = await axios.get('http://localhost:3000/api/dashboard/day',
+          {
+            headers: {
+              "x-access-token": token,
+            },
+          }
+        );
+      }catch(error){
+
+      }
     }
   },
-  created() {
-    this.fetchData();
-  }
 })
 </script>
 

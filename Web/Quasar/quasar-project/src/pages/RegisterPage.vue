@@ -9,7 +9,7 @@
           </div>
           <q-card-section style="max-width: 600px;">
             <q-form
-              @submit="onSubmit"
+              @submit.prevent="onSubmit"
               @reset="onReset"
               class="q-gutter-md"
               ref="registerForm"
@@ -28,14 +28,14 @@
                 <q-input v-model="password" type="password" label="Password" lazy-rules :rules="passwordRules"/>
               </div>
               <div>
-                <q-input v-model="confirmPassword" type="password" label="Confirm Password"/>
+                <q-input v-model="cpassword" type="password" label="Confirm Password"/>
               </div>
               <div>
                 <q-select v-model="role" :options="options" label="Role" option-label="label" @change="onRoleChange" />
               </div>
-              <div v-if="role">
+              <!-- <div v-if="role">
                 <q-select v-model="department" :options="departments" label="Department" option-label="label" />
-              </div>
+              </div> -->
               <div class="flex justify-end">
                 <q-btn label="Submit" type="submit" color="primary"/>
                 <q-btn label="Reset" type="reset" color="primary" flat class="q-mr-sm"  @click="clearForm"/>
@@ -64,9 +64,9 @@ export default {
       lastname: '',
       username: '',
       password: '',
-      confirmPassword: '',
+      cpassword: '',
       role: null,
-      department: null,
+      // department: null,
       usernameRules: [
         (v) => !!v || 'Username is required',
       ],
@@ -76,13 +76,13 @@ export default {
         (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(v) || 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
       ],
       options: [],
-      departments: []
+     // departments: []
     };
   },
 
   created() {
     this.fetchRoles(); // เรียกใช้งานเพื่อเตรียมรายการ role ที่เลือกไว้เริ่มต้น
-   // this.onRoleChange(); // เรียกใช้งานเพื่อเตรียมรายการแผนกที่สอดคล้องกับ role ที่เลือกไว้เริ่มต้น
+    //this.onRoleChange(); // เรียกใช้งานเพื่อเตรียมรายการแผนกที่สอดคล้องกับ role ที่เลือกไว้เริ่มต้น
   },
 
   methods: {
@@ -98,52 +98,74 @@ export default {
           console.error('Error fetching roles:', error);
         });
     },
-    fetchDepartments(roleId){
-      axios.get(`http://localhost:3000/api/department/roles/${roleId}`)
-      .then(response => {
-        this.departments = response.data.map(department => ({
-          label: department.depart_name,
-          value:  department.id
-        }))
-      })
-      .catch(error => {
-        console.error('Error fetching departments:', error);
-      })
-    },
-    getRoleId(roleName){
-      return axios.get(`http://localhost:3000/api/role`)
-      .then(response => {
-        const foundRole = response.data.find(role => role.role_name === roleName);
-        return foundRole? foundRole.id : null;
-      })
-      .catch(error => {
-        console.error('Error fetching Role:', error);
-        return null;
-      })
-    },
-    onRoleChange() {
-      if (this.role) {
-        const roleName = this.options.find(option => option.value === this.role).label;
-        console.log("Selected role Name:",roleName);
-        this.getRoleId(roleName)
-          .then(roleId => {
-            if(roleId){
-              console.log("Found this Role Id", roleId);
-              this.fetchDepartments(roleId);
-            }else{
-              console.log("Role with name", roleName, "not found!");
-            }
-          })
+
+    async onSubmit() {
+      const response = await this.$axios.get(`http://localhost:3000/api/auth/${this.username}`);
+      let db_username
+      if(response.data.record != undefined){
+        db_username = response.data.record.username;
+      }else{
+        db_username = null
+      }
+      console.log(response.data);
+      if(this.username === db_username){
+        this.$q.notify({
+            color: "red-4",
+            textColor: "white",
+            icon: "warning",
+            message: "This username already exists. Please choose a different username.",
+          });
+          return;
+      }
+      if(this.password != this.cpassword){
+        this.$q.notify({
+          color: "red-4",
+          textColor: "white",
+          icon: "warning",
+          message: "Passwords do not match",
+        });
+        return;
+      }
+      const res = await this.$axios.get(`http://localhost:3000/api/role/`);
+      let roleId = null;
+
+      res.data.forEach(role => {
+        if (role.role_name === this.role) {
+          roleId = role.id;
+          return;
+        }
+      });
+      console.log("Selected role ID:", roleId);
+      try{
+        const sendResponse = await this.$axios.post(`http://localhost:3000/api/auth/signup`,
+         {
+            name:this.name,
+            lastname:this.lastname,
+            username:this.username,
+            password:this.password,
+            role_id:roleId,
+         }
+        );
+        const accessToken = sendResponse.data.accessToken;
+        const RoleId = sendResponse.data.role_id;
+
+        localStorage.setItem("Access Token:", accessToken);
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Registered successfully",
+        });
+
+        this.$router.push("/user/alcohol");
+        console.log("Signup successful:", sendResponse.data);
+      }catch(error){
+        console.error("Signup error:", error);  
       }
     },
 
-    onSubmit() {
-      if (this.password.trim() !== this.confirmPassword.trim()) {
-        this.$q.notify({ type: 'negative', message: 'Passwords do not match' });
-        return;
-      }
-      // Other form submission logic
-    },
+
+   
     onReset() {
       this.$refs.registerForm.reset();
     },
@@ -152,19 +174,19 @@ export default {
       this.lastname = '';
       this.username = '';
       this.password = '';
-      this.confirmPassword = '';
+      this.cpassword = '';
       this.role = null;
-      this.department = null;
+      // this.department = null;
     },
    
   },
 
-  watch: {
-    role: function(newRole, oldRole) {
-      if (newRole !== oldRole) {
-        this.onRoleChange();
-      }
-    }
-  },
+  // watch: {
+  //   role: function(newRole, oldRole) {
+  //     if (newRole !== oldRole) {
+  //       this.onRoleChange();
+  //     }
+  //   }
+  // },
 };
 </script>

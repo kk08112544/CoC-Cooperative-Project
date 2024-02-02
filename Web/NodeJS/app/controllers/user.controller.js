@@ -22,29 +22,27 @@ const validUsername = (req, res) => {
 };
 
 const createNewUser = (req, res)=>{
-    if(!req.body.name || !req.body.lastname || !req.body.username || !req.body.password || !req.body.confirm_password || !req.body.role_id){
+    if(!req.body){
         res.status(400).send({message: "Content can not be empty."});
     }
-    
-    if(req.body.password==req.body.confirm_password){
-        const salt = bcrypt.genSaltSync(10);
-        const userObj = new User({
-            name: req.body.name,
-            lastname: req.body.lastname,
-            username: req.body.username,
-            password: bcrypt.hashSync(req.body.password, salt),
-            role_id:  req.body.role_id,
-        });
-        User.create(userObj, (err, data)=>{
-            if(err){
+    const salt = bcrypt.genSaltSync(10);
+    const userObj = new User({
+        name: req.body.name,
+        lastname: req.body.lastname,
+        username: req.body.username,
+        password: bcrypt.hashSync(req.body.password, salt),
+        role_id:  req.body.role_id,
+    });
+    User.create(userObj, (err, data)=>{
+        if(err){
                 res.status(500).send({message: err.message || "Some error occured while creating"});
-            }else res.send(data);
-        });
-    }else res.send('Password does not matches');
+        }else res.send(data);
+    });
+
 };
 
 const login = (req, res)=>{
-    if(!req.body){
+    if(!req.body.username || !req.body.password){
         res.status(400).send({message: "Content can not be empty."});
     }
     const acc = new User({
@@ -64,6 +62,7 @@ const login = (req, res)=>{
         }else res.send(data);
     });
 };
+
 
 
 module.exports = { 

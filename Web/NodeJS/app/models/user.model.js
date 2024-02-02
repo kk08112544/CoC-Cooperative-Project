@@ -54,6 +54,7 @@ User.loginModel = (account, result)=>{
                 const token = jwt.sign({id: res.insertId}, scKey.secret, {expiresIn: expireTime});
                 console.log("Login success. Token: " + token);
                 res[0].accessToken = token;
+                console.log(res);
                 result(null, res[0]);
                 return;
             }else{
