@@ -31,10 +31,10 @@
                 <q-input v-model="confirmPassword" type="password" label="Confirm Password"/>
               </div>
               <div>
-                <q-select v-model="role" :options="options" label="Role" option-label="label" />
+                <q-select v-model="role" :options="options" label="Role" option-label="label" @change="onRoleChange" />
               </div>
-              <div>
-                <q-select v-model="department" :options="departments" label="Department" />
+              <div v-if="role">
+                <q-select v-model="department" :options="departments" label="Department" option-label="label" />
               </div>
               <div class="flex justify-end">
                 <q-btn label="Submit" type="submit" color="primary"/>
@@ -53,3 +53,96 @@
     </q-img>
   </q-page>
 </template>
+<script>
+import axios from 'axios';
+export default {
+  name: 'RegisterPage',
+  data() {
+  return {
+    selectedDepartment: null,
+    name: '',
+    lastname: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    role: null,
+
+    department: null, // กำหนดค่าเริ่มต้นของ department ให้เป็น null หรือค่าที่เหมาะสม
+    departments: [] ,// เก็บ options ที่ได้จาก API response
+    usernameRules: [
+      (v) => !!v || 'Username is required',
+    ],
+    passwordRules: [
+      (v) => !!v || 'Password is required',
+      (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
+      (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(v) || 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    ],
+    options: [],
+  };
+},
+
+  created() {
+    this.fetchRoles();
+  },
+  methods: {
+    onRoleChange() {
+  axios.get('http://localhost:3000/api/role')
+    .then(response => {
+      const selectedRoleId = this.role;
+      const selectedRole = response.data.find(role => role.id === selectedRoleId);
+      if (selectedRole) {
+        const role_id = selectedRole.id;
+        axios.get(`http://localhost:3000/api/department/${role_id}`)
+          .then(response => {
+            this.departments = response.data.map(department => ({
+              label: department.depart_name,
+              value: department.id
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching departments:', error);
+          });
+      } else {
+        console.error("Selected role not found in API response.");
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching roles:', error);
+    });
+},
+    onSubmit() {
+      if (this.password.trim() !== this.confirmPassword.trim()) {
+        this.$q.notify({type: 'negative', message: 'Passwords do not match'});
+        return;
+      }
+      // Other form submission logic
+    },
+    onReset() {
+      this.$refs.loginForm.reset();
+    },
+    clearForm() {
+      this.name = '';
+      this.lastname = '';
+      this.username = '';
+      this.password = '';
+      this.confirmPassword = '';
+      this.role = null;
+      this.department = null;
+      this.selectedDepartment = null;
+    },
+    fetchRoles() {
+      axios.get('http://localhost:3000/api/role')
+        .then(response => {
+          this.options = response.data.map(role => ({
+            label: role.role_name,
+            value: role.id
+          }));
+        })
+        .catch(error => {
+          console.error('Error fetching roles:', error);
+        });
+    },
+
+  },
+};
+</script>

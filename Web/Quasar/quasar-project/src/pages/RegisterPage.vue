@@ -1,4 +1,3 @@
-User
 <template>
   <q-page>
     <q-img src="Building07-scaled.jpg" style="height: 100vh;">
@@ -13,7 +12,7 @@ User
               @submit="onSubmit"
               @reset="onReset"
               class="q-gutter-md"
-              ref="loginForm"
+              ref="registerForm"
               style="background-color: transparent;"
             >
               <div>
@@ -32,7 +31,7 @@ User
                 <q-input v-model="confirmPassword" type="password" label="Confirm Password"/>
               </div>
               <div>
-                <q-select v-model="role" :options="options" label="Role" option-label="label" />
+                <q-select v-model="role" :options="options" label="Role" option-label="label" @change="onRoleChange" />
               </div>
               <div v-if="role">
                 <q-select v-model="department" :options="departments" label="Department" option-label="label" />
@@ -56,6 +55,7 @@ User
 </template>
 <script>
 import axios from 'axios';
+
 export default {
   name: 'RegisterPage',
   data() {
@@ -76,28 +76,16 @@ export default {
         (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(v) || 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
       ],
       options: [],
-      departments: [], // Initialize departments array
+      departments: []
     };
   },
+
   created() {
-    this.fetchRoles();
+    this.fetchRoles(); // เรียกใช้งานเพื่อเตรียมรายการ role ที่เลือกไว้เริ่มต้น
+   // this.onRoleChange(); // เรียกใช้งานเพื่อเตรียมรายการแผนกที่สอดคล้องกับ role ที่เลือกไว้เริ่มต้น
   },
+
   methods: {
-    onSubmit() {
-      // Handle form submission
-    },
-    onReset() {
-      // Handle form reset
-    },
-    clearForm() {
-      this.name = '';
-      this.lastname = '';
-      this.username = '';
-      this.password = '';
-      this.confirmPassword = '';
-      this.role = null;
-      this.department = null;
-    },
     fetchRoles() {
       axios.get('http://localhost:3000/api/role')
         .then(response => {
@@ -110,23 +98,73 @@ export default {
           console.error('Error fetching roles:', error);
         });
     },
+    fetchDepartments(roleId){
+      axios.get(`http://localhost:3000/api/department/roles/${roleId}`)
+      .then(response => {
+        this.departments = response.data.map(department => ({
+          label: department.depart_name,
+          value:  department.id
+        }))
+      })
+      .catch(error => {
+        console.error('Error fetching departments:', error);
+      })
+    },
+    getRoleId(roleName){
+      return axios.get(`http://localhost:3000/api/role`)
+      .then(response => {
+        const foundRole = response.data.find(role => role.role_name === roleName);
+        return foundRole? foundRole.id : null;
+      })
+      .catch(error => {
+        console.error('Error fetching Role:', error);
+        return null;
+      })
+    },
+    onRoleChange() {
+      if (this.role) {
+        const roleName = this.options.find(option => option.value === this.role).label;
+        console.log("Selected role Name:",roleName);
+        this.getRoleId(roleName)
+          .then(roleId => {
+            if(roleId){
+              console.log("Found this Role Id", roleId);
+              this.fetchDepartments(roleId);
+            }else{
+              console.log("Role with name", roleName, "not found!");
+            }
+          })
+      }
+    },
+
+    onSubmit() {
+      if (this.password.trim() !== this.confirmPassword.trim()) {
+        this.$q.notify({ type: 'negative', message: 'Passwords do not match' });
+        return;
+      }
+      // Other form submission logic
+    },
+    onReset() {
+      this.$refs.registerForm.reset();
+    },
+    clearForm() {
+      this.name = '';
+      this.lastname = '';
+      this.username = '';
+      this.password = '';
+      this.confirmPassword = '';
+      this.role = null;
+      this.department = null;
+    },
+   
   },
+
   watch: {
-    role(newValue) {
-      console.log('Selected Role ID:', newValue);
-      axios.get(`http://localhost:3000/api/department?role_id=${newValue}`)
-        .then(response => {
-          this.departments = response.data.map(department => ({
-            label: department.depart_name,
-            value: department.id
-          }));
-        })
-        .catch(error => {
-          console.error('Error fetching departments:', error);
-        });
+    role: function(newRole, oldRole) {
+      if (newRole !== oldRole) {
+        this.onRoleChange();
+      }
     }
-  }
+  },
 };
 </script>
-
-
