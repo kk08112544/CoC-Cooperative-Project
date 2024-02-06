@@ -42,24 +42,20 @@
     </q-img>
   </q-page>
 </template>
-
 <script>
 import { defineComponent } from 'vue'
-import { useQuasar } from 'quasar'
+
 export default defineComponent({
   name: 'LoginPage',
   data() {
     return {
-      
       username: null,
       password: null,
       isPwd: false // Add this property to control password visibility
     };
   },
   methods: {
-  //  requiredValidate,
     async onSubmit(){
-      const $q = useQuasar()
       try{
         const response = await this.$axios.post(`http://localhost:3000/api/auth/login`,{
             username:this.username,
@@ -68,34 +64,53 @@ export default defineComponent({
         const accessToken = response.data.accessToken;
         const roleId = response.data.role_id;
         const userId = response.data.id;
+        const name = response.data.name;
+        const lastname = response.data.lastname;
+        this.name = name;
+        this.lastname = lastname;
         console.log("Token:",accessToken);
         console.log("Role Id:",roleId);
         console.log("User Id:",userId);
         console.log(response.data);
        
-
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("userId", userId);
+        localStorage.setItem('name', name);
+        localStorage.setItem('lastname', lastname);
 
-        // this.$q.notify({
-        //   color: "green-4",
-        //   textColor: "white",
-        //   icon: "cloud_done",
-        //   message: "Login successfully",
-        // });ss
-        
-        // console.log(response.data);
-
-        this.$router.push(parseInt(roleId, 10) === 1 ? "/director/dashboard" : "/user/alcohol");
-        $q.notify({
+        this.$q.notify({
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
           message: "Login successfully",
         });
-      }catch(error){
+        //this.$router.push(parseInt(roleId, 10) === 1 ? "/director/dashboard" : "/user/alcohol");
+        // this.$q.notify({
+        //   color: "green-4",
+        //   textColor: "white",
+        //   icon: "cloud_done",
+        //   message: "Login successfully",
+        // });
+        if (parseInt(roleId, 10) === 1) {
+          this.$router.push({
+            path: '/director/dashboard',
+            query: {
+              name: this.name,
+              lastname: this.lastname
+            }
+          });
+        } else {
+          this.$router.push({
+            path: '/user/alcohol',
+            query: {
+              name: this.name,
+              lastname: this.lastname
+            }
+          });
+        }
+      } catch(error) {
         console.log("Login error", error);
-        $q.notify({
+        this.$q.notify({
           color: "red-4",
           textColor: "white",
           icon: "warning",
@@ -108,4 +123,7 @@ export default defineComponent({
     }
   },
 });
+
+
 </script>
+

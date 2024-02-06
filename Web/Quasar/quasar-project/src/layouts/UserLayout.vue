@@ -45,7 +45,7 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
-
+        <h6>{{ $route.query.name }} {{ $route.query.lastname }}</h6>
         <!-- Use q-btn instead of q-icon for clickable behavior -->
           <q-btn @click="handleRegister" to="/" style="background: #F24C65; color: white" label="Logout" class="q-mr-md" />
       </q-toolbar>

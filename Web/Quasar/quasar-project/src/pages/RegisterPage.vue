@@ -25,7 +25,14 @@
                 <q-input v-model="username" type="text" label="Username" lazy-rules :rules="usernameRules"/>
               </div>
               <div>
-                <q-input v-model="password" type="password" label="Password" lazy-rules :rules="passwordRules"/>
+                <q-input v-model="password" :type="isPwd ? 'password' : 'text'" label="Password" lazy-rules :rules="passwordRules">
+                  <template v-slot:append>
+                    <q-icon
+                      @click="togglePwdVisibility"
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                    />
+                  </template>
+                </q-input>
               </div>
               <div>
                 <q-input v-model="cpassword" type="password" label="Confirm Password"/>
@@ -66,7 +73,8 @@ export default {
       password: '',
       cpassword: '',
       role: null,
-      // department: null,
+      isPwd: false,// Add this property to control password visibility,
+      department: null,
       usernameRules: [
         (v) => !!v || 'Username is required',
       ],
@@ -82,7 +90,7 @@ export default {
 
   created() {
     this.fetchRoles(); // เรียกใช้งานเพื่อเตรียมรายการ role ที่เลือกไว้เริ่มต้น
-    //this.onRoleChange(); // เรียกใช้งานเพื่อเตรียมรายการแผนกที่สอดคล้องกับ role ที่เลือกไว้เริ่มต้น
+   // this.onRoleChange(); // เรียกใช้งานเพื่อเตรียมรายการแผนกที่สอดคล้องกับ role ที่เลือกไว้เริ่มต้น
   },
 
   methods: {
@@ -90,7 +98,7 @@ export default {
       axios.get('http://localhost:3000/api/role')
         .then(response => {
           this.options = response.data.map(role => ({
-            label: role.role_name,
+            label:  role.role_name,
             value: role.id
           }));
         })
@@ -98,71 +106,71 @@ export default {
           console.error('Error fetching roles:', error);
         });
     },
+    // onRoleChange(){
 
+    // },
     async onSubmit() {
-      const response = await this.$axios.get(`http://localhost:3000/api/auth/${this.username}`);
-      let db_username
-      if(response.data.record != undefined){
-        db_username = response.data.record.username;
-      }else{
-        db_username = null
-      }
-      console.log(response.data);
-      if(this.username === db_username){
-        this.$q.notify({
-            color: "red-4",
-            textColor: "white",
-            icon: "warning",
-            message: "This username already exists. Please choose a different username.",
-          });
-          return;
-      }
-      if(this.password != this.cpassword){
-        this.$q.notify({
-          color: "red-4",
-          textColor: "white",
-          icon: "warning",
-          message: "Passwords do not match",
-        });
-        return;
-      }
-      const res = await this.$axios.get(`http://localhost:3000/api/role/`);
-      let roleId = null;
-
-      res.data.forEach(role => {
-        if (role.role_name === this.role) {
-          roleId = role.id;
-          return;
-        }
+  const response = await this.$axios.get(`http://localhost:3000/api/auth/${this.username}`);
+  let db_username
+  if(response.data.record != undefined){
+    db_username = response.data.record.username;
+  }else{
+    db_username = null
+  }
+  console.log(response.data);
+  if(this.username === db_username){
+    this.$q.notify({
+        color: "red-4",
+        textColor: "white",
+        icon: "warning",
+        message: "This username already exists. Please choose a different username.",
       });
-      console.log("Selected role ID:", roleId);
-      try{
-        const sendResponse = await this.$axios.post(`http://localhost:3000/api/auth/signup`,
-         {
-            name:this.name,
-            lastname:this.lastname,
-            username:this.username,
-            password:this.password,
-            role_id:roleId,
-         }
-        );
-        const accessToken = sendResponse.data.accessToken;
-        const RoleId = sendResponse.data.role_id;
+      return;
+  }
+  if(this.password != this.cpassword){
+    this.$q.notify({
+      color: "red-4",
+      textColor: "white",
+      icon: "warning",
+      message: "Passwords do not match",
+    });
+    return;
+  }
+  try{
+    const roleId = this.role.value; // Get the selected role_id directly from the model
+    console.log("Selected role ID:", roleId);
+    const sendResponse = await this.$axios.post(`http://localhost:3000/api/auth/signup`,
+     {
+        name:this.name,
+        lastname:this.lastname,
+        username:this.username,
+        password:this.password,
+        role_id:roleId,
+     }
+    );
+    const accessToken = sendResponse.data.accessToken;
+    const RoleId = sendResponse.data.role_id;
 
-        localStorage.setItem("Access Token:", accessToken);
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Registered successfully",
-        });
+    localStorage.setItem("Access Token:", accessToken);
+    this.$q.notify({
+      color: "green-4",
+      textColor: "white",
+      icon: "cloud_done",
+      message: "Registered successfully",
+    });
+    this.$router.push({
+            path: '/user/alcohol',
+            query: {
+              name: this.name,
+              lastname: this.lastname
+            }
+    });
+    console.log("Signup successful:", sendResponse.data);
+  }catch(error){
+    console.error("Signup error:", error);  
+  }
+},
 
-        this.$router.push("/user/alcohol");
-        console.log("Signup successful:", sendResponse.data);
-      }catch(error){
-        console.error("Signup error:", error);  
-      }
-    },
 
 
    
@@ -178,7 +186,9 @@ export default {
       this.role = null;
       // this.department = null;
     },
-   
+    togglePwdVisibility() {
+      this.isPwd = !this.isPwd; // Toggle password visibility
+    }
   },
 
   // watch: {

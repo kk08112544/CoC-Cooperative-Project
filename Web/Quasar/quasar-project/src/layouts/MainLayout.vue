@@ -29,15 +29,7 @@
 
       <!-- Main Header Toolbar -->
       <q-toolbar class="bg-white text-primary q-pa-none" style="height: 100px;">
-         <!-- <q-btn
-          flat
-          dense
-          roundหหห
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        /> -->
-        <!-- Logo -->
+    
         <q-img
           src="Bangkok_Hospital_Phuket-logo-48EE6B9950-seeklogo.com.png" 
           :ratio="16/9"
@@ -45,34 +37,14 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
+        
 
-        <!-- Use q-btn instead of q-icon for clickable behavior -->
         <q-btn @click="handleLogin" to="/login" style="background: #F24C65; color: white" label="Login" class="q-mr-md" />
         <q-btn @click="handleRegister" to="/register" style="background: #F24C65; color: white" label="Register" class="q-mr-md" />
         &nbsp;&nbsp;
       </q-toolbar>
        
     </q-header>
-
-    <!-- <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list> -->
-        <!-- <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label> -->
-
-        <!-- <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        /> -->
-      <!-- </q-list>
-    </q-drawer> -->
 
     <q-page-container>
       <router-view />
