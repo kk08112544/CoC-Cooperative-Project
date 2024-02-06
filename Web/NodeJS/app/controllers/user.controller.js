@@ -21,24 +21,25 @@ const validUsername = (req, res) => {
     });
 };
 
-const createNewUser = (req, res)=>{
-    if(!req.body){
-        res.status(400).send({message: "Content can not be empty."});
+const createNewUser = (req, res) => {
+    if (!req.body.name || !req.body.lastname || !req.body.username || !req.body.password || !req.body.role_id || !req.body.depart_id) {
+        res.status(400).send({ message: "Content can not be empty." });
     }
+
     const salt = bcrypt.genSaltSync(10);
     const userObj = new User({
         name: req.body.name,
         lastname: req.body.lastname,
         username: req.body.username,
         password: bcrypt.hashSync(req.body.password, salt),
-        role_id:  req.body.role_id,
+        role_id: req.body.role_id,
+        depart_id: req.body.depart_id,
     });
-    User.create(userObj, (err, data)=>{
-        if(err){
-                res.status(500).send({message: err.message || "Some error occured while creating"});
-        }else res.send(data);
+    User.create(userObj, (err, data) => {
+        if (err) {
+            res.status(500).send({ message: err.message || "Some error occured while creating" });
+        } else res.send(data);
     });
-
 };
 
 const login = (req, res)=>{

@@ -40,9 +40,9 @@
               <div>
                 <q-select v-model="role" :options="options" label="Role" option-label="label" @change="onRoleChange" />
               </div>
-              <!-- <div v-if="role">
+              <div v-if="role">
                 <q-select v-model="department" :options="departments" label="Department" option-label="label" />
-              </div> -->
+              </div>
               <div class="flex justify-end">
                 <q-btn label="Submit" type="submit" color="primary"/>
                 <q-btn label="Reset" type="reset" color="primary" flat class="q-mr-sm"  @click="clearForm"/>
@@ -84,7 +84,7 @@ export default {
         (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(v) || 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
       ],
       options: [],
-     // departments: []
+      departments: []
     };
   },
 
@@ -106,9 +106,22 @@ export default {
           console.error('Error fetching roles:', error);
         });
     },
-    // onRoleChange(){
+    onRoleChange(){
+      if(this.role){
+        const roleId = this.role.value;
+        axios.get(`http://localhost:3000/api/department/roles/${roleId}`)
+  .then(response => {
+    this.departments = response.data.map(department => ({
+      label: department.depart_name,
+      value: department.id,
+    }));
+  })
+  .catch(error => {
+    console.error('Error fetching departments:', error);
+  });
 
-    // },
+      }
+    },
     async onSubmit() {
   const response = await this.$axios.get(`http://localhost:3000/api/auth/${this.username}`);
   let db_username
@@ -139,6 +152,8 @@ export default {
   try{
     const roleId = this.role.value; // Get the selected role_id directly from the model
     console.log("Selected role ID:", roleId);
+    const departId = this.department.value;
+    console.log("Selected department ID:", departId);
     const sendResponse = await this.$axios.post(`http://localhost:3000/api/auth/signup`,
      {
         name:this.name,
@@ -146,10 +161,12 @@ export default {
         username:this.username,
         password:this.password,
         role_id:roleId,
+        depart_id:departId,
      }
     );
     const accessToken = sendResponse.data.accessToken;
     const RoleId = sendResponse.data.role_id;
+    const DepartId = sendResponse.data.depart_id;
 
     localStorage.setItem("Access Token:", accessToken);
     this.$q.notify({
@@ -184,19 +201,19 @@ export default {
       this.password = '';
       this.cpassword = '';
       this.role = null;
-      // this.department = null;
+      this.department = null;
     },
     togglePwdVisibility() {
       this.isPwd = !this.isPwd; // Toggle password visibility
     }
   },
 
-  // watch: {
-  //   role: function(newRole, oldRole) {
-  //     if (newRole !== oldRole) {
-  //       this.onRoleChange();
-  //     }
-  //   }
-  // },
+  watch: {
+  role: {
+    handler: 'onRoleChange',
+    immediate: true // เพื่อให้เรียกใช้งานฟังก์ชันเมื่อค่าเริ่มต้นถูกตั้งค่า
+  }
+},
+
 };
 </script>
