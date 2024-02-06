@@ -40,7 +40,7 @@
               <div>
                 <q-select v-model="role" :options="options" label="Role" option-label="label" @change="onRoleChange" />
               </div>
-              <div v-if="role">
+              <div v-if="role && departments.length > 0">
                 <q-select v-model="department" :options="departments" label="Department" option-label="label" />
               </div>
               <div class="flex justify-end">
@@ -60,6 +60,7 @@
     </q-img>
   </q-page>
 </template>
+
 <script>
 import axios from 'axios';
 
@@ -73,7 +74,7 @@ export default {
       password: '',
       cpassword: '',
       role: null,
-      isPwd: false,// Add this property to control password visibility,
+      isPwd: false,
       department: null,
       usernameRules: [
         (v) => !!v || 'Username is required',
@@ -89,8 +90,7 @@ export default {
   },
 
   created() {
-    this.fetchRoles(); // เรียกใช้งานเพื่อเตรียมรายการ role ที่เลือกไว้เริ่มต้น
-   // this.onRoleChange(); // เรียกใช้งานเพื่อเตรียมรายการแผนกที่สอดคล้องกับ role ที่เลือกไว้เริ่มต้น
+    this.fetchRoles();
   },
 
   methods: {
@@ -98,7 +98,7 @@ export default {
       axios.get('http://localhost:3000/api/role')
         .then(response => {
           this.options = response.data.map(role => ({
-            label:  role.role_name,
+            label: role.role_name,
             value: role.id
           }));
         })
@@ -106,91 +106,89 @@ export default {
           console.error('Error fetching roles:', error);
         });
     },
-    onRoleChange(){
-      if(this.role){
+    onRoleChange() {
+      if (this.role) {
         const roleId = this.role.value;
         axios.get(`http://localhost:3000/api/department/roles/${roleId}`)
-  .then(response => {
-    this.departments = response.data.map(department => ({
-      label: department.depart_name,
-      value: department.id,
-    }));
-  })
-  .catch(error => {
-    console.error('Error fetching departments:', error);
-  });
-
+          .then(response => {
+            this.departments = response.data.map(department => ({
+              label: department.depart_name,
+              value: department.id,
+            }));
+          })
+          .catch(error => {
+            console.error('Error fetching departments:', error);
+          });
+      } else {
+        this.departments = [];
+        this.department = null;
       }
     },
+
     async onSubmit() {
-  const response = await this.$axios.get(`http://localhost:3000/api/auth/${this.username}`);
-  let db_username
-  if(response.data.record != undefined){
-    db_username = response.data.record.username;
-  }else{
-    db_username = null
-  }
-  console.log(response.data);
-  if(this.username === db_username){
-    this.$q.notify({
-        color: "red-4",
-        textColor: "white",
-        icon: "warning",
-        message: "This username already exists. Please choose a different username.",
-      });
-      return;
-  }
-  if(this.password != this.cpassword){
-    this.$q.notify({
-      color: "red-4",
-      textColor: "white",
-      icon: "warning",
-      message: "Passwords do not match",
-    });
-    return;
-  }
-  try{
-    const roleId = this.role.value; // Get the selected role_id directly from the model
-    console.log("Selected role ID:", roleId);
-    const departId = this.department.value;
-    console.log("Selected department ID:", departId);
-    const sendResponse = await this.$axios.post(`http://localhost:3000/api/auth/signup`,
-     {
-        name:this.name,
-        lastname:this.lastname,
-        username:this.username,
-        password:this.password,
-        role_id:roleId,
-        depart_id:departId,
-     }
-    );
-    const accessToken = sendResponse.data.accessToken;
-    const RoleId = sendResponse.data.role_id;
-    const DepartId = sendResponse.data.depart_id;
+      const response = await this.$axios.get(`http://localhost:3000/api/auth/${this.username}`);
+      let db_username
+      if (response.data.record != undefined) {
+        db_username = response.data.record.username;
+      } else {
+        db_username = null
+      }
+      console.log(response.data);
+      if (this.username === db_username) {
+        this.$q.notify({
+          color: "red-4",
+          textColor: "white",
+          icon: "warning",
+          message: "This username already exists. Please choose a different username.",
+        });
+        return;
+      }
+      if (this.password != this.cpassword) {
+        this.$q.notify({
+          color: "red-4",
+          textColor: "white",
+          icon: "warning",
+          message: "Passwords do not match",
+        });
+        return;
+      }
+      try {
+        const roleId = this.role.value;
+        console.log("Selected role ID:", roleId);
+        const departId = this.department.value;
+        console.log("Selected department ID:", departId);
+        const sendResponse = await this.$axios.post(`http://localhost:3000/api/auth/signup`, {
+          name: this.name,
+          lastname: this.lastname,
+          username: this.username,
+          password: this.password,
+          role_id: roleId,
+          depart_id: departId,
+        });
+        const accessToken = sendResponse.data.accessToken;
+        const RoleId = sendResponse.data.role_id;
+        const DepartId = sendResponse.data.depart_id;
 
-    localStorage.setItem("Access Token:", accessToken);
-    this.$q.notify({
-      color: "green-4",
-      textColor: "white",
-      icon: "cloud_done",
-      message: "Registered successfully",
-    });
-    this.$router.push({
-            path: '/user/alcohol',
-            query: {
-              name: this.name,
-              lastname: this.lastname
-            }
-    });
-    console.log("Signup successful:", sendResponse.data);
-  }catch(error){
-    console.error("Signup error:", error);  
-  }
-},
+        localStorage.setItem("Access Token:", accessToken);
+        this.$q.notify({
+          color: "green-4",
+          textColor: "white",
+          icon: "cloud_done",
+          message: "Registered successfully",
+        });
+        this.$router.push({
+          path: '/user/alcohol',
+          query: {
+            name: this.name,
+            lastname: this.lastname
+          }
+        });
+        console.log("Signup successful:", sendResponse.data);
+      } catch (error) {
+        console.error("Signup error:", error);
+      }
+    },
 
-
-
-   
     onReset() {
       this.$refs.registerForm.reset();
     },
@@ -204,16 +202,15 @@ export default {
       this.department = null;
     },
     togglePwdVisibility() {
-      this.isPwd = !this.isPwd; // Toggle password visibility
+      this.isPwd = !this.isPwd;
     }
   },
 
   watch: {
-  role: {
-    handler: 'onRoleChange',
-    immediate: true // เพื่อให้เรียกใช้งานฟังก์ชันเมื่อค่าเริ่มต้นถูกตั้งค่า
-  }
-},
-
+    role: {
+      handler: 'onRoleChange',
+      immediate: true
+    }
+  },
 };
 </script>
