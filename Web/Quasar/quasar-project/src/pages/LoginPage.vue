@@ -61,29 +61,89 @@ export default defineComponent({
             username:this.username,
             password:this.password,
         });
-        const accessToken = response.data.accessToken;
-        const roleId = response.data.role_id;
-        const userId = response.data.id;
-        const name = response.data.name;
-        const lastname = response.data.lastname;
-        this.name = name;
-        this.lastname = lastname;
-        console.log("Token:",accessToken);
-        console.log("Role Id:",roleId);
-        console.log("User Id:",userId);
-        console.log(response.data);
-       
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("userId", userId);
-        localStorage.setItem('name', name);
-        localStorage.setItem('lastname', lastname);
-
-        this.$q.notify({
+        
+        const AccessToken = response.data.accessToken;
+        const role_Id = response.data.role_id;
+        if(role_Id == 1){
+          const user_id= response.data.id;
+          const name = response.data.name;
+          const lastname = response.data.lastname;
+          this.name = name;
+          this.lastname = lastname;
+          const token = AccessToken;
+          localStorage.setItem("token", token);
+          localStorage.setItem("user_id", user_id);
+          localStorage.setItem('name', name);
+          localStorage.setItem('lastname', lastname);
+            this.$q.notify({
           color: "green-4",
           textColor: "white",
           icon: "cloud_done",
           message: "Login successfully",
         });
+          this.$router.push({
+            path: '/director/dashboard',
+            // query: {
+            //   name: this.name,
+            //   lastname: this.lastname
+            // }
+          });
+        }else{
+          const userId = response.data.id;
+          const names = response.data.name;
+          const lastnames = response.data.lastname;
+          const Token = AccessToken;
+          this.names = names;
+          this.lastnames = lastnames;
+          // localStorage.setItem("Token", Token);
+          // localStorage.setItem("userId", userId);
+          // localStorage.setItem('names', names);
+          // localStorage.setItem('lastnames', lastnames);
+          localStorage.setItem("Token", Token);
+          localStorage.setItem("userId", userId);
+          localStorage.setItem('names', names);
+          localStorage.setItem('lastnames', lastnames);
+          this.$router.push({
+            path: '/user/alcohol',
+            // query: {
+            //   name: this.name,
+            //   lastname: this.lastname
+            // }
+          });
+        }
+        // const user_Id = response.data.id;
+        // const name = response.data.name;
+        // const lastname = response.data.lastname;
+        // this.name = name;
+        // this.lastname = lastname;
+        // console.log("Token:",AccessToken);
+        // console.log("Role Id:",role_Id);
+        // console.log("User Id:",user_Id);
+        // console.log(response.data);
+       
+        // // localStorage.setItem("accessToken", accessToken);
+        // // localStorage.setItem("userId", userId);
+        // // localStorage.setItem('name', name);
+        // // localStorage.setItem('lastname', lastname);
+
+        // this.$q.notify({
+        //   color: "green-4",
+        //   textColor: "white",
+        //   icon: "cloud_done",
+        //   message: "Login successfully",
+        // });
+        // if(roleId == 1){
+        //   localStorage.setItem("AccessToken", AccessToken);
+        //   localStorage.setItem("user_Id", user_Id);
+        //   localStorage.setItem('name', name);
+        //   localStorage.setItem('lastname', lastname);
+
+        // }else{
+        //   localStorage.setItem("accessToken", accessToken);
+        //   localStorage.setItem("userId", userId);
+        //   localStorage.setItem('names', name);
+        //   localStorage.setItem('lastnames', lastname);
+        // }
         //this.$router.push(parseInt(roleId, 10) === 1 ? "/director/dashboard" : "/user/alcohol");
         // this.$q.notify({
         //   color: "green-4",
@@ -91,23 +151,23 @@ export default defineComponent({
         //   icon: "cloud_done",
         //   message: "Login successfully",
         // });
-        if (parseInt(roleId, 10) === 1) {
-          this.$router.push({
-            path: '/director/dashboard',
-            query: {
-              name: this.name,
-              lastname: this.lastname
-            }
-          });
-        } else {
-          this.$router.push({
-            path: '/user/alcohol',
-            query: {
-              name: this.name,
-              lastname: this.lastname
-            }
-          });
-        }
+        // if (parseInt(roleId, 10) === 1) {
+        //   this.$router.push({
+        //     path: '/director/dashboard',
+        //     // query: {
+        //     //   name: this.name,
+        //     //   lastname: this.lastname
+        //     // }
+        //   });
+        // } else {
+        //   this.$router.push({
+        //     path: '/user/alcohol',
+        //     // query: {
+        //     //   // name: this.name,
+        //     //   // lastname: this.lastname
+        //     // }
+        //   });
+        // }
       } catch(error) {
         console.log("Login error", error);
         this.$q.notify({
@@ -126,4 +186,3 @@ export default defineComponent({
 
 
 </script>
-

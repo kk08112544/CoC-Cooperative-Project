@@ -25,7 +25,8 @@
                 <q-input v-model="username" type="text" label="Username" lazy-rules :rules="usernameRules"/>
               </div>
               <div>
-                <q-input v-model="password" :type="isPwd ? 'password' : 'text'" label="Password" lazy-rules :rules="passwordRules">
+                <q-input v-model="password" :type="isPwd ? 'password' : 'text'" label="Password">
+                  <!-- lazy-rules :rules="passwordRules" -->
                   <template v-slot:append>
                     <q-icon
                       @click="togglePwdVisibility"
@@ -62,9 +63,9 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
 import axios from 'axios';
-
-export default {
+export default defineComponent({
   name: 'RegisterPage',
   data() {
     return {
@@ -79,11 +80,11 @@ export default {
       usernameRules: [
         (v) => !!v || 'Username is required',
       ],
-      passwordRules: [
-        (v) => !!v || 'Password is required',
-        (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
-        (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(v) || 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-      ],
+      // passwordRules: [
+      //   (v) => !!v || 'Password is required',
+      //   (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
+      //   (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(v) || 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+      // ],
       options: [],
       departments: []
     };
@@ -139,7 +140,7 @@ export default {
           color: "red-4",
           textColor: "white",
           icon: "warning",
-          message: "This username already exists. Please choose a different username.",
+          message: "This username is not available",
         });
         return;
       }
@@ -165,11 +166,37 @@ export default {
           role_id: roleId,
           depart_id: departId,
         });
-        const accessToken = sendResponse.data.accessToken;
-        const RoleId = sendResponse.data.role_id;
-        const DepartId = sendResponse.data.depart_id;
-
-        localStorage.setItem("Access Token:", accessToken);
+        const AccessToken = response.data.accessToken;
+        const userId = response.data.id;
+          const names = response.data.name;
+          const lastnames = response.data.lastname;
+          const Token = AccessToken;
+          this.names = names;
+          this.lastnames = lastnames;
+          // localStorage.setItem("Token", Token);
+          // localStorage.setItem("userId", userId);
+          // localStorage.setItem('names', names);
+          // localStorage.setItem('lastnames', lastnames);
+          localStorage.setItem("Token", Token);
+          localStorage.setItem("userId", userId);
+          localStorage.setItem('names', names);
+          localStorage.setItem('lastnames', lastnames);
+      //   const accessToken = response.data.accessToken;
+      //  // const role_Id = response.data.role_id;
+      //   const userId = response.data.id;
+      //   const name = response.data.name;
+      //   const lastname = response.data.lastname;
+      //   this.name = name;
+      //   this.lastname = lastname;
+      //   console.log("Token:",accessToken);
+      //   console.log("Role Id:",roleId);
+      //   console.log("User Id:",userId);
+      //   console.log(response.data);
+       
+      //   localStorage.setItem("accessToken", accessToken);
+      //   localStorage.setItem("userId", userId);
+      //   localStorage.setItem('name', name);
+      //   localStorage.setItem('lastname', lastname);
         this.$q.notify({
           color: "green-4",
           textColor: "white",
@@ -178,10 +205,10 @@ export default {
         });
         this.$router.push({
           path: '/user/alcohol',
-          query: {
-            name: this.name,
-            lastname: this.lastname
-          }
+          // query: {
+          //   name: this.name,
+          //   lastname: this.lastname
+          // }
         });
         console.log("Signup successful:", sendResponse.data);
       } catch (error) {
@@ -212,5 +239,5 @@ export default {
       immediate: true
     }
   },
-};
+});
 </script>

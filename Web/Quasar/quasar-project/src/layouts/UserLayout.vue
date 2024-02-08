@@ -1,3 +1,4 @@
+User
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
@@ -45,15 +46,47 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
-        <h6>{{ $route.query.name }} {{ $route.query.lastname }}</h6>
+        <h6>{{ names }} {{ lastnames }}</h6>
         <!-- Use q-btn instead of q-icon for clickable behavior -->
-          <q-btn @click="handleRegister" to="/" style="background: #F24C65; color: white" label="Logout" class="q-mr-md" />
+        <q-icon
+           name="notifications"
+           class="q-mr-md"
+           style="font-size: 30px; position: relative;"
+           color="black"
+        />
+        <q-btn @click="handleRegister" to="/" style="background: #F24C65; color: white"  no-caps label="Logout" class="q-mr-md" />
+
       </q-toolbar>
        <q-toolbar class="bg-primary text-white">
-       </q-toolbar>
+        <!-- <q-btn @click="handleDashboard"  to="/director/dashboard" style="color: white"  no-caps label="Dashboard" class="q-mr-md" />
+        <q-btn @click="handleManagement"  to="/director/management" style="color: white"  no-caps label="Management" class="q-mr-md" /> -->
+
+        
+     
+
+     
+      </q-toolbar>
     </q-header>
 
-   
+    <!-- <q-drawer
+      v-model="leftDrawerOpen"
+      show-if-above
+      bordered
+    >
+      <q-list> -->
+        <!-- <q-item-label
+          header
+        >
+          Essential Links
+        </q-item-label> -->
+
+        <!-- <EssentialLink
+          v-for="link in essentialLinks"
+          :key="link.title"
+          v-bind="link"
+        /> -->
+      <!-- </q-list>
+    </q-drawer> -->
 
     <q-page-container>
       <router-view />
@@ -63,32 +96,34 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
-
-const linksList = [
- 
-]
 
 export default defineComponent({
   name: 'UserLayout',
+  setup() {
+    const names = ref('')
+    const lastnames = ref('')
 
-  // components: {
-  //   EssentialLink
-  // },
+    // ตัวอย่างการกำหนดค่า name และ lastname จาก localStorage
 
-  setup () {
-    // const leftDrawerOpen = ref(false)
-
+    names.value = localStorage.getItem('names')
+    lastnames.value = localStorage.getItem('lastnames')
+    const Token = localStorage.getItem("Token");
+    const userId =localStorage.getItem("userId");
+          // localStorage.setItem('names', names);
+          // localStorage.setItem('lastnames', lastnames);
+    // การส่งค่า reactive variables ไปยังเทมเพลต
     return {
-      // essentialLinks: linksList,
-      // leftDrawerOpen,
-      // toggleLeftDrawer () {
-      //   leftDrawerOpen.value = !leftDrawerOpen.value
-      // }
+      names,
+      lastnames,
       handleLogout() {
-        localStorage.removeItem("accessToken");
+
+        localStorage.removeItem("Token");
+        localStorage.removeItem("userId");
+        localStorage.removeItem('names');
+        localStorage.removeItem('lastnames');
       },
     }
-  }
+  },
 })
+
 </script>

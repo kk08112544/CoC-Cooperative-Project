@@ -22,7 +22,7 @@ const validUsername = (req, res) => {
 };
 
 const createNewUser = (req, res) => {
-    if (!req.body.name || !req.body.lastname || !req.body.username || !req.body.password || !req.body.role_id || !req.body.depart_id) {
+    if (!req.body.name || !req.body.lastname || !req.body.username || !req.body.password || !req.body.role_id) {
         res.status(400).send({ message: "Content can not be empty." });
     }
 

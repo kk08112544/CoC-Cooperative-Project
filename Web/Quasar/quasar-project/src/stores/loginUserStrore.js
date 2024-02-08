@@ -1,37 +1,24 @@
-import { defineStore } from "pinia";
-import { useStorage } from "@vueuse/core";
-export const useLoginUserStore = defineStore("loginuser", {
-  state: () => ({
-    userid: useStorage("userid", ""),
-    name: useStorage("name", ""),
-    lastname: useStorage("lastname",""),
-    accessToken: useStorage("accessToken", ""),
-    roleId: useStorage("roleId", ""),
-  }),
-  getters: {
-    getUserid: (state) => {
-      return state.userid;
+import { createStore } from 'vuex';
+
+export default createStore({
+  state: {
+    user: null,
+  },
+  mutations: {
+    setUser(state, userData) {
+      state.user = userData;
     },
-    getName: (state) => {
-      return state.name;
-    },
-    getLastname: (state) => {
-        return state.lastname;
-    },
-    getAccessToken: (state) => {
-      return state.accessToken;
-    },
-    getRoleId: (state) => {
-      return state.roleId;
+    clearUser(state) {
+      state.user = null;
     },
   },
   actions: {
-    clearStorage() {
-      this.userid = "";
-      this.name = "";
-      this.lastname = "";
-      this.accessToken = "";
-      this.roleId = "";
+    loginUser({ commit }, userData) {
+      commit('setUser', userData);
+    },
+    logoutUser({ commit }) {
+      commit('clearUser');
     },
   },
+  modules: {},
 });

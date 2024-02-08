@@ -1,6 +1,7 @@
 <template>
   <div class="q-pa-md">
       <h4 class="text-center">Alcohol</h4>
+ 
     <q-table
       flat bordered
       :rows="rows"
@@ -159,6 +160,8 @@ export default {
       columns,
       rows
     }
-  }
+  },
+
+
 }
 </script>

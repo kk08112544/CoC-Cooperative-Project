@@ -45,7 +45,7 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
-        <h6>{{ $route.query.name }} {{ $route.query.lastname }}</h6>
+        <h6>{{ name }} {{ lastname }}</h6>
         <!-- Use q-btn instead of q-icon for clickable behavior -->
         <q-icon
            name="notifications"
@@ -53,12 +53,12 @@
            style="font-size: 30px; position: relative;"
            color="black"
         />
-        <q-btn @click="handleRegister" to="/" style="background: #F24C65; color: white" label="Logout" class="q-mr-md" />
+        <q-btn @click="handleRegister" to="/" style="background: #F24C65; color: white"  no-caps label="Logout" class="q-mr-md" />
 
       </q-toolbar>
        <q-toolbar class="bg-primary text-white">
-        <q-btn @click="handleDashboard" style="color: white" label="Dashboard" class="q-mr-md" />
-        <q-btn @click="handleManagement" style="color: white" label="Management" class="q-mr-md" />
+        <q-btn @click="handleDashboard"  to="/director/dashboard" style="color: white"  no-caps label="Dashboard" class="q-mr-md" />
+        <q-btn @click="handleManagement"  to="/director/management" style="color: white"  no-caps label="Management" class="q-mr-md" />
 
         
      
@@ -95,32 +95,32 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
-
-const linksList = [
- 
-]
 
 export default defineComponent({
   name: 'DirectorLayout',
+  setup() {
+    const name = ref('')
+    const lastname = ref('')
 
-  // components: {
-  //   EssentialLink
-  // },
+    // ตัวอย่างการกำหนดค่า name และ lastname จาก localStorage
 
-  setup () {
-    // const leftDrawerOpen = ref(false)
-
+    const user_id = localStorage.getItem('user_id')
+    name.value = localStorage.getItem('name')
+    lastname.value = localStorage.getItem('lastname')
+    const token = localStorage.getItem('token');
+    // การส่งค่า reactive variables ไปยังเทมเพลต
     return {
-      // essentialLinks: linksList,
-      // leftDrawerOpen,
-      // toggleLeftDrawer () {
-      //   leftDrawerOpen.value = !leftDrawerOpen.value
-      // }
+      name,
+      lastname,
       handleLogout() {
-        localStorage.removeItem("accessToken");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem('name');
+        localStorage.removessItem('lastname');
       },
     }
-  }
+  },
 })
+
 </script>
+
