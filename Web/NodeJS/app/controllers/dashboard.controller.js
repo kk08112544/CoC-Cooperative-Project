@@ -44,19 +44,29 @@ const getThisAmount = (req,res) => {
 }
 
 const addNotify = (req,res) => {
-    if(!req.body){
+    if(!req.body.alcohol_id){
         res.status(400).send({message: "Content can not be empty."});
     }
-    date=CURDATE()
     const currentDate = new Date();
+
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so add 1
+    const day = currentDate.getDate().toString().padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
 
     const hours = currentDate.getHours().toString().padStart(2, '0');
     const minutes = currentDate.getMinutes().toString().padStart(2, '0');
     const seconds = currentDate.getSeconds().toString().padStart(2, '0');
     const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+    console.log("Current date:", formattedDate);
+    console.log("Current time:", formattedTime);
+
+    
     const createNewNotify = new Dashboard({
         alcohol_id:req.body.alcohol_id,
-        date: date,
+        date: formattedDate,
         times:formattedTime
     })
     Dashboard.createNotify(createNewNotify,(err,data)=>{

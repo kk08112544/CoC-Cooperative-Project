@@ -46,7 +46,7 @@ User
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
-        <h6>{{ names }} {{ lastnames }}</h6>
+        <h6>{{ name }} {{ lastname }}</h6>
         <!-- Use q-btn instead of q-icon for clickable behavior -->
         <q-icon
            name="notifications"
@@ -93,34 +93,30 @@ User
     </q-page-container>
   </q-layout>
 </template>
-
 <script>
 import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
-  name: 'UserLayout',
+  name: 'DirectorLayout',
   setup() {
-    const names = ref('')
-    const lastnames = ref('')
+    const name = ref('')
+    const lastname = ref('')
 
     // ตัวอย่างการกำหนดค่า name และ lastname จาก localStorage
 
-    names.value = localStorage.getItem('names')
-    lastnames.value = localStorage.getItem('lastnames')
-    const Token = localStorage.getItem("Token");
-    const userId =localStorage.getItem("userId");
-          // localStorage.setItem('names', names);
-          // localStorage.setItem('lastnames', lastnames);
+    const user_id = localStorage.getItem('user_id')
+    name.value = localStorage.getItem('name')
+    lastname.value = localStorage.getItem('lastname')
+    const token = localStorage.getItem('token');
     // การส่งค่า reactive variables ไปยังเทมเพลต
     return {
-      names,
-      lastnames,
+      name,
+      lastname,
       handleLogout() {
-
-        localStorage.removeItem("Token");
-        localStorage.removeItem("userId");
-        localStorage.removeItem('names');
-        localStorage.removeItem('lastnames');
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem('name');
+        localStorage.removessItem('lastname');
       },
     }
   },

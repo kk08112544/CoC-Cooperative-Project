@@ -9,8 +9,8 @@ const Dashboard = function(dashboard){
     this.alcohol_id = dashboard.alcohol_id;
     this.date = dashboard.date;
     this.times = dashboard.times;
-    this.alcohol_zone = dashboard.alcohol_zone;
-    this.detect = dashboard.detect;
+    // this.alcohol_zone = dashboard.alcohol_zone;
+    // this.detect = dashboard.detect;
 }
 
 Dashboard.getAll = (result)=>{
@@ -31,7 +31,7 @@ Dashboard.getDay = (result)=>{
     const day = currentDate.getDate().toString().padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     console.log(formattedDate);
-    sql.query("SELECT COUNT(*) as Total FROM notify WHERE DATE(date) = CURDATE()",(err, res)=>{
+    sql.query("SELECT COUNT(*) as Total FROM notify WHERE DATE(date) = ?",[formattedDate],(err, res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);
@@ -53,7 +53,13 @@ Dashboard.getAllZone = (result) => {
 }
 
 Dashboard.getDayZone = (result) => {
-    sql.query("SELECT a.alcohol_zone, COUNT(*) as count FROM notify n JOIN alcohol a ON n.alcohol_id = a.id WHERE DATE(n.date) = CURDATE() GROUP BY a.alcohol_zone",(err, res)=>{
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so add 1
+    const day = currentDate.getDate().toString().padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    console.log(formattedDate);
+    sql.query("SELECT a.alcohol_zone, COUNT(*) as count FROM notify n JOIN alcohol a ON n.alcohol_id = a.id WHERE DATE(n.date) = ? GROUP BY a.alcohol_zone",[formattedDate],(err, res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);

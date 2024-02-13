@@ -166,37 +166,16 @@ export default defineComponent({
           role_id: roleId,
           depart_id: departId,
         });
-        const AccessToken = response.data.accessToken;
+        
+        const role_Id = response.data.role_id;
         const userId = response.data.id;
-          const names = response.data.name;
-          const lastnames = response.data.lastname;
-          const Token = AccessToken;
-          this.names = names;
-          this.lastnames = lastnames;
-          // localStorage.setItem("Token", Token);
-          // localStorage.setItem("userId", userId);
-          // localStorage.setItem('names', names);
-          // localStorage.setItem('lastnames', lastnames);
-          localStorage.setItem("Token", Token);
-          localStorage.setItem("userId", userId);
-          localStorage.setItem('names', names);
-          localStorage.setItem('lastnames', lastnames);
-      //   const accessToken = response.data.accessToken;
-      //  // const role_Id = response.data.role_id;
-      //   const userId = response.data.id;
-      //   const name = response.data.name;
-      //   const lastname = response.data.lastname;
-      //   this.name = name;
-      //   this.lastname = lastname;
-      //   console.log("Token:",accessToken);
-      //   console.log("Role Id:",roleId);
-      //   console.log("User Id:",userId);
-      //   console.log(response.data);
-       
-      //   localStorage.setItem("accessToken", accessToken);
-      //   localStorage.setItem("userId", userId);
-      //   localStorage.setItem('name', name);
-      //   localStorage.setItem('lastname', lastname);
+        const name = response.data.name;
+        const lastname = response.data.lastname;
+
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("name", name);
+        localStorage.setItem("lastname", lastname);
         this.$q.notify({
           color: "green-4",
           textColor: "white",
