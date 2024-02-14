@@ -1,23 +1,3 @@
-/*
- Basic ESP8266 MQTT example
- This sketch demonstrates the capabilities of the pubsub library in combination
- with the ESP8266 board/library.
- It connects to an MQTT server then:
-  - publishes "hello world" to the topic "outTopic" every two seconds
-  - subscribes to the topic "inTopic", printing out any messages
-    it receives. NB - it assumes the received payloads are strings not binary
-  - If the first character of the topic "inTopic" is an 1, switch ON the ESP Led,
-    else switch it off
- It will reconnect to the server if the connection is lost using a blocking
- reconnect function. See the 'mqtt_reconnect_nonblocking' example for how to
- achieve the same result without blocking the main loop.
- To install the ESP8266 board, (using Arduino 1.6.4+):
-  - Add the following 3rd party board manager under "File -> Preferences -> Additional Boards Manager URLs":
-       http://arduino.esp8266.com/stable/package_esp8266com_index.json
-  - Open the "Tools -> Board -> Board Manager" and click install for the ESP8266"
-  - Select your ESP8266 in "Tools -> Board"
-*/
-
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <TridentTD_LineNotify.h>
@@ -38,7 +18,7 @@ int value = 0;
 
 
 int irPin = 16;
-int lqPin = 2;
+int lqPin = 5;
 int buzzer = 15;
 bool notified = false; // Flag to track if notification has been sent
 
@@ -131,10 +111,13 @@ void loop() {
 
   int irVal = digitalRead(irPin);
   int lqVal = digitalRead(lqPin);
+
   Serial.print("IR Value : ");
   Serial.print(irVal);
-  Serial.print
-  int i=0;
+  Serial.println();
+  Serial.print("Liquid Value : ");
+  Serial.print(lqVal);
+
   if(irVal == 0 && lqVal == 0){
     //digitalWrite(ledPin,HIGH);
     digitalWrite(buzzer,LOW);
@@ -160,4 +143,3 @@ void loop() {
  // delay(5000);
   client.publish("Alcohol/Zone", ("IR Value: " + String(irVal) + ", Liquid Value: " + String(lqVal)).c_str());
 }
-
