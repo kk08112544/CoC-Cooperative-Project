@@ -1,13 +1,15 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <TridentTD_LineNotify.h>
+#include <time.h>
 
 // Update these with values suitable for your network.
 
 const char* ssid = "กากด๋อยยย";
 const char* password = "12345678";
 const char* LINE_TOKEN = "NOpjDTUyVYmTWcupEn7Dn6mTBzMwQ7rF0u6CW0LrJly";
-const char* mqtt_server = "broker.mqtt-dashboard.com";
+const char* mqtt_server = "broker.hivemq.com";//broker.mqtt-dashboard.com
+const char* mqtt_port = 1883;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -16,11 +18,18 @@ unsigned long lastMsg = 0;
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
 
+char dates[11]; // "YYYY-MM-DD\0"
+char times[9];  // "HH:MM:SS\0"
+
 
 int irPin = 16;
 int lqPin = 5;
 int buzzer = 15;
 bool notified = false; // Flag to track if notification has been sent
+
+int timezone = 7 * 3600; //ตั้งค่า TimeZone ตามเวลาประเทศไทย
+int dst = 0; //กำหนดค่า Date Swing Time
+
 
 void setup_wifi() {
 
@@ -38,12 +47,20 @@ void setup_wifi() {
     Serial.print(".");
   }
 
+
   randomSeed(micros());
 
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  configTime(timezone, dst, "pool.ntp.org", "time.nist.gov"); //ดึงเวลาจาก Server
+  Serial.println("\nLoading time");
+  while (!time(nullptr)) {
+    Serial.print("*");
+    delay(1000);
+  }
+  Serial.println("");
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -96,6 +113,7 @@ void setup() {
   pinMode(lqPin, INPUT_PULLUP);
   pinMode(buzzer, OUTPUT);
   Serial.begin(9600);Serial.println();
+  Serial.setDebugOutput(true);
   Serial.println(LINE.getVersion());
   setup_wifi();
   client.setServer(mqtt_server, 1883);
@@ -112,11 +130,24 @@ void loop() {
   int irVal = digitalRead(irPin);
   int lqVal = digitalRead(lqPin);
 
+  time_t now = time(nullptr);
+  struct tm* p_tm = localtime(&now);
+
+
+  sprintf(dates, "%04d-%02d-%02d", p_tm->tm_year + 1900, p_tm->tm_mon + 1, p_tm->tm_mday);
+  sprintf(times, "%02d:%02d:%02d", p_tm->tm_hour, p_tm->tm_min, p_tm->tm_sec);
+
+    // แสดงผลลัพธ์
+  printf("Date: %s\n", dates);
+  printf("Time: %s\n", times);
+
   Serial.print("IR Value : ");
   Serial.print(irVal);
   Serial.println();
   Serial.print("Liquid Value : ");
   Serial.print(lqVal);
+  
+  client.publish("Alcohol/Zone", ("IR Value: " + String(irVal) + ", Liquid Value: " + String(lqVal) + ", Date: " + String(dates) + ", Time: " + String(times)).c_str());
 
   if(irVal == 0 && lqVal == 0){
     //digitalWrite(ledPin,HIGH);
@@ -136,10 +167,12 @@ void loop() {
   //   digitalWrite(ledPin,LOW);
     digitalWrite(buzzer,LOW);
   }
+
+  Serial.println();
   Serial.println("\n");
   if (lqVal != 1) {
     notified = false; // Reset notified flag if lqVal is not equal to 1
   }
  // delay(5000);
-  client.publish("Alcohol/Zone", ("IR Value: " + String(irVal) + ", Liquid Value: " + String(lqVal)).c_str());
+ // client.publish("Alcohol/Zone", ("IR Value: " + String(irVal) + ", Liquid Value: " + String(lqVal) + ", Date: " + String(dates) + ", Time: " + String(times)).c_str());
 }
