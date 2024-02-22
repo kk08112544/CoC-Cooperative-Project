@@ -62,19 +62,7 @@ export default defineComponent({
         const name = response.data.name;
         const lastname = response.data.lastname;
 
-        // Clear previous user data
-        localStorage.removeItem("names");
-
-        // Get existing names from localStorage
-        const existingNames = JSON.parse(localStorage.getItem("names")) || [];
-
-        // Add new name to the existing names
-        existingNames.push({ name, lastname });
-
-        // Save all names back to localStorage
-        localStorage.setItem("names", JSON.stringify(existingNames));
-
-        // Set new user data
+       
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("userId", userId);
         localStorage.setItem("name", name);
@@ -87,6 +75,7 @@ export default defineComponent({
           message: "Logged in successfully",
         });
 
+        console.log(response.data);
         // Check if roleId is a number (remove quotes around 1)
         this.$router.push(parseInt(roleId, 10) === 1 ? "/director/dashboard" : "/user/alcohol");
       } catch (error) {

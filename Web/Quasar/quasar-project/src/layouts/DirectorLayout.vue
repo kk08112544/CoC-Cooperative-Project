@@ -31,6 +31,7 @@
        <q-toolbar class="bg-primary text-white">
         <q-btn @click="handleDashboard"  to="/director/dashboard" style="color: white"  no-caps label="Dashboard" class="q-mr-md" />
         <q-btn @click="handleManagement"  to="/director/management" style="color: white"  no-caps label="Management" class="q-mr-md" />
+        <q-btn @click="handleAlcohol"  to="/director/RoomAlcohol" style="color: white"  no-caps label="Management" class="q-mr-md" />
       </q-toolbar>
     </q-header>
 
@@ -49,15 +50,17 @@ export default {
     const name = ref('')
     const lastname = ref('')
 
-    const user_id = localStorage.getItem('user_id')
-    name.value = localStorage.getItem('name')
-    lastname.value = localStorage.getItem('lastname')
+    //const user_id = localStorage.getItem('user_id');
+    name.value = localStorage.getItem('name');
+    lastname.value = localStorage.getItem('lastname');
+    // const token = localStorage.getItem('accessToken');
+   // accessToken.value = localStorage.getItem('accessToken');
     
     const handleLogout = () => {
-      localStorage.removeItem("token");
       localStorage.removeItem("user_id");
       localStorage.removeItem('name');
       localStorage.removeItem('lastname');
+      localStorage.removeItem('accessToken');
     };
 
     return {

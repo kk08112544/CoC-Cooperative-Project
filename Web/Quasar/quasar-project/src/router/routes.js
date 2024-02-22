@@ -16,6 +16,7 @@ const routes = [
       {path: 'dashboard',component: () => import('pages/Director/DashboardPage.vue')},
       {path: 'management',component: () => import('pages/Director/ManagementPage.vue')},
       {path: 'notify',component: () => import('pages/Director/NotifyPage.vue')},
+      {path: 'RoomAlcohol',component: () => import('pages/Director/RoomAlcoholPage.vue')},
     ]
   },
   {
