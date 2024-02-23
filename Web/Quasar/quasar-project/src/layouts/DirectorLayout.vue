@@ -31,7 +31,7 @@
        <q-toolbar class="bg-primary text-white">
         <q-btn @click="handleDashboard"  to="/director/dashboard" style="color: white"  no-caps label="Dashboard" class="q-mr-md" />
         <q-btn @click="handleManagement"  to="/director/management" style="color: white"  no-caps label="Management" class="q-mr-md" />
-        <q-btn @click="handleAlcohol"  to="/director/RoomAlcohol" style="color: white"  no-caps label="Management" class="q-mr-md" />
+        <q-btn @click="handleAlcohol"  to="/director/RoomAlcohol" style="color: white"  no-caps label="Alcohol" class="q-mr-md" />
       </q-toolbar>
     </q-header>
 

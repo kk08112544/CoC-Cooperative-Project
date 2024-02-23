@@ -13,16 +13,18 @@ const Dashboard = function(dashboard){
     // this.detect = dashboard.detect;
 }
 
-Dashboard.getAll = (result)=>{
-    sql.query("SELECT COUNT(*) as Total FROM notify", (err, res)=>{
-        if(err){
+Dashboard.getAll = (result) => {
+    sql.query("SELECT COUNT(*) as total FROM notify", (err, res) => {
+        if (err) {
             console.log("Query err: " + err);
-            result(err,null);
+            result(err, null);
             return;
         }
+        // ส่งผลลัพธ์เฉพาะตัวเลข total กลับไป
         result(null, res);
     });
 };
+
 
 Dashboard.getDay = (result)=>{
     const currentDate = new Date();
@@ -42,7 +44,13 @@ Dashboard.getDay = (result)=>{
 };
 
 Dashboard.getAllZone = (result) => {
-    sql.query("SELECT n.alcohol_id, a.room, COUNT(*) as Room FROM notify n JOIN alcohol a ON n.alcohol_id = a.id GROUP BY n.alcohol_id, a.room",(err, res)=>{
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so add 1
+    const day = currentDate.getDate().toString().padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    console.log(formattedDate);
+    sql.query("SELECT n.alcohol_id, a.room, COUNT(*) as Total FROM notify n JOIN alcohol a ON n.alcohol_id = a.id GROUP BY n.alcohol_id, a.room",[formattedDate],(err, res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);
@@ -59,7 +67,7 @@ Dashboard.getDayZone = (result) => {
     const day = currentDate.getDate().toString().padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     console.log(formattedDate);
-    sql.query("SELECT a.room, COUNT(*) as Day of Room FROM notify n JOIN alcohol a ON n.alcohol_id = a.id WHERE DATE(n.date) = ? GROUP BY a.room",[formattedDate],(err, res)=>{
+    sql.query("SELECT a.room, COUNT(*) as Total_of_Day_Room FROM notify n JOIN alcohol a ON n.alcohol_id = a.id WHERE DATE(date) = ? GROUP BY a.room",[formattedDate],(err, res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);
@@ -70,7 +78,7 @@ Dashboard.getDayZone = (result) => {
 }
 
 Dashboard.getAmount = (result) => {
-    sql.query('SELECT * FROM alcohol',(err,res)=>{
+    sql.query('SELECT alcohol.id, alcohol.room, alcohol.detect, status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id',(err,res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);

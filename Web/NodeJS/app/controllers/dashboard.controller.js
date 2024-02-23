@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const getAllTotal = (req,res) => {
     Dashboard.getAll((err,data)=>{
         if(err){
-            res.status(500).send({message: err.message || "Some error ocurred."});
+            res.status(400).send({message: err.message || "Some error ocurred."});
         }else res.send(data);
     })
 }
