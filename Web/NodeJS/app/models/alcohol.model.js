@@ -6,14 +6,13 @@ const expireTime = "2h"; //token will expire in 2 hours
 const fs = require("fs");
 
 const Alcohol = function(alcohol){
-    this.alcohol_zone = alcohol.alcohol_zone;
-    this.img = alcohol.img;
-    this.detect = alcohol.detect;
-    this.status = alcohol.status;
+    this.room = alcohol.room;
+    this.detect =alcohol.detect;
+    this.status_id = alcohol.status_id;
 }
-
+// SELECT alcohol.id, alcohol.room, alcohol.detect, status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id
 Alcohol.getAlcohol = (result)=>{
-    sql.query("SELECT * FROM alcohol", (err,res)=>{
+    sql.query(" SELECT alcohol.id, alcohol.room, alcohol.detect, status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id", (err,res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);
@@ -35,53 +34,22 @@ Alcohol.addAlcohol = (AlcoholObj,result)=>{
     });
 }
 
-const removeOldImage = (id, result) => {
-    sql.query("SELECT * FROM alcohol WHERE id=?", [id], (err, res)=>{
+Alcohol.getAlcoholId = (id,result) => {
+    sql.query("SELECT * FROM alcohol WHERE id = ?",[id],(err,res)=>{
         if(err){
-            console.log("error:" + err);
-            result(err, null);
+            console.log("Query err: " + err);
+            result(err,null);
             return;
         }
-        if(res.length){
-            let filePath = __basedir + "/assets/" + res[0].img;
-            try {
-                if(fs.existsSync(filePath)){
-                    fs.unlink(filePath, (e)=>{
-                        if(e){
-                            console.log("Error: " + e);
-                            return;
-                        }else{
-                            console.log("File: " + res[0].img + " was removed");
-                            return;
-                        }
-                    });
-                }else {
-                    console.log("File: " + res[0].img + " not found.")
-                    return;
-                }
-            } catch (error) {
-                console.log(error);
-                return;
-            }
-        }
-    });
-};
+        result(null, res);
+    })
+}
 
 
-Alcohol.updateAlcohol = (id,data,result) => {
-    if (data.img){
-        removeOldImage(id);
-    }
 
-    const updateFields = ['alcohol_zone'];
-    const updateValues = [data.alcohol_zone];
+Alcohol.updateAlcohol = (id,newRoom,result) => {
 
-    if(data.img){
-        updateFields.push('img');
-        updateValues.push(data.img);
-    }
-
-    sql.query(`UPDATE alcohol SET ${updateFields.map(field => `${field}=?`).join(',')} WHERE id=?`,[...updateValues,id],
+    sql.query(`UPDATE alcohol SET room = ? WHERE id=?`,[newRoom,id],
     (err,res)=>{
         if (err) {
             console.log("Error: " + err);
@@ -93,13 +61,13 @@ Alcohol.updateAlcohol = (id,data,result) => {
             result({ kind: "not_found" }, null);
             return;
         }
-        console.log("Update Alcohol: " + { id: id, ...data });
-        result(null, { id: id, ...data });
+        console.log("Update Alcohol: " + { id: id, ...newRoom });
+        result(null, { id: id, ...newRoom });
     })
 }
 
 Alcohol.deleteAlcoholId = (id, result)=>{
-    removeOldImage(id);
+
     sql.query("DELETE FROM alcohol WHERE id=?",[id],(err,res)=>{
         if(err){
             console.log("Query error: " + err);
@@ -116,7 +84,7 @@ Alcohol.deleteAlcoholId = (id, result)=>{
 }
 
 Alcohol.updateStatusAlcoholById = (id,newStatus,result)=>{
-    sql.query('UPDATE alcohol SET status=? WHERE id=?',[newStatus,id],
+    sql.query('UPDATE alcohol SET status_id=? WHERE id=?',[newStatus,id],
     (err,res)=>{
         if (err) {
             console.log("Query error: " + err);
@@ -131,34 +99,5 @@ Alcohol.updateStatusAlcoholById = (id,newStatus,result)=>{
         result(null, { id: id, Status:newStatus });
     })
 }
-
-Alcohol.updateDetectAlcoholById = (id,newDetect,result)=>{
-    sql.query('SELECT * FROM alcohol WHERE id=?',[id],(err,res)=>{
-        if(err){
-            console.log("Query error: " + err);
-            result(err, null);
-            return;
-        }else if(res[0].detect==newDetect){
-            console.log("Same Detect");
-        }else{
-            sql.query('UPDATE alcohol SET detect=? WHERE id=?',[newDetect,id],
-            (err,res)=>{
-                if (err) {
-                    console.log("Query error: " + err);
-                    result(err, null);
-                    return;
-                }
-                if (res.affectedRows == 0) {
-                    result({ kind: "not_found" }, null);
-                    return;
-                }
-                console.log("Updated Detection Alcohol Id: ", { id: id, Detection:newDetect });
-                result(null, { id: id, Detection:newDetection });
-            })
-        }
-    })
-
-}
-
 
 module.exports = Alcohol;

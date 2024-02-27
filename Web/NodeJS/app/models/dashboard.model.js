@@ -100,4 +100,16 @@ Dashboard.createNotify = (createNewNotify,result) => {
     })
 }
 
+Dashboard.getRoom = (result) =>{
+    sql.query("SELECT * FROM alcohol", (err, res) => {
+        if (err) {
+            console.log("Query err: " + err);
+            result(err, null);
+            return;
+        }
+        // ส่งผลลัพธ์เฉพาะตัวเลข total กลับไป
+        result(null, res);
+    });
+}
+
 module.exports = Dashboard;

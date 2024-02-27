@@ -43,6 +43,14 @@ const getThisAmount = (req,res) => {
     })
 }
 
+const getRoom = (req,res) => {
+    Dashboard.getRoom((err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
 const addNotify = (req,res) => {
     if(!req.body.alcohol_id){
         res.status(400).send({message: "Content can not be empty."});
@@ -82,5 +90,6 @@ module.exports = {
     getAllTotalZone,
     getThisDayZone,
     getThisAmount,
+    getRoom,
     addNotify,
 }

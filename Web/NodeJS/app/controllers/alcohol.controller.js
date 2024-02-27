@@ -14,9 +14,9 @@ const addToAlcohol = (req,res) => {
         res.status(400).send({message: "Content can not be empty."});
     }
     const AlcoholObj = new Alcohol({
-       alcohol_zone: req.body.alcohol_zone,
-       img: req.body.img,
-       status:'0'
+       room: req.body.room,
+       detect: '0',
+       status_id:'1',
     });
     Alcohol.addAlcohol(AlcoholObj,(err,data)=>{
         if(err){
@@ -26,17 +26,23 @@ const addToAlcohol = (req,res) => {
 }
 
 
+const getById = (req,res) => {
+    const id = req.params.id;
+    Alcohol.getAlcoholId(id,(err,data)=>{
+        if(err){
+            res.status(500).send({message:err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
 
 const updateToAlcohol = (req,res) => {
     const id = req.params.id;
     if(!req.body){
         res.status(400).send({message: "Content can not be empty."});
     }
-    const data = {
-        alcohol_zone: req.body.alcohol_zone,
-        img: req.body.img,
-    };
-    Alcohol.updateAlcoholId(id,data,(err,result)=>{
+    let newRoom = req.body.room;
+    Alcohol.updateAlcoholId(id,newRoom,(err,data)=>{
         if(err) {
             if (err.kind == "not_found") {
                 res.status(401).send({
@@ -72,11 +78,11 @@ const deleteToAlcohol = (req,res) => {
 
 const updateStatusToAlcohol = (req,res) => {
     const id = req.params.id;
-    if(!req.body.status){
+    if(!req.body.status_id){
         res.status(400).send({message: "Content can not be empty."});
     }
-    newStatus=req.body.status
-    Alcohol.updateStatusAlcoholById(id,newStatus,(err,result)=>{
+    let newStatus=req.body.status_id
+    Alcohol.updateStatusAlcoholById(id,newStatus,(err,data)=>{
         if(err) {
             if (err.kind == "not_found") {
                 res.status(401).send({
@@ -87,39 +93,17 @@ const updateStatusToAlcohol = (req,res) => {
                   message: "Error updating status Alcohol id: " + req.params.id,
                 });
             }
-        }
-        else res.send(data);
+        }else res.send(data);
     })
 }
 
-const updateDetectDataAlcohol = (req,res) => {
-    const id = req.params.id;
-    if(!req.body.status){
-        res.status(400).send({message: "Content can not be empty."});
-    }
-    newDetect=req.body.detect
-    Alcohol.updateDetectAlcoholById(id,newDetect,(err,result)=>{
-        if(err) {
-            if (err.kind == "not_found") {
-                res.status(401).send({
-                  message: "Not found Alcohol id: " + req.params.id,
-                });
-              } else {
-                res.status(500).send({
-                  message: "Error updating Detect Alcohol id: " + req.params.id,
-                });
-            }
-        }
-        else res.send(data);
-    })
-}
 
 
 module.exports = {
     getAllAlcohol,
     addToAlcohol,
+    getById,
     updateToAlcohol,
     deleteToAlcohol,
     updateStatusToAlcohol,
-    updateDetectDataAlcohol,
 }
