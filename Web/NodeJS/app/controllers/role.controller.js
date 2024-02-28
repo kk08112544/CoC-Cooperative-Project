@@ -9,6 +9,15 @@ const getAllRoles = (req,res) => {
     })
 }
 
+const getRoles = (req,res) => {
+    Roles.getRole((err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
+
 const updateToRoles = (req,res) => {
     const id = req.params.id;
     if(!req.body.role_name){
@@ -68,6 +77,7 @@ const deleteToRoles = (req,res) => {
 
 module.exports = { 
     getAllRoles,
+    getRoles,
     updateToRoles,
     addToRoles,
     deleteToRoles,

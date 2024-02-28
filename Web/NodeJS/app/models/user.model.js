@@ -11,7 +11,6 @@ const User = function(user){
     this.username = user.username;
     this.password = user.password;
     this.role_id = user.role_id;
-    this.depart_id = user.depart_id;
 }
 User.checkUsername = (username, result)=>{
     sql.query("SELECT * FROM user WHERE username='"+username+"'",(err,res)=>{
@@ -66,6 +65,52 @@ User.loginModel = (account, result)=>{
         }
         result({kind: "not_found"}, null);
     });
+};
+
+User.getAllRecords = (result)=>{
+    sql.query("SELECT user.id, user.name, user.lastname, user.username, user.role_id, role.role_name FROM user JOIN role ON user.role_id = role.id", (err, res)=>{
+        if(err){
+            console.log("Query err: " + err);
+            result(err,null);
+            return;
+        }
+        result(null, res);
+    });
+};
+
+User.updateUser = (id, data, result)=>{
+
+    sql.query("UPDATE user SET name=?, lastname=?, username=?, role_id = ? WHERE id=?", 
+    [data.name, data.lastname, data.username, data.role_id, id], (err, res)=>{
+        if(err){
+            console.log("Error: " + err);
+            result(err, null);
+            return;
+        }
+        if(res.affectedRows == 0){
+            //NO any record update
+            result({kind: "not_found"}, null);
+            return;
+        }
+        console.log("Update user: " + {id: id, ...data});
+        result(null, {id: id, ...data});
+        return;
+    });
+};
+User.removeUser = (id, result)=>{
+    sql.query("DELETE FROM user WHERE id=?", [id], (err, res)=>{
+        if(err){
+            console.log("Query error: " + err);
+            result(err, null);
+            return;
+        }
+        if(res.affectedRows == 0){
+            result({kind: "not_found"}, null);
+            return;
+        }
+        console.log("Deleted user id: " + id);
+        result(null, {id: id});
+    } );
 };
 
 module.exports = User;

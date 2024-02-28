@@ -20,6 +20,17 @@ Roles.getRoles = (result)=>{
     })
 }
 
+Roles.getRole = (result) =>{
+    sql.query("SELECT * FROM role",(err,res)=>{
+        if(err){
+            console.log("Query err: " + err);
+            result(err,null);
+            return;
+        }
+        result(null, res);
+    })
+}
+
 Roles.updateByRolesId = (id,newRoleName,result)=>{
     sql.query('SELECT * FROM role WHERE id=?',[id],
     (err,res)=>{

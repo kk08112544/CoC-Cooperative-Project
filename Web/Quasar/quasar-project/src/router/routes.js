@@ -14,9 +14,10 @@ const routes = [
     component: () => import('layouts/DirectorLayout.vue'),
     children: [
       {path: 'dashboard',component: () => import('pages/Director/DashboardPage.vue')},
-      {path: 'management',component: () => import('pages/Director/ManagementPage.vue')},
+      {path: 'role',component: () => import('pages/Director/RolePage.vue')},
       {path: 'notify',component: () => import('pages/Director/NotifyPage.vue')},
       {path: 'RoomAlcohol',component: () => import('pages/Director/RoomAlcoholPage.vue')},
+      {path: 'user',component: () => import('pages/Director/ListUserPage.vue')},
     ]
   },
   {

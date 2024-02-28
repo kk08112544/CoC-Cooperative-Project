@@ -17,7 +17,7 @@ require("./app/routes/notify.routes")(app);
 require("./app/routes/alcohol.routes")(app);
 require("./app/routes/file.routes")(app);
 require("./app/routes/role.routes")(app);
-require("./app/routes/department.routes")(app);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, ()=>{

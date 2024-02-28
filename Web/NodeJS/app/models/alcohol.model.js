@@ -47,7 +47,7 @@ Alcohol.getAlcoholId = (id,result) => {
 
 
 
-Alcohol.updateAlcohol = (id,newRoom,result) => {
+Alcohol.updateAlcoholId = (id,newRoom,result) => {
 
     sql.query(`UPDATE alcohol SET room = ? WHERE id=?`,[newRoom,id],
     (err,res)=>{

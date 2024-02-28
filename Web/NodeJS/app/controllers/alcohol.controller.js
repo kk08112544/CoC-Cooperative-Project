@@ -50,7 +50,7 @@ const updateToAlcohol = (req,res) => {
                 });
               } else {
                 res.status(500).send({
-                  message: "Error updating Alcohol id: " + req.params.id,
+                  message: "Error updating Alcohol id :  "  +  req.params.id,
                 });
             }
         }
@@ -61,7 +61,7 @@ const updateToAlcohol = (req,res) => {
 const deleteToAlcohol = (req,res) => {
     const id = req.params.id;
 
-    Alcohol.deleteAlcoholId(id,(err,result)=>{
+    Alcohol.deleteAlcoholId(id,(err,data)=>{
         if(err){
             if (err.kind == "not_found") {
                 res.status(401).send({
@@ -72,7 +72,7 @@ const deleteToAlcohol = (req,res) => {
                   message: "Error delete Alcohol id: " + req.params.id,
                 });
             }
-        }
+        }else res.send(data);
     })
 }
 

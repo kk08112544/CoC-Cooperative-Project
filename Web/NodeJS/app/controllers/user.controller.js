@@ -22,7 +22,7 @@ const validUsername = (req, res) => {
 };
 
 const createNewUser = (req, res) => {
-    if (!req.body.name || !req.body.lastname || !req.body.username || !req.body.password || !req.body.role_id) {
+    if (!req.body) {
         res.status(400).send({ message: "Content can not be empty." });
     }
 
@@ -42,32 +42,92 @@ const createNewUser = (req, res) => {
     });
 };
 
-const login = (req, res)=>{
-    if(!req.body.username || !req.body.password){
-        res.status(400).send({message: "Content can not be empty."});
+const login = (req, res) => {
+    if (!req.body.username || !req.body.password) {
+        return res.status(400).send({ message: "Content can not be empty." });
     }
     const acc = new User({
         username: req.body.username,
         password: req.body.password
     });
-    User.loginModel(acc, (err, data)=>{
+    User.loginModel(acc, (err, data) => {
+        if (err) {
+            if (err.kind == "not_found") {
+                return res.status(401).send({ message: "Not found " + req.body.username });
+            } else if (err.kind == "invalid_pass") {
+                return res.status(401).send({ message: "Invalid Password" });
+            } else {
+                return res.status(500).send({ message: "Query error." });
+            }
+        }
+        res.send(data);
+    });
+};
+
+
+const getAllUsers = (req,res)=>{
+    User.getAllRecords((err, data)=>{
         if(err){
-            if(err.kind == "not_found"){
-                res.status(401).send({message: "Not found " + req.body.username});
-            }
-            else if(err.kind == "invalid_pass"){
-                res.status(401).send({message: "Invalid Password"});
-            }else{
-                res.status(500).send({message: "Query error." });
-            }
+            res.status(500).send({message: err.message || "Some error ocurred."});
         }else res.send(data);
     });
 };
+
+const updateUserCtrl = (req, res)=>{
+    if(!req.body){
+        res.status(400).send({message: "Content can not be empty."});
+    }
+    const data = {
+        name: req.body.name,
+        lastname: req.body.lastname,
+        username: req.body.username,
+        role_id: req.body.role_id,
+    };
+    User.updateUser(req.params.id, data, (err, result)=>{
+        if(err){
+            if(err.kind == "not_found"){
+                res.status(401).send(
+                    {message: "Not found user: " + req.params.id}
+                    );
+            }else {
+                res.status(500).send(
+                    {message: "Error update user: " + req.params.id}
+                );
+            }
+        }else {
+            res.send(result);
+        }
+    });
+};
+
+const deleteUser = (req, res)=>{
+    User.removeUser(req.params.id, (err, result)=>{
+        if(err){
+            if(err.kind == "not_found"){
+                res.status(401).send(
+                    {message: "Not found user: " + req.params.id}
+                    );
+            }
+            else{
+                res.status(500).send(
+                    {message: "Error delete user: " + req.params.id}
+                    );
+            }
+        }else{
+            res.send(result);
+        }
+    });
+};
+
+
 
 
 
 module.exports = { 
     validUsername, 
     createNewUser, 
-    login
+    login,
+    getAllUsers,
+    updateUserCtrl,
+    deleteUser,
 }

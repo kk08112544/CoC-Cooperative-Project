@@ -71,7 +71,7 @@ export default defineComponent({
         this.$q.notify({
           color: "green-4",
           textColor: "white",
-          icon: "cloud_done",
+          type: "positive",
           message: "Logged in successfully",
         });
 
@@ -81,9 +81,9 @@ export default defineComponent({
       } catch (error) {
         console.log("Login error", error);
         this.$q.notify({
-          color: "red-4",
+          color: "negative",
           textColor: "white",
-          icon: "warning",
+          type: "negative",
           message: "Login failed",
         });
       }

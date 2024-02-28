@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <h4 class="text-center">Alcohol Room</h4>
+    <h4 class="text-center">Roles Management</h4>
     <div align="right" class="q-mr-sm">
       <q-btn style="background:#F24C65;" icon="add" label="Add" class="text-white" no-caps @click="form_add = true" />
 
@@ -9,15 +9,15 @@
     <q-card>
       <q-card-section class="row items-center q-pb-none">
         <q-avatar icon="add" color="primary" text-color="white" />
-        <div class="text-h6">Add Room</div>
+        <div class="text-h6">Add Roles</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
       <q-card-section>
         <span class="q-ml-sm"
-                >Room:</span
+                >Roles:</span
         >
-        <q-input outlined v-model="room" label="Room number" />
+        <q-input outlined v-model="role" label="Roles Name" />
       </q-card-section>
       <q-card-actions align="right">
               <q-btn flat label="NO" color="primary" v-close-popup />
@@ -25,7 +25,7 @@
                 flat
                 label="YES"
                 color="primary"
-                @click="addToAlcohol"
+                @click="addToRoles"
               />
       </q-card-actions>
     </q-card>
@@ -57,27 +57,7 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="id" :props="props">{{ props.row.id }}</q-td>
-            <q-td key="room" :props="props">{{ props.row.room }}</q-td>
-            <q-td key="detect" :props="props">{{ props.row.detect }}</q-td>
-            <q-td key="status_name" :props="props">
-              <q-badge
-                :color="getStatusColor(props.row.status_name)"
-                text-color="white"
-              >
-                {{ props.row.status_name }}
-              </q-badge>
-            </q-td>
-            <q-td key="edit" :props="props">
-              <q-input
-                v-model="props.row.edit"
-                type="text"
-                label="1=Active, 2=Non-active"
-                dense
-                @keydown.enter="updateStatus(props.row.id, props.row.edit)"
-                :pattern="'[1-2]'"
-                maxlength="1"
-              />
-            </q-td>
+            <q-td key="role_name" :props="props">{{ props.row.role_name }}</q-td>
             <q-td key="action" :props="props">
               <q-btn
                 color="primary"
@@ -104,19 +84,19 @@
             <q-card>
               <q-card-section class="row items-center">
                 <q-avatar icon="edit" color="primary" text-color="white" />
-                <span class="q-ml-sm">Update Room ID: {{ input.id }}</span>
+                <span class="q-ml-sm">Update Roles ID: {{ input.id }}</span>
                 <q-btn icon="close" flat round dense v-close-popup />
               </q-card-section>
               <q-card-section>
                 <span class="q-ml-sm"
-                  >Room Number: {{ input.room }}</span
+                  >Role Name: {{ input.role_name }}</span
                 >
               </q-card-section>
              <q-card-section>
               <q-input
-  v-model="input.inputRoom"
+  v-model="input.inputRole"
   outlined
-  label="Room number"
+  label="Role Name"
 />
 
              </q-card-section>
@@ -135,7 +115,7 @@
         <q-card>
           <q-card-section class="row items-center">
             <q-avatar icon="delete" color="primary" text-color="white" />
-            <span class="q-ml-sm">Delete Equipment ID: {{ input.id }}</span>
+            <span class="q-ml-sm">Delete Roles ID: {{ input.id }}</span>
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
           <q-card-actions align="right">
@@ -154,42 +134,26 @@ import { useQuasar } from 'quasar'
 import { Notify } from 'quasar';
 
 export default defineComponent({
-  name: "RoomAlcoholPage",
+  name: "RolePage",
 
   data() {
     return {
       historyItems: [],
-    loading: true,
-    columns: [
-      { name: "id", label: "ID", align: "left", field: "id", sortable: true },
-      { name: "room", label: "Room", field: "room" },
-      { name: "detect", label: "Have/Not Have", field: "detect" },
-      { name: "status_name", label: "Status", field: "status_name" },
-      { name: "edit", label: "Edit Status", field: "edit", align: "center" },
-      { name: "action", label: "Action", field: "action", align: "center" },
-    ],
-    form_delete: false,
-    form_edit: false,
-    form_add: false,
-    room: '', // เพิ่มตัวแปร room เพื่อให้ q-input ทำงานได้
-    input: { // สร้าง object input สำหรับเก็บข้อมูลที่ใช้ในการแก้ไข
-      id: '',
-      room: '',
-      inputRoom: '',
-      inputValue: ''
-    },
-      getStatusColor : (status) => {
-      const lowerCaseStatus = status.toLowerCase();
-
-      if (lowerCaseStatus === "non-active") {
-        return "negative";
-      }else if (lowerCaseStatus === "active") {
-        return "positive";
-      } else {
-        return ""; // คืนค่าว่างหากไม่ตรงเงื่อนไขใดๆ
-      }
-    },
-
+      loading: true,
+      columns: [
+        { name: "id", label: "ID", align: "left", field: "id", sortable: true },
+        { name: "role_name", label: "Role Name", field: "role_name" },
+        { name: "action", label: "Action", field: "action", align: "right" },
+      ],
+      form_add: false,
+      form_edit: false,
+      form_delete: false,
+      role:'',
+      input: { // สร้าง object input สำหรับเก็บข้อมูลที่ใช้ในการแก้ไข
+        id: '',
+        role: '',
+        inputRole: '',
+      },
     };
   },
 
@@ -203,7 +167,7 @@ export default defineComponent({
     async fetchData() {
       const token = localStorage.getItem("accessToken");
       try {
-        const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+        const response = await axios.get(`http://localhost:3000/api/role/`, {
           headers: {
             "x-access-token": token,
           },
@@ -220,10 +184,10 @@ export default defineComponent({
       form_add = true;
     },
 
-    async addToAlcohol() {
+    async addToRoles() {
   const token = localStorage.getItem("accessToken");
   try {
-    if (!this.room) {
+    if (!this.role) {
       this.$q.notify({
         color: "negative",
         textColor: "white",
@@ -232,19 +196,19 @@ export default defineComponent({
         timeout: 1000
       });
     } else {
-      const digitRegex = /^[0-9.-]+$/;
-      if(!digitRegex.test(this.room)){
-        this.$q.notify({
-          color: "negative",
-          textColor: "white",
-          type: "negative",
-          message: "Room Value only Number",
-          timeout: 1000
-        });
-      }else{
-            const response = await axios.post(
-        `http://localhost:3000/api/alcohol/addToAlcohol`,
-        { room: this.room }, // ส่งข้อมูลห้องไปยังเซิร์ฟเวอร์
+      const isValidRole = /^[a-zA-Z]+$/.test(this.role);
+      if (!isValidRole) {
+      this.$q.notify({
+        color: "negative",
+        textColor: "white",
+        type: "negative",
+        message: "Role must contain only letters (a-z)",
+        timeout: 1000
+      });
+    } else {
+      const response = await axios.post(
+        `http://localhost:3000/api/role/addToRoles/`,
+        { role_name: this.role }, // ส่งข้อมูลห้องไปยังเซิร์ฟเวอร์
         {
           headers: {
             "x-access-token": token,
@@ -256,118 +220,77 @@ export default defineComponent({
         color: "green",
         textColor: "white",
         type: "positive",
-        message: "Add Room ID: "  +  response.data.id + " Successfully",
+        message: "Add Roles ID: "  +  response.data.id + " Successfully",
         timeout: 1000
       });
       // ทำการรีโหลดหน้าหลังจากเพิ่มข้อมูลเรียบร้อย
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-      }
     }
+   }
   } catch (error) {
     console.error("Error adding room:", error);
   }
 },
-
-    async updateStatus(id, newStatus){
-      const token = localStorage.getItem("accessToken");
-      try{
-        if (newStatus !== "1" && newStatus !== "2") {
-          this.$q.notify({
-          color: "negative",
-          textColor: "white",
-          type: "negative",
-          message: "No this Status",
-          timeout:1000
-        });
-        setTimeout(() => {
-    window.location.reload();
-  }, 1000); // รอ 10 วินาทีแล้ว reload window
-      //  return;
-    }else{
-      const response = await axios.put(
-          `http://localhost:3000/api/alcohol/updateStatusToAlcohol/${id}`,
-          { status_id: newStatus },
-            {
-               headers: {
-                  "x-access-token": token,
-              },
-            }
-        );
-        setTimeout(() => {
-    window.location.reload();
-  }, 1000); 
-  this.$q.notify({
-          color: "green",
-          textColor: "white",
-          type: "positive",
-          message: "Update Status Successfully",
-          timeout:1000
-        });
-    }
-      }catch(error){
-        console.error("Error updating status:", error);
-      }
-    },
-    editRecord(row){
+editRecord(row){
   this.input.id = row.id;
-  this.input.room = row.room;
-  this.input.inputRoom = row.room;
+  this.input.role_name = row.role_name;
+  this.input.inputRole = row.role_name;
   this.form_edit = true; // เพิ่มบรรทัดนี้เพื่อเปิด form_edit
 },
-    async onEdit(input){
-  const token = localStorage.getItem("accessToken");
-  try{
-    if(!input.inputRoom){
-      this.$q.notify({
-        color: "negative",
-        textColor: "white",
-        type: "negative",
-        message: "Content is not empty",
-        timeout: 1000
-      });
-    }else{
-      const digitRegex = /^[0-9.-]+$/;
-      if(!digitRegex.test(input.inputRoom)){
+ async onEdit(input){
+    const token =localStorage.getItem("accessToken");
+    try{
+      if(!input.inputRole){
         this.$q.notify({
           color: "negative",
           textColor: "white",
           type: "negative",
-          message: "Room Value only Number",
+          message: "Content is not empty",
           timeout: 1000
         });
       }else{
-        const response = await this.$axios.put(
-      `http://localhost:3000/api/alcohol/updateToAlcohol/${input.id}`,
-      {room:input.inputRoom},
+        const isValidRole = /^[a-zA-Z]+$/.test(input.inputRole);
+        if(!isValidRole){
+          this.$q.notify({
+            color: "negative",
+            textColor: "white",
+            type: "negative",
+            message: "Role must contain only letters (a-z)",
+            timeout: 1000
+          });
+        }else{
+          const response = await this.$axios.put(
+      `http://localhost:3000/api/role/updateToRoles/${input.id}`,
+      {role_name:input.inputRole},
       {
         headers:{
           "x-access-token":token,
         }
       }
     )
-    
+     
     this.form_edit = false; // เพิ่มบรรทัดนี้เพื่อปิด form_edit เมื่อทำการแก้ไขเสร็จสมบูรณ์
       
       this.$q.notify({
         color: "green",
         textColor: "white",
         type: "positive",
-        message: "Update Room  ID : "  +  response.data.id  +  " Successfully",
+        message: "Update Roles  ID : "  +  response.data.id  +  " Successfully",
         timeout: 1000
       });
       // ทำการรีโหลดหน้าหลังจากเพิ่มข้อมูลเรียบร้อย
       setTimeout(() => {
         window.location.reload();
       }, 1000);
+        }
       }
+    }catch(error){
+      console.error("Error updating roles name:", error);
     }
-  }catch(error){
-    console.error("Error updating room:", error);
-  }
-},
-deleteRecord(row) {
+ },
+ deleteRecord(row) {
       this.input.id = row.id;
       this.form_delete = true;
     },
@@ -375,7 +298,7 @@ deleteRecord(row) {
   const token = localStorage.getItem("accessToken");
   try {
     const response = await axios.delete(
-      `http://localhost:3000/api/alcohol/deleteToAlcohol/${this.input.id}`, // Send DELETE request with the ID
+      `http://localhost:3000/api/role/deleteToRoles/${this.input.id}`, // Send DELETE request with the ID
       {
         headers: {
           "x-access-token": token,
@@ -395,14 +318,9 @@ deleteRecord(row) {
       window.location.reload();
     }, 1000);
   } catch (error) {
-    console.error("Error deleting record:", error);
+    console.error("Error deleting roles:", error);
   }
 },
-
- 
-
-  // Other methods here
-
   },
 
   mounted() {
