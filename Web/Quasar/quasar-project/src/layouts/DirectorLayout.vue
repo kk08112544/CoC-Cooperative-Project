@@ -46,7 +46,7 @@
 import { ref } from 'vue'
 
 export default {
-  name: 'MainLayout',
+  name: 'DirectorLayout',
   setup() {
     const name = ref('')
     const lastname = ref('')

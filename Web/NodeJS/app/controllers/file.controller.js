@@ -20,7 +20,7 @@ const uploadController = async (req, res)=>{
 };
 
 const displayAvatar = (req, res) => {
-  const filename = req.params.img_url;
+  const filename = req.params.img;
   const directoryPath = __basedir + "/assets/";
 
   const imagePath = directoryPath + filename;

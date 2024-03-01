@@ -1,13 +1,6 @@
 const Roles = require("../models/role.model")
 const bcrypt = require("bcryptjs");
 
-const getAllRoles = (req,res) => {
-    Roles.getRoles((err,data)=>{
-        if(err){
-            res.status(500).send({message: err.message || "Some error ocurred."});
-        }else res.send(data);
-    })
-}
 
 const getRoles = (req,res) => {
     Roles.getRole((err,data)=>{
@@ -76,7 +69,6 @@ const deleteToRoles = (req,res) => {
 }
 
 module.exports = { 
-    getAllRoles,
     getRoles,
     updateToRoles,
     addToRoles,

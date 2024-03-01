@@ -22,7 +22,7 @@
                 <q-input v-model="lastname" type="text" label="Lastname" lazy-rules/>
               </div>
               <div>
-                <q-input v-model="username" type="text" label="Username" lazy-rules />
+                <q-input v-model="username" type="text" label="Username" lazy-rules :rules="usernameRules"/>
               </div>
               <div>
                 <q-input v-model="password" :type="isPwd ? 'password' : 'text'" label="Password">
@@ -39,9 +39,11 @@
                 <q-input v-model="cpassword" type="password" label="Confirm Password"/>
               </div>
               <div>
-                <q-select v-model="role" :options="options" label="Role" option-label="label"  />
+                <q-select v-model="role" :options="options" label="Role" option-label="label" @change="onRoleChange" />
               </div>
-              <!-- s -->
+              <!-- <div v-if="role && departments.length > 0">
+                <q-select v-model="department" :options="departments" label="Department" option-label="label" />
+              </div> -->
               <div class="flex justify-end">
                 <q-btn label="Submit" type="submit" color="primary"/>
                 <q-btn label="Reset" type="reset" color="primary" flat class="q-mr-sm"  @click="clearForm"/>
@@ -94,7 +96,7 @@ export default defineComponent({
 
   methods: {
     fetchRoles() {
-      axios.get('http://localhost:3000/api/role/register')
+      axios.get('http://localhost:3000/api/role')
         .then(response => {
           this.options = response.data.map(role => ({
             label: role.role_name,
@@ -125,21 +127,6 @@ export default defineComponent({
     // },
 
     async onSubmit() {
-      const roles = await this.$axios.get(`http://localhost:3000/api/role/register`);
-
-      const roleId = this.role.value;
-      console.log("Selected role ID:", roleId);
-        // const departId = this.department.value;
-        // console.log("Selected department ID:", departId);
-      if(!this.name || !this.lastname || !this.username || !this.password || !this.confirm_password || !roleId){
-          this.$q.notify({
-            color: "negative",
-            textColor: "white",
-            type: "negative",
-            message: "Content is not empty",
-          });
-          return;
-      }
       const response = await this.$axios.get(`http://localhost:3000/api/auth/${this.username}`);
       let db_username
       if (response.data.record != undefined) {
@@ -167,19 +154,25 @@ export default defineComponent({
         return;
       }
       try {
+        const role_id = this.role.value;
+        console.log("Selected role ID:", role_id);
+        // const departId = this.department.value;
+        // console.log("Selected department ID:", departId);
         const sendResponse = await this.$axios.post(`http://localhost:3000/api/auth/signup`, {
           name: this.name,
           lastname: this.lastname,
           username: this.username,
           password: this.password,
-          role_id: roleId,
+          role_id: role_id,
+
         });
-        
-        const role_Id = response.data.role_id;
+        const accessToken = response.data.accessToken;
+        const roleId = response.data.role_id;
         const userId = response.data.id;
         const name = response.data.name;
         const lastname = response.data.lastname;
 
+       
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("userId", userId);
         localStorage.setItem("name", name);

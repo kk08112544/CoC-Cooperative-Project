@@ -278,7 +278,7 @@ export default defineComponent({
           color: "negative",
           textColor: "white",
           type: "negative",
-          message: "No this Status",
+          message: "Status is 1 or 2 Only!!!",
           timeout:1000
         });
         setTimeout(() => {

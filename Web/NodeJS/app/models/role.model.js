@@ -9,17 +9,6 @@ const Roles = function(roles){
     this.role_name = roles.role_name;
 }
 
-Roles.getRoles = (result)=>{
-    sql.query("SELECT * FROM role",(err,res)=>{
-        if(err){
-            console.log("Query err: " + err);
-            result(err,null);
-            return;
-        }
-        result(null, res);
-    })
-}
-
 Roles.getRole = (result) =>{
     sql.query("SELECT * FROM role",(err,res)=>{
         if(err){

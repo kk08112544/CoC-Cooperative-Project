@@ -56,6 +56,70 @@
       </q-table>
     </div>
   </div>
+  <q-dialog v-model="form_edit" persistent>
+            <q-card>
+              <q-card-section class="row items-center">
+                <q-avatar icon="edit" color="primary" text-color="white" />
+                <span class="q-ml-sm">Update User ID: {{ input.id }}</span>
+                <q-btn icon="close" flat round dense v-close-popup />
+              </q-card-section>
+              <q-card-section>
+               <div>
+                <q-input
+  v-model="input.inputName"
+  outlined
+  label="Name"
+/>
+               </div>
+              </q-card-section>
+             <q-card-section>
+              <div>
+
+                <q-input
+  v-model="input.inputLastname"
+  outlined
+  label="Lastname"
+/>
+              </div>
+             </q-card-section>
+             <q-card-section>
+              <div>
+
+                <q-input
+  v-model="input.inputUsername"
+  outlined
+  label="Username"
+/>
+              </div>
+             </q-card-section>
+             <q-card-section>
+  <div>
+    <!-- <q-input
+      v-model="input.inputRoleName"
+      outlined
+      label="Role Name"
+    /> -->
+    <q-select
+      v-model="input.inputRoleName"
+      outlined
+      label="Role Name"
+      :options="options"
+    />
+   
+  </div>
+</q-card-section>
+
+              <q-card-actions align="right">
+                <q-btn flat label="NO" color="primary" v-close-popup />
+                <q-btn
+                  flat
+                  label="YES"
+                  color="primary"
+                  @click="onEdit(input)"
+                />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
 
   </q-page>
 </template>
@@ -92,14 +156,26 @@ export default defineComponent({
     //   }
     // }
     //   form_add: false,
-    //   form_edit: false,
-    //   form_delete: false,
-    //   role:'',
-    //   input: { // สร้าง object input สำหรับเก็บข้อมูลที่ใช้ในการแก้ไข
-    //     id: '',
-    //     role: '',
-    //     inputRole: '',
-    //   },
+      form_edit: false,
+      // form_delete: false,
+      role:'',
+      // input: { // สร้าง object input สำหรับเก็บข้อมูลที่ใช้ในการแก้ไข
+      //   id: '',
+      //   role: '',
+      //   inputRole: '',
+      // },
+      input: {
+        id:'',
+        name:'',
+        lastname:'',
+        username:'',
+        role_name:'',
+        inputName:'',
+        inputLastname:'',
+        inputUsername:'',
+        inputRoleName: '', // เพิ่ม selectedRole เพื่อเก็บค่าบทบาทที่เลือก
+    },
+      options: [],
     };
   },
 
@@ -108,7 +184,22 @@ export default defineComponent({
     
     };
   },
+  created() {
+    this.fetchRoles();
+  },
   methods:{
+    fetchRoles() {
+      axios.get('http://localhost:3000/api/role')
+        .then(response => {
+          this.options = response.data.map(role => ({
+            label: role.role_name,
+            value: role.id
+          }));
+        })
+        .catch(error => {
+          console.error('Error fetching roles:', error);
+        });
+    },
     async fetchData() {
       const token = localStorage.getItem("accessToken");
       try {
@@ -125,6 +216,69 @@ export default defineComponent({
         this.loading = false;
       }
     },
+
+    editRecord(row){
+      this.input.id = row.id;
+      this.input.name = row.name,
+      this.input.lastname = row.lastname,
+      this.input.username = row.username,
+      this.input.role_name = row.role_name,
+      this.input.role_id = row.role_id,
+      this.input.inputName = row.name,
+      this.input.inputLastname = row.lastname,
+      this.input.inputUsername = row.username,
+      this.input.inputRoleName = row.role_name,
+      this.input.inputRoleId  = row.role_id,
+      this.form_edit = true;
+    },
+
+    async onEdit(input) {
+  const token = localStorage.getItem("accessToken");
+  try {
+    const role_id = this.input.inputRoleName.value; // ค่า role ปัจจุบันที่เลือก
+    console.log("Selected role ID:", role_id);
+    input.inputRoleId = role_id
+    console.log(input.inputRoleId);
+    // const editProfile = {
+    //   name: input.inputName,
+    //   lastname: input.inputLastname,
+    //   username: input.inputUsername,
+    //   role_id: input.inputRoleId // ยังคงใช้ role_id เดิมหากไม่มีการเปลี่ยนแปลง
+    // };
+
+    const response = await this.$axios.put(
+      `http://localhost:3000/api/auth/${input.id}`,
+       {
+        name: input.inputName,
+        lastname:input.inputLastname,
+        username:input.inputUsername,
+        role_id:input.inputRoleId
+       },
+      {
+        headers: {
+          "x-access-token": token,
+        },
+      }
+    );
+
+    this.form_edit = false;
+    console.log(response.data);
+    this.$q.notify({
+      color: "green",
+      textColor: "white",
+      type: "positive",
+      message: "Update User ID: " + response.data.id + " Successfully",
+      timeout: 1000
+    });
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  } catch (error) {
+    console.error("Error updating user id:", error);
+  }
+}
+
+
   },    
   mounted() {
     this.fetchData();

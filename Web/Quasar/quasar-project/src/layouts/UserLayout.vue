@@ -102,21 +102,25 @@ export default defineComponent({
     const name = ref('')
     const lastname = ref('')
 
-    // ตัวอย่างการกำหนดค่า name และ lastname จาก localStorage
-
-    const user_id = localStorage.getItem('user_id')
-    name.value = localStorage.getItem('name')
-    lastname.value = localStorage.getItem('lastname')
-    const token = localStorage.getItem('token');
+    //const user_id = localStorage.getItem('user_id');
+    name.value = localStorage.getItem('name');
+    lastname.value = localStorage.getItem('lastname');
+    // const token = localStorage.getItem('accessToken');
+   // accessToken.value = localStorage.getItem('accessToken');
+    
+    const handleLogout = () => {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem('name');
+      localStorage.removeItem('lastname');
+      localStorage.removeItem('accessToken');
+    };
     // การส่งค่า reactive variables ไปยังเทมเพลต
     return {
       name,
       lastname,
       handleLogout() {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem('name');
-        localStorage.removessItem('lastname');
+        name,
+        lastname
       },
     }
   },

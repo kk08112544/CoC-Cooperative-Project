@@ -78,9 +78,11 @@ User.getAllRecords = (result)=>{
     });
 };
 
-User.updateUser = (id, data, result)=>{
 
-    sql.query("UPDATE user SET name=?, lastname=?, username=?, role_id = ? WHERE id=?", 
+
+
+User.updateUser = (id, data, result)=>{
+    sql.query("UPDATE user SET name=?, lastname=?, username=?,  role_id = ? WHERE id=?", 
     [data.name, data.lastname, data.username, data.role_id, id], (err, res)=>{
         if(err){
             console.log("Error: " + err);
