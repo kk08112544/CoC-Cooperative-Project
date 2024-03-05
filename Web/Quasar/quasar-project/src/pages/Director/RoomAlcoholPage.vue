@@ -34,25 +34,27 @@
    <div v-else>
     <div class="q-pa-md">
       <q-table
-        flat
+      flat
         bordered
         :rows="historyItems"
         :columns="columns"
         row-key="id"
       >
       
-          <template v-slot:top-right>
-              <q-input
-                  borderless
-                  dense
-                  debounce="300"
-                  v-model="filter"
-                  placeholder="Search by Alcohol Room"
-              >
-                  <template v-slot:append>
-                    <q-icon name="search" />
-                  </template>
-              </q-input>
+      <template v-slot:top-right>
+            <q-input
+    borderless
+    dense
+    debounce="300"
+    v-model="filter"
+    placeholder="Search by User Id"
+    :style="{ width: '300px', maxWidth: '500px' }"
+    @input="filterData"
+  >
+    <template v-slot:append>
+      <q-icon name="search" />
+    </template>
+  </q-input>
           </template>
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -146,7 +148,6 @@
       </q-dialog>
   </q-page>
 </template>
-
 <script>
 import { defineComponent } from "vue";
 import axios from "axios";
@@ -159,7 +160,275 @@ export default defineComponent({
   data() {
     return {
       historyItems: [],
+      loading: true,
+      filter: '',
+      columns: [
+        { name: "id", label: "ID", align: "left", field: "id", sortable: true },
+        { name: "room", label: "Room", field: "room" },
+        { name: "detect", label: "Have/Not Have", field: "detect" },
+        { name: "status_name", label: "Status", field: "status_name" },
+        { name: "edit", label: "Edit Status", field: "edit", align: "center" },
+        { name: "action", label: "Action", field: "action", align: "center" },
+      ],
+      form_delete: false,
+      form_edit: false,
+      form_add: false,
+      room: '',
+      input: {
+        id: '',
+        room: '',
+        inputRoom: '',
+        inputValue: ''
+      },
+      getStatusColor: (status) => {
+        const lowerCaseStatus = status.toLowerCase();
+
+        if (lowerCaseStatus === "non-active") {
+          return "negative";
+        } else if (lowerCaseStatus === "active") {
+          return "positive";
+        } else {
+          return "";
+        }
+      },
+    };
+  },
+
+  setup() {
+    return {};
+  },
+
+  methods: {
+    filterData() {
+  if (!this.filter) {
+    // Reset loading state and fetch data
+    this.loading = true;
+    this.fetchData();
+  } else {
+    // Filter data based on the entered ID
+    this.historyItems = this.historyItems.filter(item => {
+      return item.id.toString().toLowerCase().includes(this.filter.toLowerCase());
+    });
+  }
+},
+async fetchData() {
+  const token = localStorage.getItem("accessToken");
+  try {
+    this.loading = true;
+    const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+      headers: {
+        "x-access-token": token,
+      },
+    });
+    this.historyItems = response.data;
+  } catch (error) {
+    console.error("Error fetching history data:", error);
+  } finally {
+    this.loading = false;
+  }
+},
+
+    async addToAlcohol() {
+      const token = localStorage.getItem("accessToken");
+      try {
+        if (!this.room) {
+          this.$q.notify({
+            color: "negative",
+            textColor: "white",
+            type: "negative",
+            message: "Content is not empty",
+            timeout: 1000
+          });
+        } else {
+          const digitRegex = /^[0-9.-]+$/;
+          if (!digitRegex.test(this.room)) {
+            this.$q.notify({
+              color: "negative",
+              textColor: "white",
+              type: "negative",
+              message: "Room Value only Number",
+              timeout: 1000
+            });
+          } else {
+            const response = await axios.post(
+              `http://localhost:3000/api/alcohol/addToAlcohol`,
+              { room: this.room },
+              {
+                headers: {
+                  "x-access-token": token,
+                },
+              }
+            );
+            this.form_add = false;
+            this.$q.notify({
+              color: "green",
+              textColor: "white",
+              type: "positive",
+              message: "Add Room ID: " + response.data.id + " Successfully",
+              timeout: 1000
+            });
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        }
+      } catch (error) {
+        console.error("Error adding room:", error);
+      }
+    },
+
+    async updateStatus(id, newStatus) {
+      const token = localStorage.getItem("accessToken");
+      try {
+        if (newStatus !== "1" && newStatus !== "2") {
+          this.$q.notify({
+            color: "negative",
+            textColor: "white",
+            type: "negative",
+            message: "Status is 1 or 2 Only!!!",
+            timeout: 1000
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          const response = await axios.put(
+            `http://localhost:3000/api/alcohol/updateStatusToAlcohol/${id}`,
+            { status_id: newStatus },
+            {
+              headers: {
+                "x-access-token": token,
+              },
+            }
+          );
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+          this.$q.notify({
+            color: "green",
+            textColor: "white",
+            type: "positive",
+            message: "Update Status Successfully",
+            timeout: 1000
+          });
+        }
+      } catch (error) {
+        console.error("Error updating status:", error);
+      }
+    },
+
+    editRecord(row) {
+      this.input.id = row.id;
+      this.input.room = row.room;
+      this.input.inputRoom = row.room;
+      this.form_edit = true;
+    },
+
+    async onEdit(input) {
+      const token = localStorage.getItem("accessToken");
+      try {
+        if (!input.inputRoom) {
+          this.$q.notify({
+            color: "negative",
+            textColor: "white",
+            type: "negative",
+            message: "Content is not empty",
+            timeout: 1000
+          });
+        } else {
+          const digitRegex = /^[0-9.-]+$/;
+          if (!digitRegex.test(input.inputRoom)) {
+            this.$q.notify({
+              color: "negative",
+              textColor: "white",
+              type: "negative",
+              message: "Room Value only Number",
+              timeout: 1000
+            });
+          } else {
+            const response = await this.$axios.put(
+              `http://localhost:3000/api/alcohol/updateToAlcohol/${input.id}`,
+              { room: input.inputRoom },
+              {
+                headers: {
+                  "x-access-token": token,
+                },
+              }
+            );
+
+            this.form_edit = false;
+            this.$q.notify({
+              color: "green",
+              textColor: "white",
+              type: "positive",
+              message: "Update Room  ID : " + response.data.id + " Successfully",
+              timeout: 1000
+            });
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        }
+      } catch (error) {
+        console.error("Error updating room:", error);
+      }
+    },
+
+    deleteRecord(row) {
+      this.input.id = row.id;
+      this.form_delete = true;
+    },
+
+    async onDelete() {
+      const token = localStorage.getItem("accessToken");
+      try {
+        const response = await axios.delete(
+          `http://localhost:3000/api/alcohol/deleteToAlcohol/${this.input.id}`,
+          {
+            headers: {
+              "x-access-token": token,
+            },
+          }
+        );
+        this.form_delete = false;
+        this.$q.notify({
+          color: "green",
+          textColor: "white",
+          type: "positive",
+          message: "Delete Room  ID : " + response.data.id + " Successfully",
+          timeout: 1000,
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } catch (error) {
+        console.error("Error deleting record:", error);
+      }
+    },
+  },
+
+  mounted() {
+    this.fetchData();
+  },
+});
+</script>
+
+<!-- <script>
+import { defineComponent } from "vue";
+import axios from "axios";
+import { useQuasar } from 'quasar'
+import { Notify } from 'quasar';
+
+export default defineComponent({
+  name: "RoomAlcoholPage",
+
+  data() {
+    return {
+      historyItems: [],
     loading: true,
+    // filteredItems:'',
+    filter: '',
     columns: [
       { name: "id", label: "ID", align: "left", field: "id", sortable: true },
       { name: "room", label: "Room", field: "room" },
@@ -192,6 +461,19 @@ export default defineComponent({
 
     };
   },
+  computed: {
+  filteredItems() {
+    const filtered = this.historyItems.filter(item => {
+      return (
+        item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+        item.room.toLowerCase().includes(this.filter.toLowerCase()) ||
+        item.detect.toLowerCase().includes(this.filter.toLowerCase()) ||
+        item.status_name.toLowerCase().includes(this.filter.toLowerCase())
+      );
+    });
+    return filtered;
+  },
+},
 
   setup() {
     return {
@@ -200,7 +482,31 @@ export default defineComponent({
   },
 
   methods:{
-    async fetchData() {
+
+    filterData() {
+  if (!this.filter) {
+    this.loading = true;
+    this.fetchData();
+    this.loading = false;
+  } else {
+    // Reset historyItems to its original state before filtering
+    this.historyItems = this.filteredItems;
+    // Filter the data based on the search query
+    this.historyItems = this.historyItems.filter(item => {
+      return (
+        item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+        item.room.toLowerCase().includes(this.filter.toLowerCase()) ||
+        item.detect.toLowerCase().includes(this.filter.toLowerCase()) ||
+        item.status_name.toLowerCase().includes(this.filter.toLowerCase())
+      );
+    });
+  }
+},
+
+  async fetchData() {
+    if (!this.filter) {
+      // โหลดข้อมูลเฉพาะเมื่อไม่มีการค้นหา
+      this.loading = true;
       const token = localStorage.getItem("accessToken");
       try {
         const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
@@ -208,14 +514,30 @@ export default defineComponent({
             "x-access-token": token,
           },
         });
-
         this.historyItems = response.data;
         this.loading = false;
       } catch (error) {
         console.error("Error fetching history data:", error);
         this.loading = false;
       }
-    },
+    }
+  },
+    // async fetchData() {
+    //   const token = localStorage.getItem("accessToken");
+    //   try {
+    //     const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+    //       headers: {
+    //         "x-access-token": token,
+    //       },
+    //     });
+
+    //     this.historyItems = response.data;
+    //     this.loading = false;
+    //   } catch (error) {
+    //     console.error("Error fetching history data:", error);
+    //     this.loading = false;
+    //   }
+    // },
     addMenu: () => {
       form_add = true;
     },
@@ -400,7 +722,19 @@ deleteRecord(row) {
 },
 
  
-
+computed: {
+    filteredItems() {
+      const filtered = this.historyItems.filter(item => {
+        return (
+          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.room.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.detect.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.status_name.toLowerCase().includes(this.filter.toLowerCase())
+        );
+      });
+      return filtered;
+    },
+  },
   // Other methods here
 
   },
@@ -421,4 +755,4 @@ deleteRecord(row) {
     background-color: #f0f0f0;
 }
 
-</style>
+</style> -->

@@ -4,27 +4,39 @@
   
     <div class="q-pa-md row items-start q-gutter-md">
       <q-card class="my-card"  v-for="(item, index) in total" :key="index">
-        <q-card-section class="bg-primary text-white" style="width: 350px;">
-          <div class="text-subtitle2">All Users</div>
+        <q-card-section class="bg-primary text-white" style="width: 400px;">
+          <div class="text-subtitle2">Total Used Alcohol</div>
           <div class="text-subtitle2">Totat: {{ item.total }} Person</div>
         </q-card-section>
       </q-card>
       <q-card class="my-card"  v-for="(item, index) in day" :key="index">
-        <q-card-section class="bg-negative text-white" style="width: 350px;">
+        <q-card-section class="bg-red text-white" style="width: 400px;">
           <div class="text-subtitle2">Today</div>
           <div class="text-subtitle2">Total: {{ item.Day }} Person</div>
         </q-card-section>
       </q-card>
-      <q-card class="my-card"  v-for="(item, index) in room" :key="index">
-        <q-card-section class="bg-accent text-white" style="width: 350px;">
+      <q-card class="my-card"  v-for="(item, index) in TotalRoom" :key="index">
+        <q-card-section class="bg-positive text-white" style="width: 400px;">
+          <div class="text-subtitle2">Total Room</div>
+          <div class="text-subtitle2">Total: {{ item.Total_Room }}</div>
+        </q-card-section>
+      </q-card>
+      <!-- <q-card class="my-card"  v-for="(item, index) in room" :key="index">
+        <q-card-section class="bg-accent text-white" style="width: 300px;">
           <div class="text-subtitle2">Room: {{ item.room }}</div>
           <div class="text-subtitle2">Total: {{ item.Total }} Person</div>
         </q-card-section>
+      </q-card> -->
+      <q-card class="my-card"  v-for="(item, index) in TotlaRoles" :key="index">
+        <q-card-section class="bg-warning text-white" style="width: 400px;">
+          <div class="text-subtitle2">Total Roles:</div>
+          <div class="text-subtitle2">{{ item.Total_Role }}</div>
+        </q-card-section>
       </q-card>
-      <q-card class="my-card"  v-for="(item, index) in roomday" :key="index">
-        <q-card-section class="bg-warning text-white" style="width: 350px;">
-          <div class="text-subtitle2">Today Room: {{ item.room }}</div>
-          <div class="text-subtitle2">Total: {{ item.Total_of_Day_Room }} Person</div>
+      <q-card class="my-card"  v-for="(item, index) in TotalUser" :key="index">
+        <q-card-section class="bg-pink text-white" style="width: 400px;">
+          <div class="text-subtitle2">Total Users:</div>
+          <div class="text-subtitle2">{{ item.Total_User }}</div>
         </q-card-section>
       </q-card>
     </div>
@@ -44,6 +56,9 @@ export default defineComponent({
       day:[],
       room:[],
       roomday:[],
+      TotalRoom:[],
+      TotlaRoles:[],
+      TotalUser:[],
       loading:true,
     }
   },
@@ -53,6 +68,9 @@ export default defineComponent({
     this.fetchDay();
     this.fetchRoom();
     this.fetchRoomDay();
+    this.fetchTotalRoom();
+    this.fetchTotalRoles();
+    this.fetchTotalUser();
   },
 
   methods: {
@@ -125,7 +143,58 @@ export default defineComponent({
       }catch(error){
         console.error("Error fetching day data:", error);
       }
-    }
+    },
+    async fetchTotalRoom(){
+      const token = localStorage.getItem("accessToken");
+      try{
+        const response = await axios.get(
+          `http://localhost:3000/api/dashboard/total_room`,
+          {
+            headers:{
+              "x-access-token": token,
+            }
+          }
+        )
+        this.TotalRoom = response.data;
+      }catch(error){
+        console.error("Error fetching total room:", error);
+      }
+    },
+
+    async fetchTotalRoles(){
+      const token = localStorage.getItem("accessToken");
+      try{
+        const response = await axios.get(
+          `http://localhost:3000/api/dashboard/totalRoles`,
+          {
+            headers:{
+              "x-access-token": token,
+            }
+          }
+        )
+        this.TotlaRoles = response.data;
+      }catch(error){
+        console.error("Error fetching total room:", error);
+      }
+    },
+
+    async fetchTotalUser(){
+      const token = localStorage.getItem("accessToken");
+      try{
+        const response = await axios.get(
+          `http://localhost:3000/api/dashboard/getTotalUser`,
+          {
+            headers:{
+              "x-access-token": token,
+            }
+          }
+        )
+        this.TotalUser = response.data;
+      }catch(error){
+        console.error("Error fetching total room:", error);
+      }
+    },
+
   }
 })
 </script>

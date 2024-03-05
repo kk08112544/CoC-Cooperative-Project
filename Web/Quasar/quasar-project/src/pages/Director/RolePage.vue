@@ -34,25 +34,26 @@
    <div v-else>
     <div class="q-pa-md">
       <q-table
-        flat
-        bordered
-        :rows="historyItems"
-        :columns="columns"
-        row-key="id"
+      flat
+  bordered
+  :rows="filteredItems"
+  :columns="columns"
+  row-key="id"
       >
       
           <template v-slot:top-right>
-              <q-input
-                  borderless
-                  dense
-                  debounce="300"
-                  v-model="filter"
-                  placeholder="Search by Alcohol Room"
-              >
-                  <template v-slot:append>
-                    <q-icon name="search" />
-                  </template>
-              </q-input>
+            <q-input
+    borderless
+    dense
+    debounce="600"
+    v-model="filter"
+    placeholder="Search by Id and Role Name"
+    :style="{ width: '300px', maxWidth: '500px' }"
+>
+    <template v-slot:append>
+        <q-icon name="search" />
+    </template>
+</q-input>
           </template>
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -140,6 +141,7 @@ export default defineComponent({
     return {
       historyItems: [],
       loading: true,
+      filter: '',
       columns: [
         { name: "id", label: "ID", align: "left", field: "id", sortable: true },
         { name: "role_name", label: "Role Name", field: "role_name" },
@@ -157,6 +159,17 @@ export default defineComponent({
     };
   },
 
+  computed: {
+    filteredItems() {
+      const filtered = this.historyItems.filter(item => {
+        return (
+          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
+        );
+      });
+      return filtered;
+    },
+  },
   setup() {
     return {
     
@@ -164,7 +177,41 @@ export default defineComponent({
   },
 
   methods:{
+    filterData() {
+    if (!this.filter) {
+      this.loading = true; // ให้ loading = true เมื่อทำการกรองข้อมูล
+      this.fetchData(); // โหลดข้อมูลเดิมทั้งหมดเมื่อไม่มีคำค้นหา
+      this.loading = false; // หยุด loading เมื่อโหลดข้อมูลเสร็จสมบูรณ์
+    } else {
+      // กรองข้อมูลเฉพาะที่ตรงกับคำค้นหา
+      this.historyItems = this.historyItems.filter(item => {
+        return (
+          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
+        );
+      });
+    }
+  },
+    // async fetchData() {
+    //   const token = localStorage.getItem("accessToken");
+    //   try {
+    //     const response = await axios.get(`http://localhost:3000/api/role/`, {
+    //       headers: {
+    //         "x-access-token": token,
+    //       },
+    //     });
+
+    //     this.historyItems = response.data;
+    //     this.loading = false;
+    //   } catch (error) {
+    //     console.error("Error fetching history data:", error);
+    //     this.loading = false;
+    //   }
+    // },
     async fetchData() {
+    if (!this.filter) {
+      // โหลดข้อมูลเฉพาะเมื่อไม่มีการค้นหา
+      this.loading = true;
       const token = localStorage.getItem("accessToken");
       try {
         const response = await axios.get(`http://localhost:3000/api/role/`, {
@@ -172,14 +219,14 @@ export default defineComponent({
             "x-access-token": token,
           },
         });
-
         this.historyItems = response.data;
         this.loading = false;
       } catch (error) {
         console.error("Error fetching history data:", error);
         this.loading = false;
       }
-    },
+    }
+  },
     addMenu: () => {
       form_add = true;
     },
@@ -323,9 +370,18 @@ editRecord(row){
 },
   },
 
+  // mounted() {
+  //   this.fetchData();
+  // },
   mounted() {
-    this.fetchData();
+  this.filterData(); // เรียกใช้งาน filterData เมื่อโหลดหน้าครั้งแรก
+  this.fetchData();
+},
+watch: {
+  filter: function(newFilter) {
+    this.filterData(); // เรียกใช้งาน filterData เมื่อมีการเปลี่ยนแปลงคำค้นหา
   },
+},
 });
 </script>
 <style>

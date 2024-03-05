@@ -43,8 +43,32 @@ const getThisAmount = (req,res) => {
     })
 }
 
+const getTotalRoom = (req,res) => {
+    Dashboard.getAllRoom((err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
 const getRoom = (req,res) => {
     Dashboard.getRoom((err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
+const getTotalUser = (req,res) => {
+    Dashboard.getUser((err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
+const getAllRole = (req,res) => {
+    Dashboard.getRole((err,data)=>{
         if(err){
             res.status(500).send({message: err.message || "Some error ocurred."});
         }else res.send(data);
@@ -87,6 +111,9 @@ const addNotify = (req,res) => {
 module.exports = {
     getAllTotal,
     getThisDay,
+    getTotalRoom,
+    getTotalUser,
+    getAllRole,
     getAllTotalZone,
     getThisDayZone,
     getThisAmount,

@@ -9,7 +9,17 @@ const getLess = (req,res)=>{
     })
 }
 
+const notifyCount = (req,res)=>{
+    Notify.Count((err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
+
 
 module.exports = {
     getLess,
+    notifyCount,
 }

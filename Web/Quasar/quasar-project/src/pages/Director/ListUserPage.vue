@@ -13,17 +13,19 @@
       >
       
           <template v-slot:top-right>
-              <q-input
-                  borderless
-                  dense
-                  debounce="300"
-                  v-model="filter"
-                  placeholder="Search by User Id"
-              >
-                  <template v-slot:append>
-                    <q-icon name="search" />
-                  </template>
-              </q-input>
+            <q-input
+    borderless
+    dense
+    debounce="300"
+    v-model="filter"
+    placeholder="Search by User Id"
+    :style="{ width: '300px', maxWidth: '500px' }"
+    @input="filterData"
+  >
+    <template v-slot:append>
+      <q-icon name="search" />
+    </template>
+  </q-input>
           </template>
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -120,7 +122,19 @@
               </q-card-actions>
             </q-card>
           </q-dialog>
-
+          <q-dialog v-model="form_delete" persistent>
+        <q-card>
+          <q-card-section class="row items-center">
+            <q-avatar icon="delete" color="primary" text-color="white" />
+            <span class="q-ml-sm">Delete User ID: {{ input.id }}</span>
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn flat label="NO" color="primary" v-close-popup />
+            <q-btn flat label="YES" color="primary" @click="onDelete" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
   </q-page>
 </template>
 <script>
@@ -136,6 +150,7 @@ export default defineComponent({
     return {
       historyItems: [],
       loading: true,
+      filter: '',
       columns: [
         { name: "id", label: "ID", align: "left", field: "id", sortable: true },
         { name: "name", label: "Name", field: "name" },
@@ -157,7 +172,7 @@ export default defineComponent({
     // }
     //   form_add: false,
       form_edit: false,
-      // form_delete: false,
+      form_delete: false,
       role:'',
       // input: { // สร้าง object input สำหรับเก็บข้อมูลที่ใช้ในการแก้ไข
       //   id: '',
@@ -178,6 +193,19 @@ export default defineComponent({
       options: [],
     };
   },
+  computed: {
+    filteredItems() {
+      const filtered = this.historyItems.filter(item => {
+        return (
+          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
+        );
+      });
+      return filtered;
+    },
+  },
 
   setup() {
     return {
@@ -188,6 +216,7 @@ export default defineComponent({
     this.fetchRoles();
   },
   methods:{
+    
     fetchRoles() {
       axios.get('http://localhost:3000/api/role')
         .then(response => {
@@ -200,7 +229,44 @@ export default defineComponent({
           console.error('Error fetching roles:', error);
         });
     },
+    filterData() {
+    if (!this.filter) {
+      this.loading = true; // ให้ loading = true เมื่อทำการกรองข้อมูล
+      this.fetchData(); // โหลดข้อมูลเดิมทั้งหมดเมื่อไม่มีคำค้นหา
+      this.loading = false; // หยุด loading เมื่อโหลดข้อมูลเสร็จสมบูรณ์
+    } else {
+      // กรองข้อมูลเฉพาะที่ตรงกับคำค้นหา
+      this.historyItems = this.historyItems.filter(item => {
+        return (
+          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
+        );
+      });
+    }
+  },
+    // a
+    // async fetchData() {
+    //   const token = localStorage.getItem("accessToken");
+    //   try {
+    //     const response = await axios.get(`http://localhost:3000/api/auth/`, {
+    //       headers: {
+    //         "x-access-token": token,
+    //       },
+    //     });
+
+    //     this.historyItems = response.data;
+    //     this.loading = false;
+    //   } catch (error) {
+    //     console.error("Error fetching history data:", error);
+    //     this.loading = false;
+    //   }
+    // },
     async fetchData() {
+    if (!this.filter) {
+      // โหลดข้อมูลเฉพาะเมื่อไม่มีการค้นหา
+      this.loading = true;
       const token = localStorage.getItem("accessToken");
       try {
         const response = await axios.get(`http://localhost:3000/api/auth/`, {
@@ -208,14 +274,14 @@ export default defineComponent({
             "x-access-token": token,
           },
         });
-
         this.historyItems = response.data;
         this.loading = false;
       } catch (error) {
         console.error("Error fetching history data:", error);
         this.loading = false;
       }
-    },
+    }
+  },
 
     editRecord(row){
       this.input.id = row.id;
@@ -230,6 +296,11 @@ export default defineComponent({
       this.input.inputRoleName = row.role_name,
       this.input.inputRoleId  = row.role_id,
       this.form_edit = true;
+    },
+
+    deleteRecord(row){
+      this.input.id = row.id;
+      this.form_delete = true;
     },
 
     async onEdit(input) {
@@ -276,13 +347,57 @@ export default defineComponent({
   } catch (error) {
     console.error("Error updating user id:", error);
   }
-}
+},
+async onDelete(){
+  const token = localStorage.getItem("accessToken");
+  try{
+    const response = await axios.delete(
+      `http://localhost:3000/api/auth/${this.input.id}`,
+      {
+        headers: {
+          "x-access-token": token,
+        },
+      }
+    );
+    this.form_delete = false; // Close the delete dialog
+    this.$q.notify({
+      color: "green",
+      textColor: "white",
+      type: "positive",
+      message: "Delete User  ID : "  +  response.data.id  +  " Successfully" ,
+      timeout: 1000,
+    });
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }catch(error){
+    console.error("Error deleting record:", error);
+  }
+},
 
-
+computed: {
+    filteredItems() {
+      const filtered = this.historyItems.filter(item => {
+        return (
+          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
+        );
+      });
+      return filtered;
+    },
+  },
   },    
   mounted() {
-    this.fetchData();
+    this.filterData(); // เรียกใช้งาน filterData เมื่อโหลดหน้าครั้งแรก
+  this.fetchData();
   },
+  watch: {
+  filter: function(newFilter) {
+    this.filterData(); // เรียกใช้งาน filterData เมื่อมีการเปลี่ยนแปลงคำค้นหา
+  },
+},
 })
 
 </script>

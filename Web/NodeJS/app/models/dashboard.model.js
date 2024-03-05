@@ -88,6 +88,40 @@ Dashboard.getAmount = (result) => {
     })
 }
 
+Dashboard.getRole = (result) => {
+    sql.query('SELECT COUNT(*) as Total_Role FROM role',(err,res)=>{
+        if(err){
+            console.log("Query err: " + err);
+            result(err,null);
+            return;
+        }
+        result(null, res);
+    })
+}
+
+Dashboard.getUser = (result) => {
+    sql.query('SELECT COUNT(*) as Total_User FROM user',(err,res)=>{
+        if(err){
+            console.log("Query err: " + err);
+            result(err,null);
+            return;
+        }
+        result(null, res);
+    })
+}
+
+
+Dashboard.getAllRoom = (result) => {
+    sql.query('SELECT COUNT(*) as Total_Room FROM alcohol',(err,res)=>{
+        if(err){
+            console.log("Query err: " + err);
+            result(err,null);
+            return;
+        }
+        result(null, res);
+    })
+}
+
 Dashboard.createNotify = (createNewNotify,result) => {
     sql.query('INSERT INTO notify SET ?',createNewNotify,(err,res)=>{
         if(err){

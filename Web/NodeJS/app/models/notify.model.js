@@ -13,7 +13,7 @@ const Notify = function(notify){
 }
 
 Notify.Less = (result) => {
-    sql.query("SELECT * FROM alcohol WHERE detect != 1",(err,res)=>{
+    sql.query("SELECT * FROM alcohol WHERE detect = 1",(err,res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);
@@ -23,5 +23,16 @@ Notify.Less = (result) => {
     })
 }
 
+
+Notify.Count = (result) =>{
+    sql.query("SELECT COUNT(*) as Total FROM alcohol WHERE detect = 1",(err,res)=>{
+        if(err){
+            console.log("Query err: " + err);
+            result(err,null);
+            return;
+        }
+        result(null, res);
+    })
+}
 
 module.exports = Notify;
