@@ -62,7 +62,7 @@ export default defineComponent({
         const name = response.data.name;
         const lastname = response.data.lastname;
 
-       
+        localStorage.setItem("roleId",roleId);
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("userId", userId);
         localStorage.setItem("name", name);

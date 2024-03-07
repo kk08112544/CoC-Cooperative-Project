@@ -78,7 +78,23 @@ User.getAllRecords = (result)=>{
     });
 };
 
-
+User.updateRole = (id,data,result) => {
+    sql.query("UPDATE user SET role_id = ? WHERE id=?",[data.role_id,id],(err,res) => {
+        if(err){
+            console.log("Error: " + err);
+            result(err, null);
+            return;
+        }
+        if(res.affectedRows == 0){
+            //NO any record update
+            result({kind: "not_found"}, null);
+            return;
+        }
+        console.log("Update user: " + {id: id, ...data});
+        result(null, {id: id, ...data});
+        return;
+    })
+}
 
 
 User.updateUser = (id, data, result)=>{

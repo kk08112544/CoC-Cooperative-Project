@@ -39,7 +39,7 @@
                 <q-input v-model="cpassword" type="password" label="Confirm Password"/>
               </div>
               <div>
-                <q-select v-model="role" :options="options" label="Role" option-label="label" @change="onRoleChange" />
+                <q-select v-model="role" :options="options" label="Role" option-label="label" />
               </div>
               <!-- <div v-if="role && departments.length > 0">
                 <q-select v-model="department" :options="departments" label="Department" option-label="label" />
@@ -51,7 +51,7 @@
 
               <div>
                 <text-caption class="text-cyan-8">Have Account?
-                  <a href="/#/login">Go To Login</a>
+                  <router-link to="/login">Go To Login</router-link>
                 </text-caption>
               </div>
             </q-form>
@@ -80,11 +80,6 @@ export default defineComponent({
       usernameRules: [
         (v) => !!v || 'Username is required',
       ],
-      // passwordRules: [
-      //   (v) => !!v || 'Password is required',
-      //   (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
-      //   (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(v) || 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-      // ],
       options: [],
       departments: []
     };
@@ -107,24 +102,6 @@ export default defineComponent({
           console.error('Error fetching roles:', error);
         });
     },
-    // onRoleChange() {
-    //   if (this.role) {
-    //     const roleId = this.role.value;
-    //     axios.get(`http://localhost:3000/api/department/roles/${roleId}`)
-    //       .then(response => {
-    //         this.departments = response.data.map(department => ({
-    //           label: department.depart_name,
-    //           value: department.id,
-    //         }));
-    //       })
-    //       .catch(error => {
-    //         console.error('Error fetching departments:', error);
-    //       });
-    //   } else {
-    //     this.departments = [];
-    //     this.department = null;
-    //   }
-    // },
 
     async onSubmit() {
       const response = await this.$axios.get(`http://localhost:3000/api/auth/${this.username}`);
@@ -156,15 +133,12 @@ export default defineComponent({
       try {
         const role_id = this.role.value;
         console.log("Selected role ID:", role_id);
-        // const departId = this.department.value;
-        // console.log("Selected department ID:", departId);
         const sendResponse = await this.$axios.post(`http://localhost:3000/api/auth/signup`, {
           name: this.name,
           lastname: this.lastname,
           username: this.username,
           password: this.password,
           role_id: role_id,
-
         });
         const accessToken = response.data.accessToken;
         const roleId = response.data.role_id;
@@ -172,7 +146,7 @@ export default defineComponent({
         const name = response.data.name;
         const lastname = response.data.lastname;
 
-       
+        localStorage.setItem("roleId",roleId);
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("userId", userId);
         localStorage.setItem("name", name);
@@ -183,13 +157,7 @@ export default defineComponent({
           icon: "cloud_done",
           message: "Registered successfully",
         });
-        this.$router.push({
-          path: '/user/alcohol',
-          // query: {
-          //   name: this.name,
-          //   lastname: this.lastname
-          // }
-        });
+        this.$router.push(parseInt(roleId, 10) === 1 ? "/director/dashboard" : "/user/alcohol");
         console.log("Signup successful:", sendResponse.data);
       } catch (error) {
         console.error("Signup error:", error);

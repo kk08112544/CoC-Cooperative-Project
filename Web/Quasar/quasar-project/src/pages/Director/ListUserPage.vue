@@ -72,6 +72,7 @@
   outlined
   label="Name"
 />
+
                </div>
               </q-card-section>
              <q-card-section>
@@ -302,29 +303,97 @@ export default defineComponent({
       this.input.id = row.id;
       this.form_delete = true;
     },
+//     async onEdit(input) {
+//   const token = localStorage.getItem("accessToken");
 
-    async onEdit(input) {
+//   try {
+//     let roleId;
+//     const role_name = input.inputRoleName; // Use input.inputRoleName instead of this.input.inputRoleName
+//     let profile;
+//     let role_id = this.input.inputRoleName.value;
+//     console.log(role_id);
+//     if (role_name) {
+//       const roleResponse = await this.$axios.get('http://localhost:3000/api/role');
+//       const roles = roleResponse.data;
+
+//       const selectedRole = roles.find(role => role.role_name === role_name); // Use role_name instead of input.inputRoleName
+//       roleId = selectedRole ? selectedRole.id : null;
+//       profile = {
+//         name: input.inputName,
+//         lastname: input.inputLastname,
+//         username: input.inputUsername,
+//         role_id: roleId,
+//       };
+//     }else if(this.input.inputRoleName.value){
+//       console.log(role_id);
+//       // roleId = this.input.inputRoleName.value;
+//       profile = {
+//         name: input.inputName,
+//         lastname: input.inputLastname,
+//         username: input.inputUsername,
+//         role_id: this.input.inputRoleName.value,
+//       };
+//     }
+
+    
+
+//     const response = await this.$axios.put(
+//       `http://localhost:3000/api/auth/${input.id}`,
+//       profile,
+//       {
+//         headers: {
+//           "x-access-token": token,
+//         },
+//       }
+//     );
+
+//     this.form_edit = false;
+//     this.$q.notify({
+//       color: "green",
+//       textColor: "white",
+//       type: "positive",
+//       message: "Update User ID: " + response.data.id + " Successfully",
+//       timeout: 1000
+//     });
+//     setTimeout(() => {
+//       window.location.reload();
+//     }, 1000);
+//   } catch (error) {
+//     console.error("Error updating user id:", error);
+//   }
+// },
+async onEdit(input) {
   const token = localStorage.getItem("accessToken");
+
   try {
-    const role_id = this.input.inputRoleName.value; // ค่า role ปัจจุบันที่เลือก
-    console.log("Selected role ID:", role_id);
-    input.inputRoleId = role_id
-    console.log(input.inputRoleId);
-    // const editProfile = {
-    //   name: input.inputName,
-    //   lastname: input.inputLastname,
-    //   username: input.inputUsername,
-    //   role_id: input.inputRoleId // ยังคงใช้ role_id เดิมหากไม่มีการเปลี่ยนแปลง
-    // };
+    let roleId;
+    const role_name = input.inputRoleName;
+    
+    console.log("Role Name:", role_name);
+    roleId = this.input.inputRoleName.value;
+    console.log("Role ID:", roleId);
+    input.inputRoleId = this.input.inputRoleName.value;
+    if (role_name) {
+      const roleResponse = await this.$axios.get('http://localhost:3000/api/role');
+      const roles = roleResponse.data;
+
+      const selectedRole = roles.find(role => role.role_name === role_name);
+      roleId = selectedRole ? selectedRole.id : null;
+    } else if (this.input.inputRoleName && role_id) {
+  roleId = role_id;
+  console.log("Role ID in else if:", roleId);
+}
+
+    const profile = {
+      name: input.inputName,
+      lastname: input.inputLastname,
+      username: input.inputUsername,
+      role_id: roleId,
+    };
 
     const response = await this.$axios.put(
       `http://localhost:3000/api/auth/${input.id}`,
-       {
-        name: input.inputName,
-        lastname:input.inputLastname,
-        username:input.inputUsername,
-        role_id:input.inputRoleId
-       },
+      profile,
       {
         headers: {
           "x-access-token": token,
@@ -333,7 +402,6 @@ export default defineComponent({
     );
 
     this.form_edit = false;
-    console.log(response.data);
     this.$q.notify({
       color: "green",
       textColor: "white",
@@ -348,32 +416,60 @@ export default defineComponent({
     console.error("Error updating user id:", error);
   }
 },
-async onDelete(){
-  const token = localStorage.getItem("accessToken");
-  try{
-    const response = await axios.delete(
-      `http://localhost:3000/api/auth/${this.input.id}`,
-      {
-        headers: {
-          "x-access-token": token,
-        },
-      }
-    );
-    this.form_delete = false; // Close the delete dialog
-    this.$q.notify({
-      color: "green",
-      textColor: "white",
-      type: "positive",
-      message: "Delete User  ID : "  +  response.data.id  +  " Successfully" ,
-      timeout: 1000,
-    });
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
-  }catch(error){
-    console.error("Error deleting record:", error);
-  }
-},
+
+// async onEdit(input) {
+//   const token = localStorage.getItem("accessToken");
+
+//   try {
+//     let roleId;
+//     const role_name = input.inputRoleName;
+//     console.log(this.input.inputRoleName.value);
+//     if (role_name) {
+//       const roleResponse = await this.$axios.get('http://localhost:3000/api/role');
+//       const roles = roleResponse.data;
+
+//       const selectedRole = roles.find(role => role.role_name === role_name);
+//       roleId = selectedRole ? selectedRole.id : null;
+//     } else if (this.input.inputRoleName.value) {
+//       roleId = this.input.inputRoleName.value;
+//       console.log(roleId);
+//     }
+
+//     const profile = {
+//       name: input.inputName,
+//       lastname: input.inputLastname,
+//       username: input.inputUsername,
+//       role_id: roleId,
+//     };
+
+//     const response = await this.$axios.put(
+//       `http://localhost:3000/api/auth/${input.id}`,
+//       profile,
+//       {
+//         headers: {
+//           "x-access-token": token,
+//         },
+//       }
+//     );
+
+//     this.form_edit = false;
+//     this.$q.notify({
+//       color: "green",
+//       textColor: "white",
+//       type: "positive",
+//       message: "Update User ID: " + response.data.id + " Successfully",
+//       timeout: 1000
+//     });
+//     setTimeout(() => {
+//       window.location.reload();
+//     }, 1000);
+//   } catch (error) {
+//     console.error("Error updating user id:", error);
+//   }
+// },
+
+
+
 
 computed: {
     filteredItems() {

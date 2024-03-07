@@ -19,6 +19,7 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
+        <q-icon name="account_circle" color="grey-6" size="3rem" />
         <h6>{{ name }} {{ lastname }}</h6>
         <q-icon
           name="notifications"

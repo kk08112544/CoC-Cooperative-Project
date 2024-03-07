@@ -6,10 +6,9 @@ const expireTime = "2h"; //token will expire in 2 hours
 const fs = require("fs");
 
 const Notify = function(notify){
-    this.alcohol_zone = notify.alcohol_zone;
-    this.img = notify.img;
+    this.room = notify.room;
     this.detect = notify.detect;
-    this.status = notify.status;
+    this.status_name = notify.status_name;
 }
 
 Notify.Less = (result) => {

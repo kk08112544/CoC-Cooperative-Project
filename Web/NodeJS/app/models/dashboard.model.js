@@ -6,7 +6,7 @@ const expireTime = "2h"; //token will expire in 2 hours
 const fs = require("fs");
 
 const Dashboard = function(dashboard){
-    this.alcohol_id = dashboard.alcohol_id;
+    this.room_id = dashboard.room_id;
     this.date = dashboard.date;
     this.times = dashboard.times;
     // this.alcohol_zone = dashboard.alcohol_zone;
@@ -14,7 +14,7 @@ const Dashboard = function(dashboard){
 }
 
 Dashboard.getAll = (result) => {
-    sql.query("SELECT COUNT(*) as total FROM notify", (err, res) => {
+    sql.query("SELECT COUNT(*) as total FROM used", (err, res) => {
         if (err) {
             console.log("Query err: " + err);
             result(err, null);
@@ -33,7 +33,7 @@ Dashboard.getDay = (result)=>{
     const day = currentDate.getDate().toString().padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     console.log(formattedDate);
-    sql.query("SELECT COUNT(*) as Day FROM notify WHERE DATE(date) = ?",[formattedDate],(err, res)=>{
+    sql.query("SELECT COUNT(*) as Day FROM used WHERE DATE(date) = ?",[formattedDate],(err, res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);
@@ -50,7 +50,7 @@ Dashboard.getAllZone = (result) => {
     const day = currentDate.getDate().toString().padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     console.log(formattedDate);
-    sql.query("SELECT n.alcohol_id, a.room, COUNT(*) as Total FROM notify n JOIN alcohol a ON n.alcohol_id = a.id GROUP BY n.alcohol_id, a.room",[formattedDate],(err, res)=>{
+    sql.query("SELECT u.room_id, a.room, COUNT(*) as Total FROM used u JOIN alcohol a ON u.room_id = a.id GROUP BY u.room_id, a.room",[formattedDate],(err, res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);
@@ -67,7 +67,7 @@ Dashboard.getDayZone = (result) => {
     const day = currentDate.getDate().toString().padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     console.log(formattedDate);
-    sql.query("SELECT a.room, COUNT(*) as Total_of_Day_Room FROM notify n JOIN alcohol a ON n.alcohol_id = a.id WHERE DATE(date) = ? GROUP BY a.room",[formattedDate],(err, res)=>{
+    sql.query("SELECT a.room, COUNT(*) as Total_of_Day_Room FROM used u JOIN alcohol a ON u.room_id = a.id WHERE DATE(date) = ? GROUP BY a.room",[formattedDate],(err, res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);
@@ -122,17 +122,7 @@ Dashboard.getAllRoom = (result) => {
     })
 }
 
-Dashboard.createNotify = (createNewNotify,result) => {
-    sql.query('INSERT INTO notify SET ?',createNewNotify,(err,res)=>{
-        if(err){
-            console.log("Query error: " + err);
-            result(err, null);
-            return;
-        }
-        result(null, {id:res.insertId, ...createNewNotify});
-        console.log("Cart:", {id:res.insertId, ...createNewNotify});
-    })
-}
+
 
 Dashboard.getRoom = (result) =>{
     sql.query("SELECT * FROM alcohol", (err, res) => {
