@@ -55,8 +55,10 @@ export default defineComponent({
     lastname.value = localStorage.getItem('lastname');
     
     const handleLogout = () => {
+      localStorage.removeItem("userId");
       localStorage.removeItem('name');
       localStorage.removeItem('lastname');
+      localStorage.removeItem('accessToken');
     };
     
     return {

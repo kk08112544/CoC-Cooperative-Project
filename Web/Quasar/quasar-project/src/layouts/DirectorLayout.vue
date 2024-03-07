@@ -50,6 +50,7 @@
         <q-btn @click="handleManagement"  to="/director/role" style="color: white"  no-caps label="Role" class="q-mr-md" />
         <q-btn @click="handleAlcohol"  to="/director/RoomAlcohol" style="color: white"  no-caps label="Alcohol" class="q-mr-md" />
         <q-btn @click="handleUser"  to="/director/user" style="color: white"  no-caps label="ListUser" class="q-mr-md" />
+        <q-btn @click="handleProfile"  to="/director/profile" style="color: white"  no-caps label="Profile" class="q-mr-md" />
       </q-toolbar>
     </q-header>
 
@@ -103,7 +104,7 @@ export default {
     lastname.value = localStorage.getItem('lastname') || '';
 
     const handleLogout = () => {
-      localStorage.removeItem("user_id");
+      localStorage.removeItem("userId");
       localStorage.removeItem('name');
       localStorage.removeItem('lastname');
       localStorage.removeItem('accessToken');

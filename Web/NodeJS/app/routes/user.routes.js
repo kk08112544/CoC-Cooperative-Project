@@ -6,7 +6,7 @@ module.exports = (app)=>{
     router.post("/signup", user_controller.createNewUser);
     router.post("/login", user_controller.login);
     router.get("/", authJwt, user_controller.getAllUsers);
-    router.put("/userRoles/:id",authJwt,user_controller.updateUserRole);
+    router.get("/profile/:id",authJwt,user_controller.getProfileId);
     router.put("/:id", authJwt, user_controller.updateUserCtrl);
     router.delete("/:id", authJwt, user_controller.deleteUser);
     app.use("/api/auth", router);

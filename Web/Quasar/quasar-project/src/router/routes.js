@@ -18,6 +18,7 @@ const routes = [
       {path: 'notify',component: () => import('pages/Director/NotifyPage.vue')},
       {path: 'RoomAlcohol',component: () => import('pages/Director/RoomAlcoholPage.vue')},
       {path: 'user',component: () => import('pages/Director/ListUserPage.vue')},
+      {path: 'profile',component: () => import('pages/Director/ProfilePage.vue')},
     ]
   },
   {
