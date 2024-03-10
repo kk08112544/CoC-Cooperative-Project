@@ -60,18 +60,19 @@
   </div>
   <q-dialog v-model="form_edit" persistent>
             <q-card>
+             
               <q-card-section class="row items-center">
                 <q-avatar icon="edit" color="primary" text-color="white" />
                 <span class="q-ml-sm">Update User ID: {{ input.id }}</span>
                 <q-btn icon="close" flat round dense v-close-popup />
               </q-card-section>
+              
               <q-card-section>
                <div>
                 <q-input
   v-model="input.inputName"
   outlined
   label="Name"
-  readonly
 />
 
                </div>
@@ -83,7 +84,6 @@
   v-model="input.inputLastname"
   outlined
   label="Lastname"
-  readonly
 />
               </div>
              </q-card-section>
@@ -94,9 +94,60 @@
   v-model="input.inputUsername"
   outlined
   label="Username"
-  readonly
 />
               </div>
+             </q-card-section>
+             <q-card-section>
+              <div>
+                <div>
+                  <!-- <div v-if="input.inputImg || input.img">
+  <q-img
+    :src="input.inputImg ? input.inputImg : getImageUrl(input.img)"
+    :ratio="9 / 9"
+    spinner-color="primary"
+    spinner-size="200px"
+  />
+</div>
+<div v-else>
+  <q-img
+    src="/path/to/default/image.jpg" 
+    :ratio="9 / 9"
+    spinner-color="primary"
+    spinner-size="200px"
+  />
+</div> -->
+<q-img
+
+  :src="getImageUrl(input.img)"
+  :ratio="9 / 9"
+  spinner-color="primary"
+  spinner-size="200px"
+/>
+                </div>
+                
+            <!-- <q-img
+              v-if="input.img"
+              :src="input.img"
+              :ratio="4 / 3"
+              spinner-color="primary"
+              spinner-size="82px"
+            ></q-img> -->
+            <!-- file size = 1MB -->
+            <q-file
+              outlined
+              label="Your avatar"
+              v-model="uploadFile"
+              accept=".jpg, .jpeg, .png"
+              max-file-size="1048576"
+              @rejected="onRejected"
+              @update:model-value="updateFile()"
+              
+            >
+              <template v-slot:append>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
+          </div>
              </q-card-section>
              <q-card-section>
   <div>
@@ -142,7 +193,7 @@
   </q-page>
 </template>
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, onErrorCaptured } from "vue";
 import axios from "axios";
 import { useQuasar } from 'quasar'
 import { Notify } from 'quasar';
@@ -184,16 +235,19 @@ export default defineComponent({
       //   inputRole: '',
       // },
       input: {
-        id:'',
-        name:'',
-        lastname:'',
-        username:'',
-        role_name:'',
-        inputName:'',
-        inputLastname:'',
-        inputUsername:'',
-        inputRoleName: '', // เพิ่ม selectedRole เพื่อเก็บค่าบทบาทที่เลือก
-    },
+  id:'',
+  name:'',
+  lastname:'',
+  username:'',
+  role_name:'',
+  inputName:'',
+  inputLastname:'',
+  inputUsername:'',
+  inputRoleName: '',
+  img:'',            // Existing property to hold the image URL from the database
+  inputImg:'',       // New property to hold uploaded image data
+},
+
       options: [],
     };
   },
@@ -220,7 +274,12 @@ export default defineComponent({
     this.fetchRoles();
   },
   methods:{
-
+    updateFile() {
+      this.input.inputImg = URL.createObjectURL(this.uploadFile);
+    },
+    getImageUrl(img) {
+      return `http://localhost:3000/api/file/${img}`;
+    },
     fetchRoles() {
       axios.get('http://localhost:3000/api/role')
         .then(response => {
@@ -301,22 +360,66 @@ export default defineComponent({
       this.input.inputUsername = row.username,
       this.input.inputRoleName = row.role_name,
       this.input.inputRoleId  = row.role_id,
+      this.input.img = row.img
+      this.input.inputImg = row.img
       this.form_edit = true;
     },
 
-    deleteRecord(row){
+    deleteRecord(row) {
       this.input.id = row.id;
       this.form_delete = true;
     },
+    async onDelete() {
+  const token = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.delete(
+      `http://localhost:3000/api/auth/${this.input.id}`, // Send DELETE request with the ID
+      {
+        headers: {
+          "x-access-token": token,
+        },
+      }
+    );
+    this.form_delete = false; // Close the delete dialog
+    this.$q.notify({
+      color: "green",
+      textColor: "white",
+      type: "positive",
+      message: "Delete User  ID : "  +  response.data.id  +  " Successfully" ,
+      timeout: 1000,
+    });
+    // Refresh the data after deletion
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  } catch (error) {
+    console.error("Error deleting roles:", error);
+  }
+},
 
 async onEdit(input){
-  const token = localStorage.getItem("accessToken");
-  let profile;
-  let roleId;
-  try{
+   const token = localStorage.getItem("accessToken");
+   try{
+    const fileFormData = new FormData();
+    fileFormData.append("singlefile",this.uploadFile);
+    let img;
+    console.log(this.uploadFile);
+    if(this.uploadFile){
+      const fileUploadResponse = await axios.post(
+        "http://localhost:3000/api/file/upload",
+        fileFormData
+      );
+      img = fileUploadResponse.data.uploadFileName;
+    }else{
+      img = null;
+    }
+    let profile;
+    let roleId;
+
     console.log(this.input.inputRoleName.value);
     console.log(this.input.inputRoleName);
-    if(this.input.inputRoleName.value === undefined ){
+
+    if(this.input.inputRoleName.value === undefined){
       console.log(this.input.inputRoleName);
       console.log("No");
       const roleResponse = await this.$axios.get('http://localhost:3000/api/role');
@@ -324,28 +427,43 @@ async onEdit(input){
       const selectedRole = roles.find(role => role.role_name === this.input.inputRoleName);
       roleId = selectedRole ? selectedRole.id : null;
       console.log(roleId);
-      profile = {
-      name: input.inputName,
-      lastname: input.inputLastname,
-      username: input.inputUsername,
-      role_id: roleId,
-    };
 
+      if(img !== null){
+        profile = {
+          name: input.inputName,
+          lastname: input.inputLastname,
+          username: input.inputUsername,
+          role_id: roleId,
+          img,
+        };
+      }else{
+        profile = {
+          name: input.inputName,
+          lastname: input.inputLastname,
+          username: input.inputUsername,
+          role_id: roleId,
+        };
+      }
+      
     }else{
       console.log(this.input.inputRoleName.value);
-      profile = {
-      name: input.inputName,
-      lastname: input.inputLastname,
-      username: input.inputUsername,
-      role_id: this.input.inputRoleName.value,
-    };
+      if(img !== null){
+        profile = {
+          name: input.inputName,
+          lastname: input.inputLastname,
+          username: input.inputUsername,
+          role_id: this.input.inputRoleName.value,
+          img,
+        };
+      }else{
+        profile = {
+          name: input.inputName,
+          lastname: input.inputLastname,
+          username: input.inputUsername,
+          role_id: this.input.inputRoleName.value,
+        };
+      }
     }
-    // const profile = {
-    //   name: input.inputName,
-    //   lastname: input.inputLastname,
-    //   username: input.inputUsername,
-    //   role_id: this.input.inputRoleName.value,
-    // };
     const response = await this.$axios.put(
       `http://localhost:3000/api/auth/${input.id}`,
        profile,
@@ -371,10 +489,104 @@ async onEdit(input){
     setTimeout(() => {
       window.location.reload();
     }, 1000);
-  }catch(error){
-    console.error("Error updating user id:", error);
-  }
+   }catch(error){
+    console.log(error);
+   }
 },
+
+
+// async onEdit(input){
+//   const token = localStorage.getItem("accessToken");
+//   let profile;
+//   let roleId;
+//   try{
+    
+//     let imageUrl;
+
+    
+//     console.log(this.input.inputRoleName.value);
+//     console.log(this.input.inputRoleName);
+//     if(this.input.inputRoleName.value === undefined ){
+//       console.log(this.input.inputRoleName);
+//       console.log("No");
+//       const roleResponse = await this.$axios.get('http://localhost:3000/api/role');
+//       const roles = roleResponse.data;
+//       const selectedRole = roles.find(role => role.role_name === this.input.inputRoleName);
+//       roleId = selectedRole ? selectedRole.id : null;
+//       console.log(roleId);
+//       const formData = new FormData();
+//     formData.append("singlefile",this.uploadFile);
+//     if(this.uploadFile != null){
+//       const uploadResponse = await axios.post('http://localhost:3000/api/file/upload',formData);
+//       imageUrl = uploadResponse.data.url;
+//       imageUrl = this.input.inputImg;
+//     }
+//       if(imageUrl !== null){
+//         profile = {
+//           name: input.inputName,
+//           lastname: input.inputLastname,
+//           username: input.inputUsername,
+//           role_id: roleId,
+//           img: imageUrl,
+//         };
+//       }else{
+//         profile = {
+//           name: input.inputName,
+//           lastname: input.inputLastname,
+//           username: input.inputUsername,
+//           role_id: roleId,
+//         };
+//       }
+//     }else{
+//       if(img_url !== null){
+//         console.log(this.input.inputRoleName.value);
+//         profile = {
+//           name: input.inputName,
+//           lastname: input.inputLastname,
+//           username: input.inputUsername,
+//           role_id: this.input.inputRoleName.value,
+//           img: imageUrl,
+//         };
+//       }else{
+//         console.log(this.input.inputRoleName.value);
+//         profile = {
+//           name: input.inputName,
+//           lastname: input.inputLastname,
+//           username: input.inputUsername,
+//           role_id: this.input.inputRoleName.value,
+//         };
+//       }
+//     }
+   
+//     const response = await this.$axios.put(
+//       `http://localhost:3000/api/auth/${input.id}`,
+//        profile,
+//       {
+//         headers: {
+//           "x-access-token": token,
+//         },
+//       }
+//     )
+//           // ปิดหน้าต่างแก้ไขข้อมูล
+//     this.form_edit = false;
+
+//     // แสดงแจ้งเตือนแสดงว่าอัพเดทข้อมูลสำเร็จ
+//     this.$q.notify({
+//       color: "green",
+//       textColor: "white",
+//       type: "positive",
+//       message: "Update User ID: " + response.data.id + " Successfully",
+//       timeout: 1000
+//     });
+
+//     // รีโหลดหน้าเพื่อแสดงข้อมูลใหม่
+//     setTimeout(() => {
+//       window.location.reload();
+//     }, 1000);
+//   }catch(error){
+//     console.error("Error updating user id:", error);
+//   }
+// },
 
 computed: {
     filteredItems() {

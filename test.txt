@@ -1,159 +1,18 @@
 <template>
   <q-page padding>
-    <h4 class="text-center">List User Page</h4>
-    <div v-if="loading">Loading...</div>
-    <div v-else>
-    <div class="q-pa-md">
-      <q-table
-        flat
-        bordered
-        :rows="historyItems"
-        :columns="columns"
-        row-key="id"
-      >
-      
-          <template v-slot:top-right>
-            <q-input
-    borderless
-    dense
-    debounce="300"
-    v-model="filter"
-    placeholder="Search by User Id"
-    :style="{ width: '300px', maxWidth: '500px' }"
-    @input="filterData"
-  >
-    <template v-slot:append>
-      <q-icon name="search" />
-    </template>
-  </q-input>
-          </template>
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td key="id" :props="props">{{ props.row.id }}</q-td>
-            <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="lastname" :props="props">{{ props.row.lastname }}</q-td>
-            <q-td key="username" :props="props">{{ props.row.username }}</q-td>
-            <q-td key="role_name" :props="props" class="text-white"  :style="{ backgroundColor: getColor(props.row.role_name) }">
-            
-                {{ props.row.role_name }}
-            </q-td>
-            <q-td key="new_role" :props="props">
-              <!-- <q-input
-                v-model="props.row.edit"
-                type="text"
-                label="Select New Role for User"
-                dense
-                @keydown.enter="updateStatus(props.row.id, props.row.edit)"
-                :pattern="'[1-2]'"
-                maxlength="1"
-              />
-           -->
-           <q-select
-  v-model="props.row.edit"
-  :options="options"
-  label="Select New Role"
-  dense
-  @input="updateStatus(props.row.id, props.row.edit)"
-  input-style="width: 700px;"
-  input-class="custom-input"
-/>
-    
-            </q-td>
-            <q-td key="action" :props="props">
-              <q-btn
-                color="primary"
-                flat
-                round
-                icon="edit"
-                @click="editRecord(props.row)"
-              />
-              <q-btn
-                color="primary"
-                flat
-                round
-                icon="delete"
-                @click="deleteRecord(props.row)"
-              />
-            </q-td>
-          </q-tr>
-        </template>
-        
-      </q-table>
+    <h4 class="text-center">Your Profile</h4>
+    <div class="flex flex-center absolute-full text-subtitle2">
+      <q-card class="my-card q-px-md p-py-md" style="background-color: rgba(255, 255, 255, 0.7);">
+        <div v-if="loading" class="text-center">Loading...</div>
+        <div v-else>
+          <p>Name: {{ profile.name }}</p>
+          <p>Lastname: {{ profile.lastname }}</p>
+          <p>Username: {{ profile.username }}</p>
+          <p>Role Name: {{ profile.role_name }}</p>
+          <!-- Add other profile data you want to display -->
+        </div>
+      </q-card>
     </div>
-  </div>
-  <q-dialog v-model="form_edit" persistent>
-  <q-card>
-    <q-card-section class="row items-center">
-      <q-avatar icon="edit" color="primary" text-color="white" />
-      <span class="q-ml-sm">View User ID: {{ input.id }}</span>
-      <q-btn icon="close" flat round dense v-close-popup />
-    </q-card-section>
-    <q-card-section>
-      <div>
-        <q-input
-          v-model="input.inputName"
-          outlined
-          label="Name"
-          readonly
-        />
-      </div>
-    </q-card-section>
-    <q-card-section>
-      <div>
-        <q-input
-          v-model="input.inputLastname"
-          outlined
-          label="Lastname"
-          readonly
-        />
-      </div>
-    </q-card-section>
-    <q-card-section>
-      <div>
-        <q-input
-          v-model="input.inputUsername"
-          outlined
-          label="Username"
-          readonly
-        />
-      </div>
-    </q-card-section>
-    <q-card-section>
-      <div>
-        <q-input
-          v-model="input.inputRoleName"
-          outlined
-          label="Role Name"
-          readonly
-        />
-      </div>
-    </q-card-section>
-
-    <q-card-actions align="right">
-      <q-btn flat label="NO" color="primary" v-close-popup />
-      <q-btn
-        flat
-        label="YES"
-        color="primary"
-        @click="onEdit(input)"
-      />
-    </q-card-actions>
-  </q-card>
-</q-dialog>
-
-          <q-dialog v-model="form_delete" persistent>
-        <q-card>
-          <q-card-section class="row items-center">
-            <q-avatar icon="delete" color="primary" text-color="white" />
-            <span class="q-ml-sm">Delete User ID: {{ input.id }}</span>
-            <q-btn icon="close" flat round dense v-close-popup />
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="NO" color="primary" v-close-popup />
-            <q-btn flat label="YES" color="primary" @click="onDelete" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
   </q-page>
 </template>
 <script>
@@ -163,287 +22,64 @@ import { useQuasar } from 'quasar'
 import { Notify } from 'quasar';
 
 export default defineComponent({
-    name: "ListUserPage",
-    
-  data() {
-    return {
-      historyItems: [],
-      loading: true,
-      filter: '',
-      columns: [
-        { name: "id", label: "ID", align: "left", field: "id", sortable: true },
-        { name: "name", label: "Name", field: "name" , align: "left"},
-        { name: "lastname", label: "Lastname", field: "lastname" , align: "left"},
-        { name: "username", label: "Username", field: "username", align: "left" },
-        { name: "role_name", label: "Role Name", field: "role_name", align: "left" },
-        { name: "new_role",label: "New Role", field:"new_role",align:"center"},
-        { name: "action", label: "Action", field: "action", align: "right" },
-      ],
-    //   getStatusColor : (role) => {
-    //   const lowerCaseStatus = role.toLowerCase();
+  name:"ProfilePage",
 
-    //   if (lowerCaseStatus === "admin") {
-    //     return "green";
-    //   }else if (lowerCaseStatus === "user") {
-    //     return "orange";
-    //   } else {
-    //     return ""; // คืนค่าว่างหากไม่ตรงเงื่อนไขใดๆ
-    //   }
-    // }
-    //   form_add: false,
-      form_edit: false,
-      form_delete: false,
-      role:'',
-      // input: { // สร้าง object input สำหรับเก็บข้อมูลที่ใช้ในการแก้ไข
-      //   id: '',
-      //   role: '',
-      //   inputRole: '',
-      // },
-      input: {
-        id:'',
-        name:'',
-        lastname:'',
-        username:'',
-        role_name:'',
-        inputName:'',
-        inputLastname:'',
-        inputUsername:'',
-        inputRoleName: '', // เพิ่ม selectedRole เพื่อเก็บค่าบทบาทที่เลือก
-    },
-      options: [],
-    };
-  },
-  computed: {
-    filteredItems() {
-      const filtered = this.historyItems.filter(item => {
-        return (
-          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
-        );
-      });
-      return filtered;
-    },
-  },
-
-  setup() {
-    return {
-    
-    };
-  },
-  created() {
-    this.fetchRoles();
+  data(){
+    return{
+      userId:null,
+      profile:null, // Change to null initially
+      loading:true,
+      imageUrl:null,
+    }
   },
   methods:{
-    getColor(role_name) {
-      // สร้างฟังก์ชันเพื่อสร้างสีแบบเรียงลำดับจาก role_name
-      const hash = this.hashCode(role_name);
-      const color = this.intToRGB(hash);
-      return "#" + color;
-    },
+    // getImageUrl(){
 
-    hashCode(str) {
-      // ฟังก์ชันสำหรับสร้าง hash code จาก string
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      return hash;
-    },
-
-    intToRGB(i) {
-      // ฟังก์ชันสำหรับแปลง integer เป็นสี RGB
-      const c = (i & 0x00FFFFFF).toString(16).toUpperCase();
-      return "00000".substring(0, 6 - c.length) + c;
-    },
-    fetchRoles() {
-      axios.get('http://localhost:3000/api/role')
-        .then(response => {
-          this.options = response.data.map(role => ({
-            label: role.role_name,
-            value: role.id
-          }));
-        })
-        .catch(error => {
-          console.error('Error fetching roles:', error);
-        });
-    },
-    filterData() {
-    if (!this.filter) {
-      this.loading = true; // ให้ loading = true เมื่อทำการกรองข้อมูล
-      this.fetchData(); // โหลดข้อมูลเดิมทั้งหมดเมื่อไม่มีคำค้นหา
-      this.loading = false; // หยุด loading เมื่อโหลดข้อมูลเสร็จสมบูรณ์
-    } else {
-      // กรองข้อมูลเฉพาะที่ตรงกับคำค้นหา
-      this.historyItems = this.historyItems.filter(item => {
-        return (
-          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
-        );
-      });
-    }
-  },
-    // a
-    // async fetchData() {
-    //   const token = localStorage.getItem("accessToken");
-    //   try {
-    //     const response = await axios.get(`http://localhost:3000/api/auth/`, {
-    //       headers: {
-    //         "x-access-token": token,
-    //       },
-    //     });
-
-    //     this.historyItems = response.data;
-    //     this.loading = false;
-    //   } catch (error) {
-    //     console.error("Error fetching history data:", error);
-    //     this.loading = false;
-    //   }
     // },
-    async fetchData() {
-    if (!this.filter) {
-      // โหลดข้อมูลเฉพาะเมื่อไม่มีการค้นหา
-      this.loading = true;
+    async fetchData(){
       const token = localStorage.getItem("accessToken");
-      try {
-        const response = await axios.get(`http://localhost:3000/api/auth/`, {
-          headers: {
-            "x-access-token": token,
-          },
-        });
-        this.historyItems = response.data;
+      const userId = localStorage.getItem("userId");
+      try{
+        const response = await axios.get(
+          `http://localhost:3000/api/auth/profile/${userId}`,
+          {
+            headers:{
+              "x-access-token":token,
+            }
+          }
+        );
+        this.profile = response.data;
+        this.loading = false; // Set loading to false when data is received
+        if(this.profile && this.profile.img === null){
+
+        }else{
+          this.getImageUrl(this.profile.img);
+        }
+      }catch(error){
+        console.log(error);
         this.loading = false;
-      } catch (error) {
-        console.error("Error fetching history data:", error);
-        this.loading = false;
+        // Handle error here, show notification etc.
+        // Notify.create({
+        //   type: 'negative',
+        //   message: 'Failed to fetch profile data.'
+        // })
+      }
+    },
+    async getImageUrl(imgName){
+      try{
+        const response = await axios.get(
+          `http://localhost:3000/api/file/${imgName}`,
+        )
+        this.imageUrl = response.data.url;
+      }catch(error){
+        console.error('Failed to fetch image URL:', error);
       }
     }
   },
-
-    editRecord(row){
-      this.input.id = row.id;
-      this.input.name = row.name,
-      this.input.lastname = row.lastname,
-      this.input.username = row.username,
-      this.input.role_name = row.role_name,
-      this.input.role_id = row.role_id,
-      this.input.inputName = row.name,
-      this.input.inputLastname = row.lastname,
-      this.input.inputUsername = row.username,
-      this.input.inputRoleName = row.role_name,
-      this.input.inputRoleId  = row.role_id,
-      this.form_edit = true;
-    },
-
-    deleteRecord(row){
-      this.input.id = row.id;
-      this.form_delete = true;
-    },
-
-//     async onEdit(input) {
-//   const token = localStorage.getItem("accessToken");
-//   try {
-//     const role_id = this.input.inputRoleName.value; // ค่า role ปัจจุบันที่เลือก
-//     console.log("Selected role ID:", role_id);
-//     input.inputRoleId = role_id
-//     console.log(input.inputRoleId);
-//     // const editProfile = {
-//     //   name: input.inputName,
-//     //   lastname: input.inputLastname,
-//     //   username: input.inputUsername,
-//     //   role_id: input.inputRoleId // ยังคงใช้ role_id เดิมหากไม่มีการเปลี่ยนแปลง
-//     // };
-
-//     const response = await this.$axios.put(
-//       `http://localhost:3000/api/auth/${input.id}`,
-//        {
-//         name: input.inputName,
-//         lastname:input.inputLastname,
-//         username:input.inputUsername,
-//         role_id:input.inputRoleId
-//        },
-//       {
-//         headers: {
-//           "x-access-token": token,
-//         },
-//       }
-//     );
-
-//     this.form_edit = false;
-//     console.log(response.data);
-//     this.$q.notify({
-//       color: "green",
-//       textColor: "white",
-//       type: "positive",
-//       message: "Update User ID: " + response.data.id + " Successfully",
-//       timeout: 1000
-//     });
-//     setTimeout(() => {
-//       window.location.reload();
-//     }, 1000);
-//   } catch (error) {
-//     console.error("Error updating user id:", error);
-//   }
-// },
-async onDelete(){
-  const token = localStorage.getItem("accessToken");
-  try{
-    const response = await axios.delete(
-      `http://localhost:3000/api/auth/${this.input.id}`,
-      {
-        headers: {
-          "x-access-token": token,
-        },
-      }
-    );
-    this.form_delete = false; // Close the delete dialog
-    this.$q.notify({
-      color: "green",
-      textColor: "white",
-      type: "positive",
-      message: "Delete User  ID : "  +  response.data.id  +  " Successfully" ,
-      timeout: 1000,
-    });
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
-  }catch(error){
-    console.error("Error deleting record:", error);
+  
+  mounted(){
+    this.userId = localStorage.getItem("userId");
+    this.fetchData();
   }
-},
-
-computed: {
-    filteredItems() {
-      const filtered = this.historyItems.filter(item => {
-        return (
-          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
-        );
-      });
-      return filtered;
-    },
-  },
-  },    
-  mounted() {
-    this.filterData(); // เรียกใช้งาน filterData เมื่อโหลดหน้าครั้งแรก
-  this.fetchData();
-  },
-  watch: {
-  filter: function(newFilter) {
-    this.filterData(); // เรียกใช้งาน filterData เมื่อมีการเปลี่ยนแปลงคำค้นหา
-  },
-},
-})
-
+});
 </script>
-<style>
-.background {
-  width: 25%; /* Set the width to 100% of the container */
-  height: 25vh; /* Set the height to 100% of the viewport height */
-}
-</style>

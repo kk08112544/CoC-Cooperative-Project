@@ -26,7 +26,7 @@ const routes = [
     component: () => import('layouts/UserLayout.vue'),
     children: [
       {path: 'alcohol',component: () => import('pages/User/AlcoholPage.vue')},
-      {path: 'profile',component: () => import('pages/User/ProfilePage.vue')},
+      {path: 'profileuser',component: () => import('pages/User/ProfileUserPage.vue')},
     ]
   },
 

@@ -357,7 +357,7 @@ editRecord(row){
       color: "green",
       textColor: "white",
       type: "positive",
-      message: "Delete Room  ID : "  +  response.data.id  +  " Successfully" ,
+      message: "Delete Role  ID : "  +  response.data.id  +  " Successfully" ,
       timeout: 1000,
     });
     // Refresh the data after deletion

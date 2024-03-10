@@ -32,7 +32,7 @@
       </q-toolbar>
       <q-toolbar class="bg-primary text-white">
         <q-btn @click="handleAlcohol"  to="/user/alcohol" style="color: white"  no-caps label="Alcohol" class="q-mr-md" />
-        <q-btn @click="handleProfile"  to="/user/profile" style="color: white"  no-caps label="Profile" class="q-mr-md" />
+        <q-btn @click="handleProfile"  to="/user/profileuser" style="color: white"  no-caps label="Profile" class="q-mr-md" />
       </q-toolbar>
     </q-header>
 

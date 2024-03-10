@@ -11,6 +11,7 @@ const User = function(user){
     this.username = user.username;
     this.password = user.password;
     this.role_id = user.role_id;
+    this.img = user.img;
 }
 User.checkUsername = (username, result)=>{
     sql.query("SELECT * FROM user WHERE username='"+username+"'",(err,res)=>{

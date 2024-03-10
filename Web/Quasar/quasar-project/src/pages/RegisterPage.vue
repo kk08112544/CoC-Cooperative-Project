@@ -25,21 +25,28 @@
                 <q-input v-model="username" type="text" label="Username" lazy-rules :rules="usernameRules"/>
               </div>
               <div>
-                <q-input v-model="password" :type="isPwd ? 'password' : 'text'" label="Password">
-                  <!-- lazy-rules :rules="passwordRules" -->
-                  <template v-slot:append>
-                    <q-icon
-                      @click="togglePwdVisibility"
-                      :name="isPwd ? 'visibility_off' : 'visibility'"
-                    />
-                  </template>
-                </q-input>
+                <q-input v-model="password" :type="isPwd ? 'password' : 'text'" label="Password"/>
               </div>
               <div>
                 <q-input v-model="cpassword" type="password" label="Confirm Password"/>
               </div>
               <div>
                 <q-select v-model="role" :options="options" label="Role" option-label="label" />
+              </div>
+              <div>
+                <q-file
+              label="Your avatar"
+              v-model="uploadFile"
+              accept=".jpg, .jpeg, .png"
+              max-file-size="1048576"
+              @rejected="onRejected"
+              @update:model-value="updateFile()"
+              
+            >
+              <template v-slot:append>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
               </div>
               <!-- <div v-if="role && departments.length > 0">
                 <q-select v-model="department" :options="departments" label="Department" option-label="label" />
