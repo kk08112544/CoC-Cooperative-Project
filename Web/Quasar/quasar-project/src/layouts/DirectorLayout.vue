@@ -19,7 +19,6 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
-        <q-icon name="account_circle" color="grey-6" size="3rem" />
         <h6>{{ name }} {{ lastname }}</h6>
         <q-icon
           name="notifications"
@@ -69,6 +68,7 @@ export default {
   setup() {
     const name = ref('');
     const lastname = ref('');
+    const img_url = ref('');
     const notifications = ref([]);
     const totals = ref([]);
 
@@ -102,6 +102,7 @@ export default {
 
     name.value = localStorage.getItem('name') || '';
     lastname.value = localStorage.getItem('lastname') || '';
+    img_url.value = localStorage.getItem('img_url') || ''; // changed img_url to img
 
     const handleLogout = () => {
       localStorage.removeItem("userId");
@@ -130,6 +131,7 @@ export default {
       fetchNotifications,
       notificationsMenu,
       totals,
+      img_url, // added img to return
     };
   },
 };

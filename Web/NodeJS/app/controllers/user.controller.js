@@ -32,7 +32,8 @@ const createNewUser = (req, res) => {
         lastname: req.body.lastname,
         username: req.body.username,
         password: bcrypt.hashSync(req.body.password, salt),
-        role_id: req.body.role_id
+        role_id: req.body.role_id,
+        img: req.body.img,
     });
     User.create(userObj, (err, data) => {
         if (err) {
