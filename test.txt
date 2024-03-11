@@ -1,85 +1,280 @@
 <template>
-  <q-page padding>
-    <h4 class="text-center">Your Profile</h4>
-    <div class="flex flex-center absolute-full text-subtitle2">
-      <q-card class="my-card q-px-md p-py-md" style="background-color: rgba(255, 255, 255, 0.7);">
-        <div v-if="loading" class="text-center">Loading...</div>
-        <div v-else>
-          <p>Name: {{ profile.name }}</p>
-          <p>Lastname: {{ profile.lastname }}</p>
-          <p>Username: {{ profile.username }}</p>
-          <p>Role Name: {{ profile.role_name }}</p>
-          <!-- Add other profile data you want to display -->
-        </div>
-      </q-card>
-    </div>
-  </q-page>
+  <q-layout view="lHh Lpr lFf">
+    <q-header elevated>
+      <div class="row no-wrap shadow-1" style="height: 5px;">
+        <q-toolbar class="col-8 col-md-7 bg-negative text-white q-pa-xs">
+          <!-- Adjusted padding to q-pa-xs -->
+        </q-toolbar>
+        <q-toolbar class="col-4 col-md-5 bg-primary text-white q-pa-xs">
+          <!-- Adjusted padding to q-pa-xs -->
+        </q-toolbar>
+      </div>
+
+      <!-- Main Header Toolbar -->
+      <q-toolbar class="bg-white text-primary q-pa-none" style="height: 100px;">
+        <q-img
+          src="Bangkok_Hospital_Phuket-logo-48EE6B9950-seeklogo.com.png" 
+          :ratio="16/9"
+          spinner-color="primary"
+          spinner-size="82px"
+          style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
+        />
+        <q-btn outline round color="primary">
+          <q-img
+  :src="img" 
+  :ratio="16/9"
+  spinner-color="primary"
+  spinner-size="32px"
+/>
+        </q-btn>
+        &nbsp;
+        <h6>{{ name }} {{ lastname }}</h6>
+        <q-icon
+          name="notifications"
+          @click="toggleNotifications"
+          style="font-size: 30px; position: relative;"
+          color="black"
+          class="q-mr-md"
+        >
+        <q-badge v-if="totals.length > 0" style="position: absolute; top: -8px; right: -8px">{{ totals[0].totals }}</q-badge>
+
+          <q-menu
+            ref="notificationsMenu"
+            anchor="down right"
+            :content-class="'bg-white text-primary'"
+          >
+            <q-list>
+              <!-- Add individual notifications here -->
+              <q-item clickable v-for="(notification, index) in notifications" :key="index">
+                <q-item-section>{{ notification.room }} don't have Alcohol</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-icon>
+        <q-btn @click="handleLogout" to="/login" style="background: #F24C65; color: white" no-caps label="Logout" class="q-mr-md" />
+      </q-toolbar>
+      <q-toolbar class="bg-primary text-white">
+        <q-btn @click="handleDashboard"  to="/director/dashboard" style="color: white"  no-caps label="Dashboard" class="q-mr-md" />
+        <q-btn @click="handleManagement"  to="/director/role" style="color: white"  no-caps label="Role" class="q-mr-md" />
+        <q-btn @click="handleAlcohol"  to="/director/RoomAlcohol" style="color: white"  no-caps label="Alcohol" class="q-mr-md" />
+        <q-btn @click="handleUser"  to="/director/user" style="color: white"  no-caps label="ListUser" class="q-mr-md" />
+        <q-btn @click="handleProfile"  to="/director/profile" style="color: white"  no-caps label="Profile" class="q-mr-md" />
+      </q-toolbar>
+    </q-header>
+
+    <q-page-container>
+      <router-view />
+    </q-page-container>
+  </q-layout>
 </template>
 <script>
-import { defineComponent } from "vue";
-import axios from "axios";
-import { useQuasar } from 'quasar'
-import { Notify } from 'quasar';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-export default defineComponent({
-  name:"ProfilePage",
+export default {
+  name: 'DirectorLayout',
+  setup() {
+    const name = ref('');
+    const lastname = ref('');
+    const img = ref('');
+    const notifications = ref([]);
+    const totals = ref([]);
+    const profile = ref(null); // เพิ่ม ref สำหรับข้อมูลโปรไฟล์
 
-  data(){
-    return{
-      userId:null,
-      profile:null, // Change to null initially
-      loading:true,
-      imageUrl:null,
-    }
-  },
-  methods:{
-    // getImageUrl(){
-
-    // },
-    async fetchData(){
-      const token = localStorage.getItem("accessToken");
-      const userId = localStorage.getItem("userId");
-      try{
-        const response = await axios.get(
-          `http://localhost:3000/api/auth/profile/${userId}`,
-          {
-            headers:{
-              "x-access-token":token,
-            }
+    const fetchNotifications = async () => {
+      const token = localStorage.getItem('accessToken');
+      try {
+        const response = await axios.get('http://localhost:3000/api/notify/Less', {
+          headers: {
+            "x-access-token": token,
           }
-        );
-        this.profile = response.data;
-        this.loading = false; // Set loading to false when data is received
-        if(this.profile && this.profile.img === null){
+        });
+        notifications.value = response.data;
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
 
-        }else{
-          this.getImageUrl(this.profile.img);
-        }
+    const fetchTotal = async () => {
+      const token = localStorage.getItem('accessToken');
+      try {
+        const response = await axios.get('http://localhost:3000/api/notify/count', {
+          headers: {
+            "x-access-token": token,
+          }
+        });
+        totals.value = response.data;
+      } catch (error) {
+        console.error('Error fetching total:', error);
+      }
+    };
+
+    const fetchUserId = async () => {
+      const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+      try {
+        const response = await axios.get(`http://localhost:3000/api/auth/profile/${userId}`, {
+          headers: {
+            "x-access-token": token,
+          }
+        });
+        profile.value = response.data; // กำหนดค่าข้อมูลโปรไฟล์
+        img.value = getImageUrl(response.data.img); // กำหนดค่ารูปภาพโปรไฟล์
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const getImageUrl = (img) => {
+      return `http://localhost:3000/api/file/${img}`;
+    };
+
+    name.value = localStorage.getItem('name') || '';
+    lastname.value = localStorage.getItem('lastname') || '';
+
+    const handleLogout = () => {
+      localStorage.removeItem("userId");
+      localStorage.removeItem('name');
+      localStorage.removeItem('lastname');
+      localStorage.removeItem('accessToken');
+    };
+
+    const toggleNotifications = () => {
+      notificationsMenu.value?.$refs.notificationsMenu.toggle();
+    };
+
+    const fetchUserData = () => {
+      // Fetch user data from Local Storage
+      fetchUserId(); // เรียกใช้งานเมื่อมีการอัพเดทข้อมูลผู้ใช้
+    };
+
+    const notificationsMenu = ref(null);
+
+    onMounted(() => {
+      fetchNotifications();
+      fetchTotal();
+      fetchUserData();
+    });
+
+    return {
+      name,
+      lastname,
+      handleLogout,
+      toggleNotifications,
+      notifications,
+      fetchNotifications,
+      notificationsMenu,
+      totals,
+      img,
+      profile, // เพิ่มข้อมูลโปรไฟล์ในการ return
+    };
+  },
+};
+</script>
+
+<!-- <script>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+export default {
+  name: 'DirectorLayout',
+  setup() {
+    const name = ref('');
+    const lastname = ref('');
+    const img = ref('');
+    const notifications = ref([]);
+    const totals = ref([]);
+    
+    const fetchNotifications = async () => {
+      const token = localStorage.getItem('accessToken');
+      try {
+        const response = await axios.get('http://localhost:3000/api/notify/Less',{
+          headers:{
+            "x-access-token": token,
+          }
+        });
+        notifications.value = response.data;
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    const fetchTotal = async () => {
+      const token = localStorage.getItem('accessToken');
+      try{
+        const response = await axios.get('http://localhost:3000/api/notify/count',{
+          headers:{
+            "x-access-token": token,
+          }
+        });
+        totals.value = response.data;
+      }catch(error){
+        console.error('Error fetching total:', error);
+      }
+    };
+    
+
+    const getImageUrl = (img) => {
+      return `http://localhost:3000/api/file/${img}`;
+    };
+
+    const fetchUserId = async () => {
+      const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+      try{
+        const response = await axios.get(`http://localhost:3000/api/auth/profile/${userId}`,
+        {
+          headers:{
+            "x-access-token": token,
+          }
+        });
+        profile.value = response.data;
+
       }catch(error){
         console.log(error);
-        this.loading = false;
-        // Handle error here, show notification etc.
-        // Notify.create({
-        //   type: 'negative',
-        //   message: 'Failed to fetch profile data.'
-        // })
-      }
-    },
-    async getImageUrl(imgName){
-      try{
-        const response = await axios.get(
-          `http://localhost:3000/api/file/${imgName}`,
-        )
-        this.imageUrl = response.data.url;
-      }catch(error){
-        console.error('Failed to fetch image URL:', error);
       }
     }
+
+    name.value = localStorage.getItem('name') || '';
+    lastname.value = localStorage.getItem('lastname') || '';
+    img.value = localStorage.getItem('img') || ''; // changed img_url to img
+    console.log(img)
+
+    const handleLogout = () => {
+      localStorage.removeItem("userId");
+      localStorage.removeItem('name');
+      localStorage.removeItem('lastname');
+      localStorage.removeItem('accessToken');
+    };
+
+    const toggleNotifications = () => {
+      notificationsMenu.value?.$refs.notificationsMenu.toggle();
+    };
+
+    const fetchUserData = () => {
+      // Fetch user data from Local Storage
+      img.value = localStorage.getItem('img') || ''; // กำหนดค่าให้กับ ref img
+    };
+
+    const notificationsMenu = ref(null);
+
+    onMounted(() => {
+      fetchNotifications();
+      fetchTotal();
+      fetchUserData();
+    });
+
+    return {
+      name,
+      lastname,
+      handleLogout,
+      toggleNotifications,
+      notifications,
+      fetchNotifications,
+      notificationsMenu,
+      totals,
+      img, // added img to return
+    };
   },
-  
-  mounted(){
-    this.userId = localStorage.getItem("userId");
-    this.fetchData();
-  }
-});
-</script>
+};
+
+</script> -->

@@ -19,14 +19,24 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
-        <q-icon name="account_circle" color="grey-6" size="3rem" />
+        <q-btn outline round color="primary" @click="handleProfile" style="border-radius: 50%;">
+          <q-img
+            v-if="img"
+            :src="img"
+            :ratio="1"
+            spinner-color="primary"
+            spinner-size="32px"
+            style="border-radius: 50%;"
+          />
+        </q-btn>
+        &nbsp;
         <h6>{{ name }} {{ lastname }}</h6>
 
         <q-icon
-           name="notifications"
-           class="q-mr-md"
-           style="font-size: 30px; position: relative;"
-           color="black"
+          name="notifications"
+          class="q-mr-md"
+          style="font-size: 30px; position: relative;"
+          color="black"
         />
         <q-btn @click="handleLogout" to="/login" style="background: #F24C65; color: white" no-caps label="Logout" class="q-mr-md" />
       </q-toolbar>
@@ -43,16 +53,49 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'UserLayout',
   setup() {
     const name = ref('');
     const lastname = ref(''); 
-    
-    name.value = localStorage.getItem('name');
-    lastname.value = localStorage.getItem('lastname');
+    const img = ref('');
+    const profile = ref(null); // เพิ่ม ref สำหรับข้อมูลโปรไฟล์
+
+    const fetchUserId = async () => {
+      const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+      try {
+        const response = await axios.get(`http://localhost:3000/api/auth/profile/${userId}`, {
+          headers: {
+            "x-access-token": token,
+          }
+        });
+        profile.value = response.data; // กำหนดค่าข้อมูลโปรไฟล์
+        img.value = getImageUrl(response.data.img); // กำหนดค่ารูปภาพโปรไฟล์
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const getImageUrl = (img) => {
+      return `http://localhost:3000/api/file/${img}`;
+    };
+
+    name.value = localStorage.getItem('name') || '';
+    lastname.value = localStorage.getItem('lastname') || '';
+
+
+    const fetchUserData = () => {
+      // Fetch user data from Local Storage
+      fetchUserId(); // เรียกใช้งานเมื่อมีการอัพเดทข้อมูลผู้ใช้
+    };
+
+    onMounted(() => {
+      fetchUserData();
+    });
     
     const handleLogout = () => {
       localStorage.removeItem("userId");
@@ -60,11 +103,19 @@ export default defineComponent({
       localStorage.removeItem('lastname');
       localStorage.removeItem('accessToken');
     };
+
+    const handleProfile = () => {
+      // handle profile click
+      console.log('Profile clicked');
+    };
     
     return {
       name,
       lastname,
       handleLogout,
+      img,
+      profile, 
+      handleProfile, // return handleProfile function
     }
   },
 })

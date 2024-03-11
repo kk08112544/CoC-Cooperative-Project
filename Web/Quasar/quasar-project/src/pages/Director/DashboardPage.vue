@@ -40,6 +40,13 @@
         </q-card-section>
       </q-card>
     </div>
+    <q-img
+  :src="img" 
+  :ratio="16/9"
+  spinner-color="primary"
+  spinner-size="82px"
+  style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
+/>
   </q-page>
 </template>
 
@@ -76,7 +83,8 @@ export default defineComponent({
   methods: {
     async fetchTotal() {
       const token = localStorage.getItem("accessToken");
-
+      const img = localStorage.getItem("img");
+      console.log(img);
       try {
         const response = await axios.get(
           `http://localhost:3000/api/dashboard/total`,

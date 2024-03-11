@@ -101,6 +101,14 @@ export default defineComponent({
     },
     async onSubmit() {
   try {
+    if(!this.name || !this.lastname || !this.username || !this.password || !this.cpassword || !this.role || !this.img){
+      this.$q.notify({
+        color: 'red-4',
+        textColor: 'white',
+        icon: 'warning',
+        message:'Content is not empty',
+      });
+    }
     // Check if username exists
     const response = await axios.get(`http://localhost:3000/api/auth/${this.username}`);
     const db_username = response.data.record ? response.data.record.username : null;
@@ -122,7 +130,7 @@ export default defineComponent({
       const fileUploadResponse = await axios.post('http://localhost:3000/api/file/upload', fileFormData);
       console.log(fileUploadResponse.data.uploadFileName);
       img = fileUploadResponse.data.uploadFileName;
-      localStorage.setItem('img_url', img);
+      // localStorage.setItem('img', img);
     }
 
     // Create user
@@ -149,6 +157,7 @@ export default defineComponent({
     localStorage.setItem('userId', userId);
     localStorage.setItem('name', name);
     localStorage.setItem('lastname', lastname);
+    // localStorage.setItem('img', img);
     
 
     // Notify user

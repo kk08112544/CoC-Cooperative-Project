@@ -8,7 +8,7 @@
         <br>
         <div v-if="profile.img" class="text-center">
           <q-card-actions align="right">
-          <q-btn icon="edit" color="positive" @click="editRecord(profile)" />
+          <!-- <q-btn icon="edit" color="positive" @click="editRecord(profile)" /> -->
         </q-card-actions>
           <q-img
           :src="getImageUrl(profile.img)"

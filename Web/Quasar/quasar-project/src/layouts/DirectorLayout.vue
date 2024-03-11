@@ -19,6 +19,20 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
+        <q-btn outline round color="primary">
+          <q-btn outline round color="primary" style="border-radius: 50%;">
+  <q-img
+    :src="img" 
+    :ratio="1"
+    spinner-color="primary"
+    spinner-size="32px"
+    style="border-radius: 50%;"
+  />
+</q-btn>
+
+        </q-btn>
+        &nbsp;
+
         <h6>{{ name }} {{ lastname }}</h6>
         <q-icon
           name="notifications"
@@ -58,7 +72,6 @@
     </q-page-container>
   </q-layout>
 </template>
-
 <script>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
@@ -68,15 +81,16 @@ export default {
   setup() {
     const name = ref('');
     const lastname = ref('');
-    const img_url = ref('');
+    const img = ref('');
     const notifications = ref([]);
     const totals = ref([]);
+    const profile = ref(null); // เพิ่ม ref สำหรับข้อมูลโปรไฟล์
 
     const fetchNotifications = async () => {
       const token = localStorage.getItem('accessToken');
       try {
-        const response = await axios.get('http://localhost:3000/api/notify/Less',{
-          headers:{
+        const response = await axios.get('http://localhost:3000/api/notify/Less', {
+          headers: {
             "x-access-token": token,
           }
         });
@@ -88,21 +102,40 @@ export default {
 
     const fetchTotal = async () => {
       const token = localStorage.getItem('accessToken');
-      try{
-        const response = await axios.get('http://localhost:3000/api/notify/count',{
-          headers:{
+      try {
+        const response = await axios.get('http://localhost:3000/api/notify/count', {
+          headers: {
             "x-access-token": token,
           }
         });
         totals.value = response.data;
-      }catch(error){
+      } catch (error) {
         console.error('Error fetching total:', error);
+      }
+    };
+
+    const fetchUserId = async () => {
+      const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+      try {
+        const response = await axios.get(`http://localhost:3000/api/auth/profile/${userId}`, {
+          headers: {
+            "x-access-token": token,
+          }
+        });
+        profile.value = response.data; // กำหนดค่าข้อมูลโปรไฟล์
+        img.value = getImageUrl(response.data.img); // กำหนดค่ารูปภาพโปรไฟล์
+      } catch (error) {
+        console.log(error);
       }
     }
 
+    const getImageUrl = (img) => {
+      return `http://localhost:3000/api/file/${img}`;
+    };
+
     name.value = localStorage.getItem('name') || '';
     lastname.value = localStorage.getItem('lastname') || '';
-    img_url.value = localStorage.getItem('img_url') || ''; // changed img_url to img
 
     const handleLogout = () => {
       localStorage.removeItem("userId");
@@ -115,11 +148,17 @@ export default {
       notificationsMenu.value?.$refs.notificationsMenu.toggle();
     };
 
+    const fetchUserData = () => {
+      // Fetch user data from Local Storage
+      fetchUserId(); // เรียกใช้งานเมื่อมีการอัพเดทข้อมูลผู้ใช้
+    };
+
     const notificationsMenu = ref(null);
 
     onMounted(() => {
       fetchNotifications();
       fetchTotal();
+      fetchUserData();
     });
 
     return {
@@ -131,9 +170,10 @@ export default {
       fetchNotifications,
       notificationsMenu,
       totals,
-      img_url, // added img to return
+      img,
+      profile, // เพิ่มข้อมูลโปรไฟล์ในการ return
     };
   },
 };
-
 </script>
+
