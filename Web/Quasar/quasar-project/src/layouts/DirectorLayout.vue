@@ -12,6 +12,7 @@
 
       <!-- Main Header Toolbar -->
       <q-toolbar class="bg-white text-primary q-pa-none" style="height: 100px;">
+
         <q-img
           src="Bangkok_Hospital_Phuket-logo-48EE6B9950-seeklogo.com.png" 
           :ratio="16/9"
@@ -19,51 +20,34 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
-        <q-btn outline round color="primary">
-          <q-btn outline round color="primary" style="border-radius: 50%;">
-  <q-img
-    :src="img" 
-    :ratio="1"
-    spinner-color="primary"
-    spinner-size="32px"
-    style="border-radius: 50%;"
-  />
-</q-btn>
-
+        <div @click="toggleNotifications" v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
+        
+        <q-btn outline round color="primary" @click="toggleNotifications" style="position: relative;">
+          <q-icon
+            name="notifications"
+            style="font-size: 30px; position: absolute; right: -12px; top: -10px;"
+            color="black"
+            class="q-mr-md"
+          />
+          <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
+          <q-img
+            :src="img" 
+            :ratio="1"
+            spinner-color="primary"
+            spinner-size="32px"
+            style="border-radius: 50%;"
+          />
         </q-btn>
-        &nbsp;
-
         <h6>{{ name }} {{ lastname }}</h6>
-        <q-icon
-          name="notifications"
-          @click="toggleNotifications"
-          style="font-size: 30px; position: relative;"
-          color="black"
-          class="q-mr-md"
-        >
-        <q-badge v-if="totals.length > 0" style="position: absolute; top: -8px; right: -8px">{{ totals[0].totals }}</q-badge>
-
-          <q-menu
-            ref="notificationsMenu"
-            anchor="down right"
-            :content-class="'bg-white text-primary'"
-          >
-            <q-list>
-              <!-- Add individual notifications here -->
-              <q-item clickable v-for="(notification, index) in notifications" :key="index">
-                <q-item-section>{{ notification.room }} don't have Alcohol</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-icon>
-        <q-btn @click="handleLogout" to="/login" style="background: #F24C65; color: white" no-caps label="Logout" class="q-mr-md" />
+       
       </q-toolbar>
       <q-toolbar class="bg-primary text-white">
-        <q-btn @click="handleDashboard"  to="/director/dashboard" style="color: white"  no-caps label="Dashboard" class="q-mr-md" />
-        <q-btn @click="handleManagement"  to="/director/role" style="color: white"  no-caps label="Role" class="q-mr-md" />
-        <q-btn @click="handleAlcohol"  to="/director/RoomAlcohol" style="color: white"  no-caps label="Alcohol" class="q-mr-md" />
-        <q-btn @click="handleUser"  to="/director/user" style="color: white"  no-caps label="ListUser" class="q-mr-md" />
-        <q-btn @click="handleProfile"  to="/director/profile" style="color: white"  no-caps label="Profile" class="q-mr-md" />
+        <q-btn @click="handleDashboard" to="/director/dashboard" style="color: white" no-caps label="Dashboard" class="q-mr-md" />
+        <q-btn @click="handleManagement" to="/director/role" style="color: white" no-caps label="Role" class="q-mr-md" />
+        <q-btn @click="handleAlcohol" to="/director/RoomAlcohol" style="color: white" no-caps label="Alcohol" class="q-mr-md" />
+        <q-btn @click="handleUser" to="/director/user" style="color: white" no-caps label="ListUser" class="q-mr-md" />
+        <q-btn @click="handleProfile" to="/director/profile" style="color: white" no-caps label="Profile" class="q-mr-md" />
+        <q-btn @click="handleLogout" to="/login" style="background: #F24C65; color: white" no-caps label="Logout" class="q-mr-md" />
       </q-toolbar>
     </q-header>
 
@@ -72,6 +56,8 @@
     </q-page-container>
   </q-layout>
 </template>
+
+
 <script>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
@@ -83,8 +69,7 @@ export default {
     const lastname = ref('');
     const img = ref('');
     const notifications = ref([]);
-    const totals = ref([]);
-    const profile = ref(null); // เพิ่ม ref สำหรับข้อมูลโปรไฟล์
+    const profile = ref(null);
 
     const fetchNotifications = async () => {
       const token = localStorage.getItem('accessToken');
@@ -100,20 +85,6 @@ export default {
       }
     };
 
-    const fetchTotal = async () => {
-      const token = localStorage.getItem('accessToken');
-      try {
-        const response = await axios.get('http://localhost:3000/api/notify/count', {
-          headers: {
-            "x-access-token": token,
-          }
-        });
-        totals.value = response.data;
-      } catch (error) {
-        console.error('Error fetching total:', error);
-      }
-    };
-
     const fetchUserId = async () => {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
@@ -123,8 +94,8 @@ export default {
             "x-access-token": token,
           }
         });
-        profile.value = response.data; // กำหนดค่าข้อมูลโปรไฟล์
-        img.value = getImageUrl(response.data.img); // กำหนดค่ารูปภาพโปรไฟล์
+        profile.value = response.data;
+        img.value = getImageUrl(response.data.img);
       } catch (error) {
         console.log(error);
       }
@@ -145,19 +116,17 @@ export default {
     };
 
     const toggleNotifications = () => {
-      notificationsMenu.value?.$refs.notificationsMenu.toggle();
+      if (notificationsMenu.value) notificationsMenu.value.$refs.notificationsMenu.toggle();
     };
 
     const fetchUserData = () => {
-      // Fetch user data from Local Storage
-      fetchUserId(); // เรียกใช้งานเมื่อมีการอัพเดทข้อมูลผู้ใช้
+      fetchUserId();
     };
 
     const notificationsMenu = ref(null);
 
     onMounted(() => {
       fetchNotifications();
-      fetchTotal();
       fetchUserData();
     });
 
@@ -169,11 +138,9 @@ export default {
       notifications,
       fetchNotifications,
       notificationsMenu,
-      totals,
       img,
-      profile, // เพิ่มข้อมูลโปรไฟล์ในการ return
+      profile,
     };
   },
 };
 </script>
-

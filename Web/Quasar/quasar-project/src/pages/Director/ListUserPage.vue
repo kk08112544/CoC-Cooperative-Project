@@ -27,34 +27,40 @@
     </template>
   </q-input>
           </template>
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td key="id" :props="props">{{ props.row.id }}</q-td>
-            <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="lastname" :props="props">{{ props.row.lastname }}</q-td>
-            <q-td key="username" :props="props">{{ props.row.username }}</q-td>
-            <q-td key="role_name" :props="props">
-                {{ props.row.role_name }}
-            </q-td>
-            <q-td key="action" :props="props">
-              <q-btn
-                color="primary"
-                flat
-                round
-                icon="edit"
-                @click="editRecord(props.row)"
-              />
-              <q-btn
-                color="primary"
-                flat
-                round
-                icon="delete"
-                @click="deleteRecord(props.row)"
-              />
-            </q-td>
-          </q-tr>
-        </template>
-        
+          <template v-slot:body="props">
+  <q-tr :props="props">
+    <q-td key="id" :props="props">{{ props.row.id }}</q-td>
+    <q-td key="name" :props="props">{{ props.row.name }}</q-td>
+    <q-td key="lastname" :props="props">{{ props.row.lastname }}</q-td>
+    <q-td key="img" :props="props">
+      <q-img
+        :src="getImageUrl(props.row.img)" 
+        :ratio="9 / 9"
+        spinner-color="primary"
+        spinner-size="200px"
+      />
+    </q-td>
+    <q-td key="username" :props="props">{{ props.row.username }}</q-td>
+    <q-td key="role_name" :props="props">{{ props.row.role_name }}</q-td>
+    <q-td key="action" :props="props">
+      <q-btn
+        color="primary"
+        flat
+        round
+        icon="edit"
+        @click="editRecord(props.row)"
+      />
+      <q-btn
+        color="primary"
+        flat
+        round
+        icon="delete"
+        @click="deleteRecord(props.row)"
+      />
+    </q-td>
+  </q-tr>
+</template>
+
       </q-table>
     </div>
   </div>
@@ -208,8 +214,9 @@ export default defineComponent({
       filter: '',
       columns: [
         { name: "id", label: "ID", align: "left", field: "id", sortable: true },
-        { name: "name", label: "Name", field: "name" },
-        { name: "lastname", label: "Lastname", field: "lastname" },
+        { name: "name", label: "Name", field: "name", align:"left" },
+        { name: "lastname", label: "Lastname", field: "lastname" , align:"left"},
+        { name: "img", label: "Image", field: "img" ,align:"center"},
         { name: "username", label: "Username", field: "username" },
         { name: "role_name", label: "Role Name", field: "role_name" },
         { name: "action", label: "Action", field: "action", align: "right" },
@@ -274,6 +281,7 @@ export default defineComponent({
     this.fetchRoles();
   },
   methods:{
+    
     updateFile() {
       this.input.inputImg = URL.createObjectURL(this.uploadFile);
     },
@@ -309,23 +317,7 @@ export default defineComponent({
       });
     }
   },
-    // a
-    // async fetchData() {
-    //   const token = localStorage.getItem("accessToken");
-    //   try {
-    //     const response = await axios.get(`http://localhost:3000/api/auth/`, {
-    //       headers: {
-    //         "x-access-token": token,
-    //       },
-    //     });
 
-    //     this.historyItems = response.data;
-    //     this.loading = false;
-    //   } catch (error) {
-    //     console.error("Error fetching history data:", error);
-    //     this.loading = false;
-    //   }
-    // },
     async fetchData() {
     if (!this.filter) {
       // โหลดข้อมูลเฉพาะเมื่อไม่มีการค้นหา

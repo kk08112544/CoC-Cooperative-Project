@@ -19,6 +19,7 @@ const routes = [
       {path: 'RoomAlcohol',component: () => import('pages/Director/RoomAlcoholPage.vue')},
       {path: 'user',component: () => import('pages/Director/ListUserPage.vue')},
       {path: 'profile',component: () => import('pages/Director/ProfilePage.vue')},
+      // {path: 'test',component: () => import('pages/Director/TestPage.vue')},
     ]
   },
   {
@@ -29,6 +30,13 @@ const routes = [
       {path: 'profileuser',component: () => import('pages/User/ProfileUserPage.vue')},
     ]
   },
+  // {
+  //   path:'/test/',
+  //   component: () => import('layouts/TestLayout.vue'),
+  //   children:[
+  //     { path: '/tester', component: () => import('pages/TesterPage.vue') },
+  //   ]
+  // },
 
   // Always leave this as last one,
   // but you can also remove it
