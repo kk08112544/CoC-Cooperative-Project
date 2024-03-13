@@ -39,7 +39,8 @@
           />
         </q-btn>
         <h6>{{ name }} {{ lastname }}</h6>
-       
+        &nbsp;
+        <q-btn @click="handleLogout" to="/login" style="background: #F24C65; color: white" no-caps label="Logout" class="q-mr-md" />
       </q-toolbar>
       <q-toolbar class="bg-primary text-white">
         <q-btn @click="handleDashboard" to="/director/dashboard" style="color: white" no-caps label="Dashboard" class="q-mr-md" />
@@ -47,7 +48,6 @@
         <q-btn @click="handleAlcohol" to="/director/RoomAlcohol" style="color: white" no-caps label="Alcohol" class="q-mr-md" />
         <q-btn @click="handleUser" to="/director/user" style="color: white" no-caps label="ListUser" class="q-mr-md" />
         <q-btn @click="handleProfile" to="/director/profile" style="color: white" no-caps label="Profile" class="q-mr-md" />
-        <q-btn @click="handleLogout" to="/login" style="background: #F24C65; color: white" no-caps label="Logout" class="q-mr-md" />
       </q-toolbar>
     </q-header>
 

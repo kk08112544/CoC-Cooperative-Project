@@ -54,8 +54,8 @@
               </div>
           
               <div class="flex justify-end">
-                <q-btn label="Submit" type="submit" color="primary" />
-                <q-btn label="Reset" type="reset" color="primary" flat class="q-mr-sm" @click="clearForm" />
+                <q-btn label="Sign Up" no-caps type="submit" color="primary" />
+                <q-btn label="Reset" no-caps type="reset" color="primary" flat class="q-mr-sm" @click="clearForm" />
               </div>
               <div>
                 <text-caption class="text-cyan-8">Have Account?

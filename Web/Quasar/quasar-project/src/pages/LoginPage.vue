@@ -21,7 +21,7 @@
                 </q-input>
               </div>
               <div>
-                <q-btn label="Submit" type="submit" color="primary" style="width: 100%;" />
+                <q-btn label="Login" no-caps type="submit" color="primary" style="width: 100%;" />
               </div>
               <div>
                 <text-caption class="text-cyan-8">Not registered?
