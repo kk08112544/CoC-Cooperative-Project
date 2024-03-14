@@ -219,7 +219,7 @@ export default defineComponent({
         { name: "img", label: "Image", field: "img" ,align:"center"},
         { name: "username", label: "Username", field: "username" },
         { name: "role_name", label: "Role Name", field: "role_name" },
-        { name: "action", label: "Action", field: "action", align: "right" },
+        { name: "action", label: "Action", field: "action", align: "center" },
       ],
     //   getStatusColor : (role) => {
     //   const lowerCaseStatus = role.toLowerCase();

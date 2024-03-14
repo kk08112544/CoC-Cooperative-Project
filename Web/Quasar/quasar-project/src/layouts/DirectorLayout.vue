@@ -3,14 +3,10 @@
     <q-header elevated>
       <div class="row no-wrap shadow-1" style="height: 5px;">
         <q-toolbar class="col-8 col-md-7 bg-negative text-white q-pa-xs">
-          <!-- Adjusted padding to q-pa-xs -->
         </q-toolbar>
         <q-toolbar class="col-4 col-md-5 bg-primary text-white q-pa-xs">
-          <!-- Adjusted padding to q-pa-xs -->
         </q-toolbar>
       </div>
-
-      <!-- Main Header Toolbar -->
       <q-toolbar class="bg-white text-primary q-pa-none" style="height: 100px;">
 
         <q-img
@@ -20,16 +16,8 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
-        <div @click="toggleNotifications" v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
-        
-        <q-btn outline round color="primary" @click="toggleNotifications" style="position: relative;">
-          <q-icon
-            name="notifications"
-            style="font-size: 30px; position: absolute; right: -12px; top: -10px;"
-            color="black"
-            class="q-mr-md"
-          />
-          <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
+  
+        <q-btn outline round color="primary">
           <q-img
             :src="img" 
             :ratio="1"
@@ -38,9 +26,57 @@
             style="border-radius: 50%;"
           />
         </q-btn>
-        <h6>{{ name }} {{ lastname }}</h6>
         &nbsp;
+        <div style="display: flex; align-items: center; position: relative;">
+          <h6 style="margin-right: 10px;">{{ name }} {{ lastname }}</h6>
+        </div>
+        <!-- <div style="display: flex; align-items: center; position: relative;">
+          <div @click="toggleNotifications" style="position: relative;">
+            <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
+            <q-icon
+              name="notifications"
+              style="font-size: 30px;"
+              color="black"
+              class="q-mr-md"
+            />
+            <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
+          </div>
+          <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0;">
+            <q-list>
+              <q-item v-for="notification in notifications" :key="notification.id">
+                <q-item-section>{{ notification.room }} don't have Alcohol!!!</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </div> -->
+        <div @click="toggleNotifications" style="position: relative;">
+          <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
+ 
+      </div>
+<div style="display: flex; align-items: center; position: relative;">
+  <div @click="toggleNotifications" style="position: relative;">
+    <q-icon
+      name="notifications"
+      style="font-size: 30px;"
+      color="black"
+      class="q-mr-md"
+    />
+    <!-- <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div> -->
+  </div>
+  <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0;">
+    <q-list>
+      <q-item v-for="notification in notifications" :key="notification.id">
+        <q-item-section>{{ notification.room }} don't have Alcohol!!!</q-item-section>
+      </q-item>
+    </q-list>
+  </q-menu>
+</div>
+<!-- <div @click="toggleNotifications" style="position: relative;">
+          <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
+ 
+      </div> -->
         <q-btn @click="handleLogout" to="/login" style="background: #F24C65; color: white" no-caps label="Logout" class="q-mr-md" />
+        
       </q-toolbar>
       <q-toolbar class="bg-primary text-white">
         <q-btn @click="handleDashboard" to="/director/dashboard" style="color: white" no-caps label="Dashboard" class="q-mr-md" />
@@ -56,7 +92,6 @@
     </q-page-container>
   </q-layout>
 </template>
-
 
 <script>
 import { ref, onMounted } from 'vue';
@@ -80,6 +115,7 @@ export default {
           }
         });
         notifications.value = response.data;
+        // console.log(notifications.length);
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }
