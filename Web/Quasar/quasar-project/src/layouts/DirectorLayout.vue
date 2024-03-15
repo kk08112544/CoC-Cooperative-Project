@@ -30,25 +30,7 @@
         <div style="display: flex; align-items: center; position: relative;">
           <h6 style="margin-right: 10px;">{{ name }} {{ lastname }}</h6>
         </div>
-        <!-- <div style="display: flex; align-items: center; position: relative;">
-          <div @click="toggleNotifications" style="position: relative;">
-            <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
-            <q-icon
-              name="notifications"
-              style="font-size: 30px;"
-              color="black"
-              class="q-mr-md"
-            />
-            <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
-          </div>
-          <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0;">
-            <q-list>
-              <q-item v-for="notification in notifications" :key="notification.id">
-                <q-item-section>{{ notification.room }} don't have Alcohol!!!</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </div> -->
+       
         <div @click="toggleNotifications" style="position: relative;">
           <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
  
@@ -66,7 +48,7 @@
   <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0;">
     <q-list>
       <q-item v-for="notification in notifications" :key="notification.id">
-        <q-item-section>{{ notification.room }} don't have Alcohol!!!</q-item-section>
+        <q-item-section>{{ notification.room }} room don't have Alcohol!!!</q-item-section>
       </q-item>
     </q-list>
   </q-menu>

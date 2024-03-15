@@ -1,19 +1,47 @@
 <template>
   <q-page padding>
-    <h4 class="text-center">List User Page</h4>
-    <div v-if="loading">Loading...</div>
-    <div v-else>
+    <h4 class="text-center">Alcohol Room</h4>
+    <div align="right" class="q-mr-sm">
+      <q-btn style="background:#F24C65;" icon="add" label="Add" class="text-white" no-caps @click="form_add = true" />
+
+  </div>
+  <q-dialog v-model="form_add">
+    <q-card>
+      <q-card-section class="row items-center q-pb-none">
+        <q-avatar icon="add" color="primary" text-color="white" />
+        <div class="text-h6">Add Room</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+      <q-card-section>
+        <span class="q-ml-sm"
+                >Room:</span
+        >
+        <q-input outlined v-model="room" label="Room number" />
+      </q-card-section>
+      <q-card-actions align="right">
+              <q-btn flat label="NO" color="primary" v-close-popup />
+              <q-btn
+                flat
+                label="YES"
+                color="primary"
+                @click="addToAlcohol"
+              />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+   <div v-if="loading">Loading...</div>
+   <div v-else>
     <div class="q-pa-md">
       <q-table
-        flat
+      flat
         bordered
-        grid
         :rows="historyItems"
         :columns="columns"
         row-key="id"
       >
       
-          <template v-slot:top-right>
+      <template v-slot:top-right>
             <q-input
     borderless
     dense
@@ -28,146 +56,72 @@
     </template>
   </q-input>
           </template>
-          <template v-slot:body="props">
-  <q-tr :props="props">
-    <q-td key="id" :props="props">{{ props.row.id }}</q-td>
-    <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-    <q-td key="lastname" :props="props">{{ props.row.lastname }}</q-td>
-    <q-td key="img" :props="props">
-      <q-img :src="getImageUrl(props.row.img)" :ratio="9 / 9" spinner-color="primary" spinner-size="200px" />
-    </q-td>
-    <q-td key="username" :props="props">{{ props.row.username }}</q-td>
-    <q-td key="role_name" :props="props">{{ props.row.role_name }}</q-td>
-    <q-td key="action" :props="props">
-      <q-btn
-        color="primary"
-        flat
-        round
-        icon="edit"
-        @click="editRecord(props.row)"
-      />
-      <q-btn
-        color="primary"
-        flat
-        round
-        icon="delete"
-        @click="deleteRecord(props.row)"
-      />
-    </q-td>
-  </q-tr>
-</template>
-
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="id" :props="props">{{ props.row.id }}</q-td>
+            <q-td key="room" :props="props">{{ props.row.room }}</q-td>
+            <q-td key="detect" :props="props">{{ props.row.detect }}</q-td>
+            <q-td key="status_name" :props="props">
+              <q-badge
+                :color="getStatusColor(props.row.status_name)"
+                text-color="white"
+              >
+                {{ props.row.status_name }}
+              </q-badge>
+            </q-td>
+            <q-td key="edit" :props="props">
+              <q-input
+                v-model="props.row.edit"
+                type="text"
+                label="1=Active, 2=Non-active"
+                dense
+                @keydown.enter="updateStatus(props.row.id, props.row.edit)"
+                :pattern="'[1-2]'"
+                maxlength="1"
+              />
+            </q-td>
+            <q-td key="action" :props="props">
+              <q-btn
+                color="primary"
+                flat
+                round
+                icon="edit"
+                @click="editRecord(props.row)"
+              />
+              <q-btn
+                color="primary"
+                flat
+                round
+                icon="delete"
+                @click="deleteRecord(props.row)"
+              />
+            </q-td>
+          </q-tr>
+        </template>
+        
       </q-table>
     </div>
   </div>
   <q-dialog v-model="form_edit" persistent>
             <q-card>
-             
               <q-card-section class="row items-center">
                 <q-avatar icon="edit" color="primary" text-color="white" />
-                <span class="q-ml-sm">Update User ID: {{ input.id }}</span>
+                <span class="q-ml-sm">Update Room ID: {{ input.id }}</span>
                 <q-btn icon="close" flat round dense v-close-popup />
               </q-card-section>
-              
               <q-card-section>
-               <div>
-                <q-input
-  v-model="input.inputName"
-  outlined
-  label="Name"
-/>
-
-               </div>
+                <span class="q-ml-sm"
+                  >Room Number: {{ input.room }}</span
+                >
               </q-card-section>
              <q-card-section>
-              <div>
-
-                <q-input
-  v-model="input.inputLastname"
+              <q-input
+  v-model="input.inputRoom"
   outlined
-  label="Lastname"
+  label="Room number"
 />
-              </div>
-             </q-card-section>
-             <q-card-section>
-              <div>
 
-                <q-input
-  v-model="input.inputUsername"
-  outlined
-  label="Username"
-/>
-              </div>
              </q-card-section>
-             <q-card-section>
-              <div>
-                <div>
-                  <!-- <div v-if="input.inputImg || input.img">
-  <q-img
-    :src="input.inputImg ? input.inputImg : getImageUrl(input.img)"
-    :ratio="9 / 9"
-    spinner-color="primary"
-    spinner-size="200px"
-  />
-</div>
-<div v-else>
-  <q-img
-    src="/path/to/default/image.jpg" 
-    :ratio="9 / 9"
-    spinner-color="primary"
-    spinner-size="200px"
-  />
-</div> -->
-<q-img
-
-  :src="getImageUrl(input.img)"
-  :ratio="9 / 9"
-  spinner-color="primary"
-  spinner-size="200px"
-/>
-                </div>
-                
-            <!-- <q-img
-              v-if="input.img"
-              :src="input.img"
-              :ratio="4 / 3"
-              spinner-color="primary"
-              spinner-size="82px"
-            ></q-img> -->
-            <!-- file size = 1MB -->
-            <q-file
-              outlined
-              label="Your avatar"
-              v-model="uploadFile"
-              accept=".jpg, .jpeg, .png"
-              max-file-size="1048576"
-              @rejected="onRejected"
-              @update:model-value="updateFile()"
-              
-            >
-              <template v-slot:append>
-                <q-icon name="attach_file" />
-              </template>
-            </q-file>
-          </div>
-             </q-card-section>
-             <q-card-section>
-  <div>
-    <!-- <q-input
-      v-model="input.inputRoleName"
-      outlined
-      label="Role Name"
-    /> -->
-    <q-select
-      v-model="input.inputRoleName"
-      outlined
-      label="Role Name"
-      :options="options"
-    />
-   
-  </div>
-</q-card-section>
-
               <q-card-actions align="right">
                 <q-btn flat label="NO" color="primary" v-close-popup />
                 <q-btn
@@ -183,7 +137,7 @@
         <q-card>
           <q-card-section class="row items-center">
             <q-avatar icon="delete" color="primary" text-color="white" />
-            <span class="q-ml-sm">Delete User ID: {{ input.id }}</span>
+            <span class="q-ml-sm">Delete Equipment ID: {{ input.id }}</span>
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
           <q-card-actions align="right">
@@ -195,14 +149,14 @@
   </q-page>
 </template>
 <script>
-import { defineComponent, onErrorCaptured } from "vue";
+import { defineComponent } from "vue";
 import axios from "axios";
 import { useQuasar } from 'quasar'
 import { Notify } from 'quasar';
 
 export default defineComponent({
-    name: "TestPage",
-    
+  name: "RoomAlcoholPage",
+
   data() {
     return {
       historyItems: [],
@@ -210,279 +164,279 @@ export default defineComponent({
       filter: '',
       columns: [
         { name: "id", label: "ID", align: "left", field: "id", sortable: true },
-        { name: "name", label: "Name", field: "name", align:"left" },
-        { name: "lastname", label: "Lastname", field: "lastname" , align:"left"},
-        { name: "img", label: "Image", field: "img", align: "center", format: (val) => `<img src="${val}" style="max-width: 100px; max-height: 100px;" />` },
-        { name: "username", label: "Username", field: "username" },
-        { name: "role_name", label: "Role Name", field: "role_name" },
-        { name: "action", label: "Action", field: "action", align: "right" },
+        { name: "room", label: "Room", field: "room" },
+        { name: "detect", label: "Have/Not Have", field: "detect" },
+        { name: "status_name", label: "Status", field: "status_name" },
+        { name: "edit", label: "Edit Status", field: "edit", align: "center" },
+        { name: "action", label: "Action", field: "action", align: "center" },
       ],
-    //   getStatusColor : (role) => {
-    //   const lowerCaseStatus = role.toLowerCase();
-
-    //   if (lowerCaseStatus === "admin") {
-    //     return "green";
-    //   }else if (lowerCaseStatus === "user") {
-    //     return "orange";
-    //   } else {
-    //     return ""; // คืนค่าว่างหากไม่ตรงเงื่อนไขใดๆ
-    //   }
-    // }
-    //   form_add: false,
-      form_edit: false,
       form_delete: false,
-      role:'',
-      // input: { // สร้าง object input สำหรับเก็บข้อมูลที่ใช้ในการแก้ไข
-      //   id: '',
-      //   role: '',
-      //   inputRole: '',
-      // },
+      form_edit: false,
+      form_add: false,
+      room: '',
       input: {
-  id:'',
-  name:'',
-  lastname:'',
-  username:'',
-  role_name:'',
-  inputName:'',
-  inputLastname:'',
-  inputUsername:'',
-  inputRoleName: '',
-  img:'',            // Existing property to hold the image URL from the database
-  inputImg:'',       // New property to hold uploaded image data
-},
+        id: '',
+        room: '',
+        inputRoom: '',
+        inputValue: ''
+      },
+      getStatusColor: (status) => {
+        const lowerCaseStatus = status.toLowerCase();
 
-      options: [],
+        if (lowerCaseStatus === "non-active") {
+          return "negative";
+        } else if (lowerCaseStatus === "active") {
+          return "positive";
+        } else {
+          return "";
+        }
+      },
     };
-  },
-  computed: {
-    
-    filteredItems() {
-      const filtered = this.historyItems.filter(item => {
-        return (
-          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
-        );
-      });
-      return filtered;
-    },
   },
 
   setup() {
-    return {
-    
-    };
+    return {};
   },
-  created() {
-    this.fetchRoles();
-  },
-  methods:{
-    updateFile() {
-      this.input.inputImg = URL.createObjectURL(this.uploadFile);
-    },
-    getImageUrl(img) {
-      return `http://localhost:3000/api/file/${img}`;
-    },
-    fetchRoles() {
-      axios.get('http://localhost:3000/api/role')
-        .then(response => {
-          this.options = response.data.map(role => ({
-            label: role.role_name,
-            value: role.id
-          }));
-        })
-        .catch(error => {
-          console.error('Error fetching roles:', error);
-        });
-    },
+
+  methods: {
     filterData() {
-    if (!this.filter) {
-      this.loading = true; // ให้ loading = true เมื่อทำการกรองข้อมูล
-      this.fetchData(); // โหลดข้อมูลเดิมทั้งหมดเมื่อไม่มีคำค้นหา
-      this.loading = false; // หยุด loading เมื่อโหลดข้อมูลเสร็จสมบูรณ์
-    } else {
-      // กรองข้อมูลเฉพาะที่ตรงกับคำค้นหา
-      this.historyItems = this.historyItems.filter(item => {
-        return (
-          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
-        );
-      });
-    }
-  },
-
-    async fetchData() {
-    if (!this.filter) {
-      // โหลดข้อมูลเฉพาะเมื่อไม่มีการค้นหา
-      this.loading = true;
-      const token = localStorage.getItem("accessToken");
-      const userId = localStorage.getItem("userId");
-      console.log(userId);
-      try {
-        const response = await axios.get(`http://localhost:3000/api/auth/`, {
-          headers: {
-            "x-access-token": token,
-          },
-        });
-        // this.historyItems = response.data;
-        this.loading = false;
-        this.historyItems: response.data.map(item => ({
-            id: item.id,
-            name: item.name,
-            lastname: item.lastname,
-            username: item.username,
-            role_name: item.role_name,
-            img: item.img, // Assuming 'img' is the property containing the image URL
-        })),
-      } catch (error) {
-        console.error("Error fetching history data:", error);
-        this.loading = false;
-      }
-    }
-  },
-
-    editRecord(row){
-      this.input.id = row.id;
-      this.input.name = row.name,
-      this.input.lastname = row.lastname,
-      this.input.username = row.username,
-      this.input.role_name = row.role_name,
-      this.input.role_id = row.role_id,
-      this.input.inputName = row.name,
-      this.input.inputLastname = row.lastname,
-      this.input.inputUsername = row.username,
-      this.input.inputRoleName = row.role_name,
-      this.input.inputRoleId  = row.role_id,
-      this.input.img = row.img
-      this.input.inputImg = row.img
-      this.form_edit = true;
-    },
-
-    deleteRecord(row) {
-      this.input.id = row.id;
-      this.form_delete = true;
-    },
-    async onDelete() {
+  if (!this.filter) {
+    // Reset loading state and fetch data
+    this.loading = true;
+    this.fetchData();
+  } else {
+    // Filter data based on the entered ID
+    this.historyItems = this.historyItems.filter(item => {
+      return item.id.toString().toLowerCase().includes(this.filter.toLowerCase());
+    });
+  }
+},
+async fetchData() {
   const token = localStorage.getItem("accessToken");
   try {
-    const response = await axios.delete(
-      `http://localhost:3000/api/auth/${this.input.id}`, // Send DELETE request with the ID
+    this.loading = true;
+    const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+      headers: {
+        "x-access-token": token,
+      },
+    });
+    this.historyItems = response.data;
+  } catch (error) {
+    console.error("Error fetching history data:", error);
+  } finally {
+    this.loading = false;
+  }
+},
+
+
+async addToAlcohol(){
+  
+  const token = localStorage.getItem("accessToken");
+  if(!this.room){
+    this.$q.notify({
+      color: "negative",
+      textColor: "white",
+      type: "negative",
+      message: "Room number is required",
+      timeout: 1000
+    });
+    return;
+  }
+  
+  const digitRegex = /^[0-9.-]+$/;
+
+  if(!digitRegex.test(this.room)){
+      this.$q.notify({
+        color: "negative",
+        textColor: "white",
+        type: "negative",
+        message: "Room number must contain only numbers",
+        timeout: 1000
+      });
+      return;    
+  }
+
+  const response = await axios.get(`http://localhost:3000/api/alcohol/check/${this.room}`);
+  let db_room;
+  if(response.data.record !== undefined){
+    db_room = response.data.record.room;
+  }
+  else{
+    db_room = null
+  }
+  console.log("Database Room: ", db_room);
+  console.log("Input Room: ",this.room);
+
+  if(this.room == db_room){
+    this.$q.notify({
+      color: "red-4",
+      textColor: "white",
+      icon: "warning",
+      message: "This room is not available",
+    });
+    return;
+  }
+
+  try{
+    const sendResponse = await axios.post(
+      `http://localhost:3000/api/alcohol/addToAlcohol`,
+      { room: this.room },
       {
         headers: {
           "x-access-token": token,
         },
       }
     );
-    this.form_delete = false; // Close the delete dialog
+    this.form_add = false;
     this.$q.notify({
       color: "green",
       textColor: "white",
       type: "positive",
-      message: "Delete User  ID : "  +  response.data.id  +  " Successfully" ,
-      timeout: 1000,
+      message: "Added Room ID: " + sendResponse.data.id + " successfully",
+      timeout: 1000
     });
-    // Refresh the data after deletion
     setTimeout(() => {
       window.location.reload();
     }, 1000);
-  } catch (error) {
-    console.error("Error deleting roles:", error);
+  }catch(error){
+    console.error("Error adding room:", error);
   }
 },
 
-async onEdit(input) {
-    const token = localStorage.getItem("accessToken");
-    try {
-      // Handle file upload
-      let img = null;
-      if (this.uploadFile) {
-        const fileFormData = new FormData();
-        fileFormData.append("singlefile", this.uploadFile);
-        const fileUploadResponse = await axios.post(
-          "http://localhost:3000/api/file/upload",
-          fileFormData
-        );
-        img = fileUploadResponse.data.uploadFileName;
-        this.input.inputImg = img; // Assign uploaded image to input
-      }
-
-      // Prepare data for update
-      const profile = {
-        name: input.inputName,
-        lastname: input.inputLastname,
-        username: input.inputUsername,
-        role_id: this.input.inputRoleName.value || null,
-        img: this.input.inputImg, // Use uploaded image URL
-      };
-
-      // Send update request
-      const response = await axios.put(
-        `http://localhost:3000/api/auth/${input.id}`,
-        profile,
-        {
-          headers: {
-            "x-access-token": token,
-          },
+    async updateStatus(id, newStatus) {
+      const token = localStorage.getItem("accessToken");
+      console.log(newStatus);
+      try {
+        if (newStatus !== "1" && newStatus !== "2") {
+          this.$q.notify({
+            color: "negative",
+            textColor: "white",
+            type: "negative",
+            message: "Status is 1 or 2 Only!!!",
+            timeout: 1000
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          const response = await axios.put(
+            `http://localhost:3000/api/alcohol/updateStatusToAlcohol/${id}`,
+            { status_id: newStatus },
+            {
+              headers: {
+                "x-access-token": token,
+              },
+            }
+          );
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+          this.$q.notify({
+            color: "green",
+            textColor: "white",
+            type: "positive",
+            message: "Update Status Successfully",
+            timeout: 1000
+          });
         }
-      );
-
-      // Close edit dialog
-      this.form_edit = false;
-
-      // Show success notification
-      this.$q.notify({
-        color: "green",
-        textColor: "white",
-        type: "positive",
-        message: "Update User ID: " + response.data.id + " Successfully",
-        timeout: 1000,
-      });
-
-      // Reload page to show updated data
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    } catch (error) {
-      console.log(error);
-    }
-  },
-computed: {
-    filteredItems() {
-      const filtered = this.historyItems.filter(item => {
-        return (
-          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.role_name.toLowerCase().includes(this.filter.toLowerCase())
-        );
-      });
-      return filtered;
-    },
-    getImageUrl() {
-    return function (img) {
-      if (img) {
-        // Return the URL of the uploaded image
-        return `http://localhost:3000/api/file/${img}`;
-      } else {
-        // If no uploaded image, return a placeholder image URL or null
-        return null; // You can return a placeholder image URL here if needed
+      } catch (error) {
+        console.error("Error updating status:", error);
       }
-    };
-  },
-  },
-  },    
-  mounted() {
-    this.filterData(); // เรียกใช้งาน filterData เมื่อโหลดหน้าครั้งแรก
-  this.fetchData();
-  },
-  watch: {
-  filter: function(newFilter) {
-    this.filterData(); // เรียกใช้งาน filterData เมื่อมีการเปลี่ยนแปลงคำค้นหา
-  },
-},
-})
+    },
 
+    editRecord(row) {
+      this.input.id = row.id;
+      this.input.room = row.room;
+      this.input.inputRoom = row.room;
+      this.form_edit = true;
+    },
+
+    async onEdit(input) {
+      const token = localStorage.getItem("accessToken");
+      try {
+        if (!input.inputRoom) {
+          this.$q.notify({
+            color: "negative",
+            textColor: "white",
+            type: "negative",
+            message: "Content is not empty",
+            timeout: 1000
+          });
+        } else {
+          const digitRegex = /^[0-9.-]+$/;
+          if (!digitRegex.test(input.inputRoom)) {
+            this.$q.notify({
+              color: "negative",
+              textColor: "white",
+              type: "negative",
+              message: "Room Value only Number",
+              timeout: 1000
+            });
+          } else {
+            const response = await this.$axios.put(
+              `http://localhost:3000/api/alcohol/updateToAlcohol/${input.id}`,
+              { room: input.inputRoom },
+              {
+                headers: {
+                  "x-access-token": token,
+                },
+              },
+            );
+
+            this.form_edit = false;
+            this.$q.notify({
+              color: "green",
+              textColor: "white",
+              type: "positive",
+              message: "Update Room  ID : " + response.data.id + " Successfully",
+              timeout: 1000
+            });
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        }
+      } catch (error) {
+        console.error("Error updating room:", error);
+      }
+    },
+
+    deleteRecord(row) {
+      this.input.id = row.id;
+      this.form_delete = true;
+    },
+
+    async onDelete() {
+      const token = localStorage.getItem("accessToken");
+      try {
+        const response = await axios.delete(
+          `http://localhost:3000/api/alcohol/deleteToAlcohol/${this.input.id}`,
+          {
+            headers: {
+              "x-access-token": token,
+            },
+          }
+        );
+        this.form_delete = false;
+        this.$q.notify({
+          color: "green",
+          textColor: "white",
+          type: "positive",
+          message: "Delete Room  ID : " + response.data.id + " Successfully",
+          timeout: 1000,
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } catch (error) {
+        console.error("Error deleting record:", error);
+      }
+    },
+  },
+
+  mounted() {
+    this.fetchData();
+  },
+});
 </script>

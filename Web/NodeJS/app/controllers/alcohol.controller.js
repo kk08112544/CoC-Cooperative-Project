@@ -9,6 +9,28 @@ const getAllAlcohol = (req,res) => {
     })
 }
 
+
+
+const validRoom = (req,res) => {
+    Alcohol.checkRoom(req.params.room,(err,data)=>{
+        if(err) {
+            if(err.kind == "not_found"){
+                res.send({
+                    message: "Not Found: " + req.params.room,
+                    valid: true
+                });
+            }
+            else {
+                res.status(500).send({ 
+                    message: "Error query: " + req.params.room,
+                });
+            }
+        }else{
+            res.send({record: data, valid: false});
+        }
+    })
+}
+
 const addToAlcohol = (req,res) => {
     if(!req.body){
         res.status(400).send({message: "Content can not be empty."});
@@ -101,6 +123,7 @@ const updateStatusToAlcohol = (req,res) => {
 
 module.exports = {
     getAllAlcohol,
+    validRoom,
     addToAlcohol,
     getById,
     updateToAlcohol,

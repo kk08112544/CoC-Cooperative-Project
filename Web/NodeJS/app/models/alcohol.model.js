@@ -22,6 +22,24 @@ Alcohol.getAlcohol = (result)=>{
     });
 }
 
+
+Alcohol.checkRoom = (room,result) =>{
+    sql.query("SELECT * FROM alcohol WHERE room='"+room+"'",(err,res)=>{
+        if(err){
+            console.log("Error: " + err);
+            result(err, null);
+            return;
+        }
+        if(res.length){
+            console.log("Found username: " + res[0]);
+            result(null, res[0]);
+            return;
+        }
+        result({ kind: "not_found"}, null);
+    });
+}
+
+
 Alcohol.addAlcohol = (AlcoholObj,result)=>{
     sql.query("INSERT INTO alcohol SET ?", AlcoholObj,(err,res)=>{
         if(err){

@@ -2,6 +2,7 @@ const authJwt = require("../middleware/auth.jwt");
 module.exports = (app)=>{
     const alcohol_controller = require("../controllers/alcohol.controller");
     var router = require("express").Router();
+    router.get("/check/:room",alcohol_controller.validRoom);
     router.get("/", authJwt,alcohol_controller.getAllAlcohol);
     router.post("/addToAlcohol",authJwt,alcohol_controller.addToAlcohol);
     router.get("/:id",authJwt,alcohol_controller.getById);
