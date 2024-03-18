@@ -17,8 +17,6 @@ const notifyCount = (req,res)=>{
     })
 }
 
-
-
 module.exports = {
     getLess,
     notifyCount,

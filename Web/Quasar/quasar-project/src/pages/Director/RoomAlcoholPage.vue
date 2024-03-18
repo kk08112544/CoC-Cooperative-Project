@@ -279,6 +279,7 @@ async fetchData() {
 
     async updateStatus(id, newStatus) {
       const token = localStorage.getItem("accessToken");
+      console.log(newStatus);
       try {
         if (newStatus !== "1" && newStatus !== "2") {
           this.$q.notify({
