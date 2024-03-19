@@ -46,12 +46,18 @@
     <!-- <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div> -->
   </div>
   <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0;">
-    <q-list>
-      <q-item v-for="notification in notifications" :key="notification.id">
-        <q-item-section>{{ notification.room }} room don't have Alcohol!!!</q-item-section>
-      </q-item>
-    </q-list>
-  </q-menu>
+  <q-list>
+    <q-item v-for="notification in notifications" :key="notification.id">
+      <q-item-section v-if="notification.detect === 0">
+        {{ notification.room }} room have alcohol 
+      </q-item-section>
+      <q-item-section v-else>
+        {{ notification.room }} room don't have alcohol 
+      </q-item-section>
+    </q-item>
+  </q-list>
+</q-menu>
+
 </div>
 <!-- <div @click="toggleNotifications" style="position: relative;">
           <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
@@ -87,11 +93,13 @@ export default {
     const img = ref('');
     const notifications = ref([]);
     const profile = ref(null);
+    const totals = ref([]);
 
     const fetchNotifications = async () => {
       const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get('http://localhost:3000/api/notify/Less', {
+        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -102,6 +110,22 @@ export default {
         console.error('Error fetching notifications:', error);
       }
     };
+
+    const fetchTotalNotifications = async () => {
+      const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+      try {
+        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/total/${userId}`, {
+          headers: {
+            "x-access-token": token,
+          }
+        });
+        totals.value = response.data;
+        // console.log(notifications.length);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    }
 
     const fetchUserId = async () => {
       const token = localStorage.getItem('accessToken');

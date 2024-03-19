@@ -13,7 +13,7 @@ const History = function(history){
 }
 
 History.getHistory = (result) => {
-    sql.query('SELECT AlcoholHistory.id,AlcoholHistory.alcohol_id,AlcoholHistory.date,AlcoholHistory.times FROM AlcoholHistory JOIN AlcoholHistoryRead ON AlcoholHistory.id = AlcoholHistoryRead.id;',(err,res)=>{
+    sql.query('(SELECT AH.id, AH.alcohol_id, A.room, AH.detect, AH.date, AH.times FROM AlcoholHistory AH LEFT JOIN alcohol A ON AH.alcohol_id = A.id WHERE AH.alcohol_id NOT IN ( SELECT alcohol_id FROM AlcoholHistoryRead ) LIMIT 25);',(err,res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);

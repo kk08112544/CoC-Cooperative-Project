@@ -2,13 +2,41 @@ const HistoryUserId = require('../models/HistoryUserId.model');
 const bcrypt = require("bcryptjs");
 
 const getHistoryUserId = (req,res) => {
-    HistoryUserId.getHistoryUserId((err,data)=>{
+    HistoryUserId.getHistoryUserId(req.params.user_id,(err,data)=>{
         if(err){
             res.status(500).send({message: err.message || "Some error ocurred."});
         }else res.send(data);
     })
 }
 
+const gettotalHistoryUserId = (req,res) => {
+    HistoryUserId.gettotalHistoryUserId(req.params.user_id,(err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
+const createNewHistory = (req,res) => {
+    const currentDate = new Date();
+    const date = currentDate.toISOString().slice(0, 10); // yyyy-mm-dd
+    const time = currentDate.toTimeString().slice(0, 8); // hh:mm:ss
+    const newHistory = new History({
+        alcohol_id : req.body.alcohol_id,
+        detect: req.body.detect.detect,
+        date: date,
+        times: time,
+        user_id: req.body.user_id,
+    })
+    HistoryUserId.create(newHistory, (err,data)=>{
+        if (err) {
+            res.status(500).send({ message: err.message || "Some error occured while creating" });
+        } else res.send(data);
+    })
+}
+
 module.exports = {
     getHistoryUserId,
+    createNewHistory,
+    gettotalHistoryUserId,
 }
