@@ -67,19 +67,33 @@
   </div> 
  
   
-  <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0;">
+
+
+<q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 300px;">
   <q-list>
-    <q-item v-for="notification in notifications" :key="notification.id">
+    <q-item v-for="notification in sortedNotifications" :key="notification.id">
+     
+      <!-- <template v-if="index === 0 || notification.room !== sortedNotifications[index - 1].room">
+        <q-item-separator v-if="notification.room === 'room 1'">{{ notification.room }}</q-item-separator>
+      </template> -->
+      <div class="horizontal-line" v-if="index !== sortedNotifications.length - 1">
       <q-item-section v-if="notification.detect === 0">
-        {{ notification.room }} room have alcohol 
-        {{ notification.date }}
-        {{ notification.times }}
+        <div style="display: none;">{{ notification.alcohol_id }}</div>
+        Room {{ notification.room }} have alcohol 
+        <br/>
+        Date:   {{ notification.date }}
+        <br/>
+        Times:  {{ notification.times }}
       </q-item-section>
+     
       <q-item-section v-else>
-        {{ notification.room }} room don't have alcohol 
-        {{ notification.date }}
-        {{ notification.times }}
+        Room {{ notification.room }} don't have alcohol.
+        <br/>
+        Date:   {{ notification.date }}
+        <br/>
+        Times:  {{ notification.times }}
       </q-item-section>
+    </div>
     </q-item>
   </q-list>
 </q-menu>
@@ -110,6 +124,7 @@ import axios from 'axios';
 
 export default {
   name: 'DirectorLayout',
+ 
   setup() {
     const name = ref('');
     const lastname = ref('');
@@ -157,10 +172,10 @@ export default {
         const response = await axios.post(
           `http://localhost:3000/api/HistoryUserId/createHistory`,
           {
-            alcohol_id: this.alcohol_id,
-            detect: this.detect,
-            date: this.date,
-            times: this.times,
+            alcohol_id: notification.alcohol_id,
+            detect: notification.detect,
+            date: notification.date,
+            times: notification.times,
             user_id: user_id,
           },
           {
@@ -234,5 +249,31 @@ export default {
       fetchTotalNotifications,
     };
   },
+  computed: {
+  sortedNotifications() {
+    // ทำการคัดลอกรายการการแจ้งเตือนก่อน
+    const copiedNotifications = [...this.notifications];
+    
+    // เรียงลำดับรายการตามวันที่และเวลา
+    copiedNotifications.sort((a, b) => {
+      // ใช้ Date object เพื่อทำการเปรียบเทียบวันที่และเวลา
+      const dateA = new Date(`${a.date}T${a.times}`);
+      const dateB = new Date(`${b.date}T${b.times}`);
+      
+      // เรียงลำดับจากมากไปน้อย
+      return dateB - dateA;
+    });
+    
+    return copiedNotifications;
+  }
+},
 };
 </script>
+<style>
+  .horizontal-line {
+    width: calc(100% + 20px); /* 100% width plus padding on both sides */
+    border-bottom: 1px solid #ccc; /* You can adjust the style as needed */
+    margin: 10px -10px; /* Negative margin to stick to the edges */
+    
+  }
+</style>
