@@ -21,9 +21,9 @@ const createNewHistory = (req,res) => {
     const currentDate = new Date();
     const date = currentDate.toISOString().slice(0, 10); // yyyy-mm-dd
     const time = currentDate.toTimeString().slice(0, 8); // hh:mm:ss
-    const newHistory = new History({
+    const newHistory = new HistoryUserId({
         alcohol_id : req.body.alcohol_id,
-        detect: req.body.detect.detect,
+        detect: req.body.detect,
         date: date,
         times: time,
         user_id: req.body.user_id,

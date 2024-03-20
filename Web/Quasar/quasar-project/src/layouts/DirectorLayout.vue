@@ -53,8 +53,12 @@
       <div class="col"> 
         
         <div v-if="totals && totals.length > 0">
-          &nbsp;&nbsp;&nbsp;<span v-for="(total, index) in totals" :key="index" style="color: red;">{{ total.total_notifications }} </span>
-        </div>
+  <template v-for="(total, index) in totals">
+    <span v-if="total.total_notifications !== 0" :key="index" style="color: red;">
+      {{ total.total_notifications }}
+    </span>
+  </template>
+</div>
       </div>
     </div>
   </div>
@@ -63,7 +67,9 @@
       style="font-size: 30px; width: 15px; height: 20px;"
       color="black"
       class="q-mr-md"
+      @click="insertDataToDatabase"
     />
+    
   </div> 
  
   
@@ -73,12 +79,11 @@
   <q-list>
     <q-item v-for="notification in sortedNotifications" :key="notification.id">
      
-      <!-- <template v-if="index === 0 || notification.room !== sortedNotifications[index - 1].room">
-        <q-item-separator v-if="notification.room === 'room 1'">{{ notification.room }}</q-item-separator>
-      </template> -->
+    
       <div class="horizontal-line" v-if="index !== sortedNotifications.length - 1">
       <q-item-section v-if="notification.detect === 0">
         <div style="display: none;">{{ notification.alcohol_id }}</div>
+        <div style="display: none;">{{ notification.detect }}</div>
         Room {{ notification.room }} have alcohol 
         <br/>
         Date:   {{ notification.date }}
@@ -165,29 +170,29 @@ export default {
       }
     }
 
-    const addHistory = async () => {
-      const token = localStorage.getItem('accessToken');
-      const userId = localStorage.getItem('userId');
-      try{
-        const response = await axios.post(
-          `http://localhost:3000/api/HistoryUserId/createHistory`,
-          {
-            alcohol_id: notification.alcohol_id,
-            detect: notification.detect,
-            date: notification.date,
-            times: notification.times,
-            user_id: user_id,
-          },
-          {
-            headers: {
-                  "x-access-token": token,
-            },
-          },
-        );
-      }catch(error){
-        console.error('Error fetching notifications:', error);
-      }
-    }
+    // const addHistory = async () => {
+    //   const token = localStorage.getItem('accessToken');
+    //   const userId = localStorage.getItem('userId');
+    //   try{
+    //     const response = await axios.post(
+    //       `http://localhost:3000/api/HistoryUserId/createHistory`,
+    //       {
+    //         alcohol_id: notification.alcohol_id,
+    //         detect: notification.detect,
+    //         date: notification.date,
+    //         times: notification.times,
+    //         user_id: user_id,
+    //       },
+    //       {
+    //         headers: {
+    //               "x-access-token": token,
+    //         },
+    //       },
+    //     );
+    //   }catch(error){
+    //     console.error('Error fetching notifications:', error);
+    //   }
+    // }
 
     const fetchUserId = async () => {
       const token = localStorage.getItem('accessToken');
@@ -248,6 +253,39 @@ export default {
       profile,
       fetchTotalNotifications,
     };
+  },
+  methods: {
+    async insertDataToDatabase() {
+  const token = localStorage.getItem('accessToken');
+  const userId = localStorage.getItem('userId');
+  try {
+    // Iterate over notifications and collect data
+    for (const notification of this.notifications) {
+      const data = {
+        alcohol_id: notification.alcohol_id,
+        room: notification.room,
+        date: notification.date,
+        times: notification.times,
+        detect: notification.detect,
+        user_id: userId, // Fix variable name
+      };
+
+      // Make HTTP POST request to the API endpoint
+      const response =await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
+        headers: {
+          "x-access-token": token,
+        }
+      });
+      console.log(response.data);
+    }
+
+    // If insertion is successful, clear the notifications list
+    this.notifications = [];
+  } catch (error) {
+    console.error('Error inserting data:', error);
+    // Handle error as needed
+  }
+}
   },
   computed: {
   sortedNotifications() {
