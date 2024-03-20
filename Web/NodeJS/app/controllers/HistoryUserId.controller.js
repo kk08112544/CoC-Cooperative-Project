@@ -22,9 +22,10 @@ const createNewHistory = (req,res) => {
     const date = currentDate.toISOString().slice(0, 10); // yyyy-mm-dd
     const time = currentDate.toTimeString().slice(0, 8); // hh:mm:ss
     const newHistory = new HistoryUserId({
+        his_id: req.body.his_id,
         alcohol_id : req.body.alcohol_id,
         detect: req.body.detect,
-        date: date,
+        dates: date,
         times: time,
         user_id: req.body.user_id,
     })
@@ -35,8 +36,18 @@ const createNewHistory = (req,res) => {
     })
 }
 
+
+const getHistoryUserIdLook = (req,res) => {
+    HistoryUserId.getAllHistoryLook(req.params.user_id,(err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
 module.exports = {
     getHistoryUserId,
     createNewHistory,
     gettotalHistoryUserId,
+    getHistoryUserIdLook,
 }

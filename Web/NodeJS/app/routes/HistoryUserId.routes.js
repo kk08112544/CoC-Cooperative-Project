@@ -5,5 +5,6 @@ module.exports = (app)=>{
     router.get('/:user_id',authJwt,historyuser_id_controller.getHistoryUserId);
     router.get('/total/:user_id',authJwt,historyuser_id_controller.gettotalHistoryUserId)
     router.post('/createHistory',authJwt,historyuser_id_controller.createNewHistory);
+    router.get('/look/:user_id',authJwt,historyuser_id_controller.getHistoryUserIdLook);
     app.use("/api/HistoryUserId", router);
 };

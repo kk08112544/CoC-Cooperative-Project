@@ -35,27 +35,19 @@
           <h6 style="margin-right: 10px;">{{ name }} {{ lastname }}</h6>
         </div>
        
-        <!-- <div @click="toggleNotifications" style="position: relative;">
-    <div class="row justify-content-end">
-      <div class="col"> 
-        <div v-if="totals && totals.length > 0">
-          <span v-for="(total, index) in totals" :key="index">{{ total.total_notifications }} </span>
-        </div>
-      </div>
-    </div>
-  </div> -->
+       
 <div style="display: flex; align-items: center; position: relative;">
  
   <div @click="toggleNotifications" style="position: relative;">
-    
+    &nbsp;&nbsp;
     <div @click="toggleNotifications" style="position: relative; flex-grow: 1;">
     <div class="row justify-content-end"> 
       <div class="col"> 
         
         <div v-if="totals && totals.length > 0">
   <template v-for="(total, index) in totals">
-    <span v-if="total.total_notifications !== 0" :key="index" style="color: red;">
-      {{ total.total_notifications }}
+    <span v-if="total.total !== 0" :key="index" style="color: red;">
+     &nbsp;&nbsp; {{ total.total }}
     </span>
   </template>
 </div>
@@ -82,6 +74,7 @@
     
       <div class="horizontal-line" v-if="index !== sortedNotifications.length - 1">
       <q-item-section v-if="notification.detect === 0">
+        <div style="display: none;">{{ notification.id }}</div>
         <div style="display: none;">{{ notification.alcohol_id }}</div>
         <div style="display: none;">{{ notification.detect }}</div>
         Room {{ notification.room }} have alcohol 
@@ -137,7 +130,23 @@ export default {
     const notifications = ref([]);
     const profile = ref(null);
     const totals = ref([]);
+    const read = ref([]);
 
+    const getHistoryUserIdLook = async () => {
+      const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+      try{
+        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/look/${userId}`, {
+          headers: {
+            "x-access-token": token,
+          }
+        });
+        read.value = response.data;
+      }catch(error){
+        console.error('Error fetching data:', error);
+      }
+    }
+    
     const fetchNotifications = async () => {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
@@ -169,30 +178,6 @@ export default {
         console.error('Error fetching notifications:', error);
       }
     }
-
-    // const addHistory = async () => {
-    //   const token = localStorage.getItem('accessToken');
-    //   const userId = localStorage.getItem('userId');
-    //   try{
-    //     const response = await axios.post(
-    //       `http://localhost:3000/api/HistoryUserId/createHistory`,
-    //       {
-    //         alcohol_id: notification.alcohol_id,
-    //         detect: notification.detect,
-    //         date: notification.date,
-    //         times: notification.times,
-    //         user_id: user_id,
-    //       },
-    //       {
-    //         headers: {
-    //               "x-access-token": token,
-    //         },
-    //       },
-    //     );
-    //   }catch(error){
-    //     console.error('Error fetching notifications:', error);
-    //   }
-    // }
 
     const fetchUserId = async () => {
       const token = localStorage.getItem('accessToken');
@@ -262,9 +247,10 @@ export default {
     // Iterate over notifications and collect data
     for (const notification of this.notifications) {
       const data = {
+        his_id: notification.id,
         alcohol_id: notification.alcohol_id,
         room: notification.room,
-        date: notification.date,
+        dates: notification.dates,
         times: notification.times,
         detect: notification.detect,
         user_id: userId, // Fix variable name
