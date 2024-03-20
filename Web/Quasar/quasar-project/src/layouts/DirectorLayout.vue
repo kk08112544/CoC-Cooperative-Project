@@ -16,6 +16,10 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
+      
+        <!-- <div v-if="totals && totals.length > 0">
+    <span v-for="(total, index) in totals" :key="index">{{ total.total_notifications }} </span>
+  </div> -->
   
         <q-btn outline round color="primary">
           <q-img
@@ -31,38 +35,57 @@
           <h6 style="margin-right: 10px;">{{ name }} {{ lastname }}</h6>
         </div>
        
-        <div @click="toggleNotifications" style="position: relative;">
-          <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
- 
+        <!-- <div @click="toggleNotifications" style="position: relative;">
+    <div class="row justify-content-end">
+      <div class="col"> 
+        <div v-if="totals && totals.length > 0">
+          <span v-for="(total, index) in totals" :key="index">{{ total.total_notifications }} </span>
+        </div>
       </div>
+    </div>
+  </div> -->
 <div style="display: flex; align-items: center; position: relative;">
+ 
   <div @click="toggleNotifications" style="position: relative;">
-    <q-icon
+    
+    <div @click="toggleNotifications" style="position: relative; flex-grow: 1;">
+    <div class="row justify-content-end"> 
+      <div class="col"> 
+        
+        <div v-if="totals && totals.length > 0">
+          &nbsp;&nbsp;&nbsp;<span v-for="(total, index) in totals" :key="index" style="color: red;">{{ total.total_notifications }} </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <q-icon
       name="notifications"
-      style="font-size: 30px;"
+      style="font-size: 30px; width: 15px; height: 20px;"
       color="black"
       class="q-mr-md"
     />
-    <!-- <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div> -->
-  </div>
+  </div> 
+ 
+  
   <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0;">
   <q-list>
     <q-item v-for="notification in notifications" :key="notification.id">
       <q-item-section v-if="notification.detect === 0">
         {{ notification.room }} room have alcohol 
+        {{ notification.date }}
+        {{ notification.times }}
       </q-item-section>
       <q-item-section v-else>
         {{ notification.room }} room don't have alcohol 
+        {{ notification.date }}
+        {{ notification.times }}
       </q-item-section>
     </q-item>
   </q-list>
 </q-menu>
 
 </div>
-<!-- <div @click="toggleNotifications" style="position: relative;">
-          <div v-if="notifications.length > 0" style="position: absolute; top: -8px; right: -8px" class="text-red">{{ notifications.length }}</div>
- 
-      </div> -->
+
         <q-btn @click="handleLogout" to="/login" style="background: #F24C65; color: white" no-caps label="Logout" class="q-mr-md" />
         
       </q-toolbar>
@@ -127,6 +150,30 @@ export default {
       }
     }
 
+    const addHistory = async () => {
+      const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+      try{
+        const response = await axios.post(
+          `http://localhost:3000/api/HistoryUserId/createHistory`,
+          {
+            alcohol_id: this.alcohol_id,
+            detect: this.detect,
+            date: this.date,
+            times: this.times,
+            user_id: user_id,
+          },
+          {
+            headers: {
+                  "x-access-token": token,
+            },
+          },
+        );
+      }catch(error){
+        console.error('Error fetching notifications:', error);
+      }
+    }
+
     const fetchUserId = async () => {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
@@ -170,6 +217,7 @@ export default {
     onMounted(() => {
       fetchNotifications();
       fetchUserData();
+      fetchTotalNotifications();
     });
 
     return {
@@ -181,7 +229,9 @@ export default {
       fetchNotifications,
       notificationsMenu,
       img,
+      totals,
       profile,
+      fetchTotalNotifications,
     };
   },
 };

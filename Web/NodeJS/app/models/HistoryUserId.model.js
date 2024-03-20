@@ -15,7 +15,7 @@ const HistoryUserId = function(historyuserid){
 
 HistoryUserId.getHistoryUserId = (user_id, result) => {
     sql.query(
-        "SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, ah.date, ah.times " +
+        "SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.date, '%Y-%m-%d') AS date, ah.times " +
         "FROM AlcoholHistoryRead AS ahr " +
         "INNER JOIN (SELECT ah.alcohol_id " +
         "            FROM AlcoholHistoryRead AS ahr1 " +
@@ -35,7 +35,7 @@ HistoryUserId.getHistoryUserId = (user_id, result) => {
         "                  WHERE ahr3.alcohol_id = ahr.alcohol_id " +
         "                    AND ahr3.user_id = ?) " +
         "UNION " +
-        "(SELECT AH.id, AH.alcohol_id, A.room, AH.detect, AH.date, AH.times " +
+        "(SELECT AH.id, AH.alcohol_id, A.room, AH.detect,DATE_FORMAT( AH.date, '%Y-%m-%d') AS date, AH.times " +
         " FROM AlcoholHistory AH " +
         " LEFT JOIN alcohol A ON AH.alcohol_id = A.id " +
         " WHERE AH.alcohol_id NOT IN (SELECT alcohol_id FROM AlcoholHistoryRead) " +
@@ -53,7 +53,7 @@ HistoryUserId.getHistoryUserId = (user_id, result) => {
 };
 
 HistoryUserId.gettotalHistoryUserId = (user_id, result) => {
-    sql.query("SELECT COUNT(*) AS total_notifications FROM (SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, ah.date, ah.times " +
+    sql.query("SELECT COUNT(*) AS total_notifications FROM (SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.date, '%Y-%m-%d') AS date, ah.times " +
     "FROM AlcoholHistoryRead AS ahr " +
     "INNER JOIN (SELECT ah.alcohol_id " +
     "            FROM AlcoholHistoryRead AS ahr1 " +
