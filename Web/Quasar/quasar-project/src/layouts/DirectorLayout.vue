@@ -63,7 +63,7 @@
   
 
 
-<q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 300px; height: 500px;">
+<q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 350px; height: 500px;">
   <q-list>
     <q-item v-for="notification in sortedNotifications" :key="notification.id">
      

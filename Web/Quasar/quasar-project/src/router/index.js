@@ -26,5 +26,19 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  Router.beforeEach((to, from, next) => {
+    const isAuthenticated = /* ตรวจสอบว่าผู้ใช้ลงทะเบียนหรือเข้าสู่ระบบแล้วหรือไม่ */ false; // ให้เปลี่ยนค่าตรงนี้ตามการตรวจสอบของคุณเอง
+
+    // รายการหน้าที่ต้องการตรวจสอบสถานะการเข้าสู่ระบบ
+    const securePages = ['dashboard', 'alcohol', 'role', 'user', 'profile','RoomAlcohol','profileuser'];
+
+    if (securePages.includes(to.name) && !isAuthenticated) {
+      next({ name: 'Login', query: { redirect: 'login' } }); // ถ้าไม่ใช่หน้า Login หรือ Register และไม่มีการลงทะเบียนหรือเข้าสู่ระบบ ให้เปลี่ยนเส้นทางไปยังหน้า Login
+    } else {
+      next(); // อนุญาตให้ผู้ใช้เข้าถึงหน้า
+    }
+  })
+
   return Router
 })
+
