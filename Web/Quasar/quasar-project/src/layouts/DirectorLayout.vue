@@ -16,10 +16,6 @@
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
         />
-      
-        <!-- <div v-if="totals && totals.length > 0">
-    <span v-for="(total, index) in totals" :key="index">{{ total.total_notifications }} </span>
-  </div> -->
   
         <q-btn outline round color="primary">
           <q-img
@@ -93,7 +89,31 @@
       </q-item-section>
     </div>
     </q-item>
+    <q-item v-for="item in sortedReads" :key="item.id">
+  <div class="horizontal-line" v-if="index !== sortedNotifications.length - 1">
+    <q-item-section v-if="item.detect === 0">
+      <div style="display: none;">{{ item.id }}</div>
+      <div style="display: none;">{{ item.alcohol_id }}</div>
+      <div style="display: none;">{{ item.detect }}</div>
+      Room {{ item.room }} have alcohol 
+      <br/>
+      Date:   {{ item.date }}
+      <br/>
+      Times:  {{ item.times }}
+    </q-item-section>
+   
+    <q-item-section v-else>
+      Room {{ item.room }} don't have alcohol.
+      <br/>
+      Date:   {{ item.date }}
+      <br/>
+      Times:  {{ item.times }}
+    </q-item-section>
+  </div> 
+</q-item>
+
   </q-list>
+  
 </q-menu>
 
 </div>
@@ -130,7 +150,7 @@ export default {
     const notifications = ref([]);
     const profile = ref(null);
     const totals = ref([]);
-    const read = ref([]);
+    const reads = ref([]);
 
     const getHistoryUserIdLook = async () => {
       const token = localStorage.getItem('accessToken');
@@ -141,7 +161,7 @@ export default {
             "x-access-token": token,
           }
         });
-        read.value = response.data;
+        reads.value = response.data;
       }catch(error){
         console.error('Error fetching data:', error);
       }
@@ -223,6 +243,7 @@ export default {
       fetchNotifications();
       fetchUserData();
       fetchTotalNotifications();
+      getHistoryUserIdLook();
     });
 
     return {
@@ -237,6 +258,8 @@ export default {
       totals,
       profile,
       fetchTotalNotifications,
+      getHistoryUserIdLook,
+      reads,
     };
   },
   methods: {
@@ -289,8 +312,20 @@ export default {
     });
     
     return copiedNotifications;
+  },
+  sortedReads() {
+    return this.reads.slice().sort((a, b) => b.id - a.id);
   }
 },
+// sortedReads() {
+//     const copNotifications = [...this.reads];
+//     copNotifications.sort((a, b) => {
+//       const dateA = new Date(`${a.date}T${a.times}`);
+//       const dateB = new Date(`${b.date}T${b.times}`);
+//       return dateB - dateA;
+//     });
+//     return copNotifications;
+//   }
 };
 </script>
 <style>
