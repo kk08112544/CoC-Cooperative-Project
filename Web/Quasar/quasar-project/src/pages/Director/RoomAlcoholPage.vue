@@ -72,7 +72,7 @@
             <q-td key="edit" :props="props">
               <q-input
                 v-model="props.row.edit"
-                type="number"
+                type="text"
                 label="1=Active, 2=Non-active"
                 dense
                 @keydown.enter="updateStatus(props.row.id, props.row.edit)"

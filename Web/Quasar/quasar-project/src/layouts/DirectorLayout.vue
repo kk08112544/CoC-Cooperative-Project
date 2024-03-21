@@ -63,7 +63,7 @@
   
 
 
-<q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 300px;">
+<q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 300px; height: 500px;">
   <q-list>
     <q-item v-for="notification in sortedNotifications" :key="notification.id">
      
@@ -317,15 +317,6 @@ export default {
     return this.reads.slice().sort((a, b) => b.id - a.id);
   }
 },
-// sortedReads() {
-//     const copNotifications = [...this.reads];
-//     copNotifications.sort((a, b) => {
-//       const dateA = new Date(`${a.date}T${a.times}`);
-//       const dateB = new Date(`${b.date}T${b.times}`);
-//       return dateB - dateA;
-//     });
-//     return copNotifications;
-//   }
 };
 </script>
 <style>
