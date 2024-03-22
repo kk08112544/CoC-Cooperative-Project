@@ -136,4 +136,15 @@ Dashboard.getRoom = (result) =>{
     });
 }
 
+Dashboard.ChangeAlcohol = (result) => {
+    sql.query('SELECT COUNT(*) as Total_Change FROM AlcoholHistory WHERE detect = 0',(err,res)=>{
+        if(err){
+            console.log("Query err: " + err);
+            result(err,null);
+            return;
+        }
+        result(null, res);
+    })
+}
+
 module.exports = Dashboard;

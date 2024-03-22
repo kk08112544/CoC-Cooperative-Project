@@ -10,7 +10,7 @@ module.exports = (app)=>{
     router.get("/amount",authJwt,dashboard_controller.getThisAmount);
     router.get("/totalRoles",authJwt,dashboard_controller.getAllRole);
     router.get("/getTotalUser",authJwt,dashboard_controller.getTotalUser);
-    // router.post("/addNotify",dashboard_controller.addNotify);
+    router.get("/totalChange",authJwt,dashboard_controller.getChange);
     router.get("/room",authJwt,dashboard_controller.getRoom);
     app.use("/api/dashboard", router);
 };

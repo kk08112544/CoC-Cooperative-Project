@@ -75,6 +75,14 @@ const getAllRole = (req,res) => {
     })
 }
 
+const getChange = (req,res) => {
+    Dashboard.ChangeAlcohol((err,data)=>{
+        if(err){
+            res.status(500).send({message: err.message || "Some error ocurred."});
+        }else res.send(data);
+    })
+}
+
 
 
 module.exports = {
@@ -87,4 +95,5 @@ module.exports = {
     getThisDayZone,
     getThisAmount,
     getRoom,
+    getChange,
 }

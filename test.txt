@@ -1,0 +1,87 @@
+<template>
+  <div class="q-pa-md">
+    <q-table
+      :grid="$q.screen.xs"
+      flat bordered
+      title="Treats"
+      :rows="rows"
+      :columns="columns"
+      row-key="name"
+      :filter="filter"
+      hide-header
+    >
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+      <template v-slot:body-cell-status_name="props">
+        <q-td :props="props">
+          <q-badge
+            :color="getStatusColor(props.row.status_name)"
+            text-color="white"
+          >
+            {{ props.row.status_name }}
+          </q-badge>
+        </q-td>
+      </template>
+    </q-table>
+  </div>
+</template>
+
+<script>
+import { defineComponent } from "vue";
+import axios from "axios";
+
+export default defineComponent({
+  name: "AlcoholPage",
+  data() {
+    return {
+      historyItems: [],
+      loading: true,
+      filter:'',
+      rows: [],
+      columns: [
+        { name: "id", label: "ID", align: "left", field: "id", sortable: true },
+        { name: "room", label: "Room", field: "room" },
+        { name: "detect", label: "Have/Not Have", field: "detect" },
+        { name: "status_name", label: "Status", field: "status_name" },
+      ]
+    };
+  },
+
+  methods: {
+    async fetchData() {
+      this.loading = true;
+      const token = localStorage.getItem("accessToken");
+      try {
+        const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+          headers: { "x-access-token": token }
+        });
+        this.rows = response.data;
+      } catch (error) {
+        console.error("Error fetching history data:", error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    getStatusColor(status) {
+      const lowerCaseStatus = status.toLowerCase();
+      if (lowerCaseStatus === "non-active") {
+        return "negative";
+      } else if (lowerCaseStatus === "active") {
+        return "positive";
+      } else {
+        return "";
+      }
+    }
+  },
+
+  mounted() {
+    this.fetchData();
+  },
+});
+</script>
