@@ -60,6 +60,12 @@ module.exports = configure(function (/* ctx */) {
         node: 'node16'
       },
 
+      // pwa: {
+      //   workboxOptions: {},
+      //   manifest: {}
+      //   // ค่าอื่น ๆ ตามต้องการ
+      // },
+
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,

@@ -42,19 +42,19 @@
       >
       
       <template v-slot:top-right>
-            <q-input
-    borderless
-    dense
-    debounce="300"
-    v-model="filter"
-    placeholder="Search by User Id"
-    :style="{ width: '300px', maxWidth: '500px' }"
-    @input="filterData"
-  >
-    <template v-slot:append>
-      <q-icon name="search" />
-    </template>
-  </q-input>
+        <q-input
+  borderless
+  dense
+  debounce="300"
+  v-model="filter"
+  placeholder="Search by id"
+  :style="{ width: '300px', maxWidth: '500px' }"
+  @input="filterData"
+>
+  <template v-slot:append>
+    <q-icon name="search" />
+  </template>
+</q-input>
           </template>
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -199,34 +199,47 @@ export default defineComponent({
   },
 
   methods: {
-    filterData() {
+    async filterData() {
   if (!this.filter) {
-    // Reset loading state and fetch data
+    // หากไม่มีการกรอง ให้โหลดข้อมูลทั้งหมด
     this.loading = true;
-    this.fetchData();
+    await this.fetchData();
   } else {
-    // Filter data based on the entered ID
-    this.historyItems = this.historyItems.filter(item => {
-      return item.id.toString().toLowerCase().includes(this.filter.toLowerCase());
-    });
+    try {
+      // กรองข้อมูลตามเงื่อนไขที่พิมพ์
+      const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+        headers: {
+          "x-access-token": localStorage.getItem("accessToken"),
+        },
+      });
+      this.historyItems = response.data.filter(item => {
+        // กรองแถวที่มีข้อความตรงกับที่พิมพ์
+        return item.room.toLowerCase().includes(this.filter.toLowerCase());
+      });
+    } catch (error) {
+      console.error("เกิดข้อผิดพลาดในการดึงข้อมูลที่กรอง:", error);
+    } finally {
+      this.loading = false;
+    }
   }
 },
-async fetchData() {
-  const token = localStorage.getItem("accessToken");
-  try {
-    this.loading = true;
-    const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
-      headers: {
-        "x-access-token": token,
-      },
-    });
-    this.historyItems = response.data;
-  } catch (error) {
-    console.error("Error fetching history data:", error);
-  } finally {
-    this.loading = false;
-  }
-},
+
+  async fetchData() {
+    const token = localStorage.getItem("accessToken");
+    try {
+      this.loading = true;
+      const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+        headers: {
+          "x-access-token": token,
+        },
+      });
+      this.historyItems = response.data;
+    } catch (error) {
+      console.error("Error fetching history data:", error);
+    } finally {
+      this.loading = false;
+    }
+  },
 
     async addToAlcohol() {
       const token = localStorage.getItem("accessToken");
