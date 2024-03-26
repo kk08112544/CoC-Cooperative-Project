@@ -73,7 +73,7 @@
               <input
   v-model="props.row.edit"
   type="number"
-  label="1=Active, 2=Non-active"
+  placeholder="1=Active, 2=Non-active"
 
   @keydown.enter="updateStatus(props.row.id, props.row.edit)"
 />
@@ -325,7 +325,7 @@ async updateStatus(id, newStatus) {
         color: "green",
         textColor: "white",
         type: "positive",
-        message: "Update Status Successfully",
+        message: "Update  Room  Status ID : "  +  response.data.id  + " Successfully",
         timeout: 1000
       });
       setTimeout(() => {

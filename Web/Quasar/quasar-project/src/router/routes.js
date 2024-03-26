@@ -20,7 +20,6 @@ const routes = [
       {path: 'RoomAlcohol',component: () => import('pages/Director/RoomAlcoholPage.vue')},
       {path: 'user',component: () => import('pages/Director/ListUserPage.vue')},
       {path: 'profile',component: () => import('pages/Director/ProfilePage.vue')},
-      { path: 'test', component: () => import('pages/Director/testerPage.vue') },
     ]
   },
   {
