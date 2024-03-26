@@ -37,8 +37,9 @@
                 >
                   {{ props.row.status_name }}
                 </q-badge>
+                <!-- <q-toggle v-model="props.row.isActive" checked-icon="add" unchecked-icon="remove" /> -->
               </q-td>
-              <q-td>
+              <q-td key="edit" :props="props">
                 <q-toggle v-model="props.row.isActive" checked-icon="add" unchecked-icon="remove" />
               </q-td>
             </q-tr>
@@ -66,6 +67,7 @@ export default defineComponent({
         { name: "room", label: "Room", field: "room" },
         { name: "detect", label: "Have/Not Have", field: "detect" },
         { name: "status_name", label: "Status", field: "status_name" },
+        { name: "edit", label: "Edit", field: "edit" },
       ],
     };
   },
