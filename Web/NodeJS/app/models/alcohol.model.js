@@ -12,7 +12,7 @@ const Alcohol = function(alcohol){
 }
 // SELECT alcohol.id, alcohol.room, alcohol.detect, status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id
 Alcohol.getAlcohol = (result)=>{
-    sql.query(" SELECT alcohol.id, alcohol.room, alcohol.detect, status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id", (err,res)=>{
+    sql.query(" SELECT alcohol.id, alcohol.room, alcohol.detect,alcohol.status_id ,status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id", (err,res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);

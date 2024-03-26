@@ -70,16 +70,16 @@
               </q-badge>
             </q-td>
             <q-td key="edit" :props="props">
-              <q-input
-                v-model="props.row.edit"
-                type="text"
-                label="1=Active, 2=Non-active"
-                dense
-                @keydown.enter="updateStatus(props.row.id, props.row.edit)"
-                :pattern="'[1-2]'"
-                maxlength="1"
-              />
-            </q-td>
+        <q-input
+          v-model="props.row.edit"
+          type="text"
+          label="1=Active, 2=Non-active"
+          dense
+          @keydown.enter="handleUpdate(props.row.id, props.row.edit)"
+          :pattern="'[1-2]'"
+          maxlength="1"
+        />
+      </q-td>
             <q-td key="action" :props="props">
               <q-btn
                 color="primary"
@@ -200,6 +200,7 @@ export default defineComponent({
 
   methods: {
     async filterData() {
+      const token = localStorage.getItem("accessToken");
   if (!this.filter) {
     // หากไม่มีการกรอง ให้โหลดข้อมูลทั้งหมด
     this.loading = true;
@@ -234,6 +235,7 @@ export default defineComponent({
         },
       });
       this.historyItems = response.data;
+      
     } catch (error) {
       console.error("Error fetching history data:", error);
     } finally {
@@ -290,46 +292,49 @@ export default defineComponent({
       }
     },
 
+  
+    handleUpdate(id, newStatus) {
+    console.log(newStatus);
+    this.updateStatus(id, newStatus);
+  },
+
     async updateStatus(id, newStatus) {
-      const token = localStorage.getItem("accessToken");
-      console.log(newStatus);
-      try {
-        if (newStatus !== "1" && newStatus !== "2") {
-          this.$q.notify({
-            color: "negative",
-            textColor: "white",
-            type: "negative",
-            message: "Status is 1 or 2 Only!!!",
-            timeout: 1000
-          });
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
-        } else {
-          const response = await axios.put(
-            `http://localhost:3000/api/alcohol/updateStatusToAlcohol/${id}`,
-            { status_id: newStatus },
-            {
-              headers: {
-                "x-access-token": token,
-              },
-            }
-          );
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
-          this.$q.notify({
-            color: "green",
-            textColor: "white",
-            type: "positive",
-            message: "Update Status Successfully",
-            timeout: 1000
-          });
+  const token = localStorage.getItem("accessToken");
+  console.log(newStatus);
+  try {
+    if (newStatus !== "1" && newStatus !== "2") {
+      this.$q.notify({
+        color: "negative",
+        textColor: "white",
+        type: "negative",
+        message: "Status must be either 1 or 2",
+        timeout: 1000
+      });
+    } else {
+      const response = await axios.put(
+        `http://localhost:3000/api/alcohol/updateStatusToAlcohol/${id}`,
+        { status_id: newStatus },
+        {
+          headers: {
+            "x-access-token": token,
+          },
         }
-      } catch (error) {
-        console.error("Error updating status:", error);
-      }
-    },
+      );
+      this.$q.notify({
+        color: "green",
+        textColor: "white",
+        type: "positive",
+        message: "Update Status Successfully",
+        timeout: 1000
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  } catch (error) {
+    console.error("Error updating status:", error);
+  }
+},
 
     editRecord(row) {
       this.input.id = row.id;
