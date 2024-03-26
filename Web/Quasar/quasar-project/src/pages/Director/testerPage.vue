@@ -11,6 +11,7 @@
           :columns="columns"
           row-key="id"
         >
+          <!-- Search input -->
           <template v-slot:top-right>
             <q-input
               borderless
@@ -25,6 +26,8 @@
               </template>
             </q-input>
           </template>
+
+          <!-- Table body -->
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td key="id" :props="props">{{ props.row.id }}</q-td>
@@ -37,10 +40,9 @@
                 >
                   {{ props.row.status_name }}
                 </q-badge>
-                <!-- <q-toggle v-model="props.row.isActive" checked-icon="add" unchecked-icon="remove" /> -->
               </q-td>
               <q-td key="edit" :props="props">
-                <q-toggle v-model="props.row.isActive" checked-icon="add" unchecked-icon="remove" />
+                <q-toggle v-model="props.row.isActive" @change="updateStatus(props.row.id, props.row.isActive)" />
               </q-td>
             </q-tr>
           </template>
@@ -79,42 +81,34 @@ export default defineComponent({
   methods: {
     async fetchData() {
       this.loading = true;
-      const token = localStorage.getItem("accessToken");
       try {
         const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
-          headers: { "x-access-token": token }
+          headers: { "x-access-token": this.getToken() }
         });
         this.historyItems = response.data;
       } catch (error) {
         console.error("Error fetching history data:", error);
+        // Handle error, display error message, or retry logic
       } finally {
         this.loading = false;
       }
     },
+    async updateStatus(id, newStatus) {
+      const status_id = newStatus ? '1' : '2'; // Assuming '1' for active and '2' for non-active
+      try {
+        await axios.put(`http://localhost:3000/api/alcohol/updateStatusToAlcohol/${id}`, { status_id }, {
+          headers: { "x-access-token": this.getToken() }
+        });
+        this.fetchData(); // Refresh data after update
+      } catch (error) {
+        console.error("Error updating status:", error);
+        // Handle error
+      }
+    },
+
     getStatusColor(status) {
-  const lowerCaseStatus = status.toLowerCase();
-  if (lowerCaseStatus === "non-active") {
-    // ตรวจสอบสถานะและอัปเดตค่า isActive ใน historyItems
-    this.historyItems.forEach(item => {
-      if (item.status_name.toLowerCase() === "non-active") {
-        item.isActive = false;
-      }
-    });
-    return "negative";
-  } else if (lowerCaseStatus === "active") {
-    // ตรวจสอบสถานะและอัปเดตค่า isActive ใน historyItems
-    this.historyItems.forEach(item => {
-      if (item.status_name.toLowerCase() === "active") {
-        item.isActive = true;
-      }
-    });
-    return "positive";
-  } else {
-    return "";
-  }
-},
-
-
+      return status.toLowerCase() === 'active' ? 'positive' : 'negative';
+    },
   },
 
   computed: {
@@ -134,7 +128,6 @@ export default defineComponent({
       // Nothing needs to be done here
       // The computed property `filteredItems` will automatically update
       // based on the new value of `filter`
-      console.log("Filtered items:", this.filteredItems);
     },
   },
 });

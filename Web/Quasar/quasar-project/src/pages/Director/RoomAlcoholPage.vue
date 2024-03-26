@@ -70,15 +70,14 @@
               </q-badge>
             </q-td>
             <q-td key="edit" :props="props">
-        <q-input
-          v-model="props.row.edit"
-          type="text"
-          label="1=Active, 2=Non-active"
-          dense
-          @keydown.enter="handleUpdate(props.row.id, props.row.edit)"
-          :pattern="'[1-2]'"
-          maxlength="1"
-        />
+              <input
+  v-model="props.row.edit"
+  type="number"
+  label="1=Active, 2=Non-active"
+
+  @keydown.enter="updateStatus(props.row.id, props.row.edit)"
+/>
+
       </q-td>
             <q-td key="action" :props="props">
               <q-btn
@@ -294,15 +293,17 @@ export default defineComponent({
 
   
     handleUpdate(id, newStatus) {
-    console.log(newStatus);
-    this.updateStatus(id, newStatus);
-  },
+  // แปลง newStatus เป็นตัวเลข
+  const statusNumber = parseInt(newStatus);
 
-    async updateStatus(id, newStatus) {
+  // เรียกใช้งานฟังก์ชัน updateStatus โดยส่งค่าตัวเลขให้
+  this.updateStatus(id, statusNumber);
+},
+
+async updateStatus(id, newStatus) {
   const token = localStorage.getItem("accessToken");
-  console.log(newStatus);
   try {
-    if (newStatus !== "1" && newStatus !== "2") {
+    if (newStatus !== 1 && newStatus !== 2) {
       this.$q.notify({
         color: "negative",
         textColor: "white",
@@ -335,6 +336,7 @@ export default defineComponent({
     console.error("Error updating status:", error);
   }
 },
+
 
     editRecord(row) {
       this.input.id = row.id;
