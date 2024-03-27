@@ -36,7 +36,7 @@
       <q-table
       flat
         bordered
-        :rows="historyItems"
+        :rows="filteredItems"
         :columns="columns"
         row-key="id"
       >
@@ -193,36 +193,42 @@ export default defineComponent({
     };
   },
 
+  computed: {
+    filteredItems() {
+      const filtered = this.historyItems.filter(item => {
+        return (
+          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.room.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.detect.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.status_name.toLowerCase().includes(this.filter.toLowerCase()) 
+        );
+      });
+      return filtered;
+    },
+  },
+
   setup() {
     return {};
   },
 
   methods: {
-    async filterData() {
-      const token = localStorage.getItem("accessToken");
-  if (!this.filter) {
-    // หากไม่มีการกรอง ให้โหลดข้อมูลทั้งหมด
-    this.loading = true;
-    await this.fetchData();
-  } else {
-    try {
-      // กรองข้อมูลตามเงื่อนไขที่พิมพ์
-      const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
-        headers: {
-          "x-access-token": localStorage.getItem("accessToken"),
-        },
+    filterData() {
+    if (!this.filter) {
+      this.loading = true; // ให้ loading = true เมื่อทำการกรองข้อมูล
+      this.fetchData(); // โหลดข้อมูลเดิมทั้งหมดเมื่อไม่มีคำค้นหา
+      this.loading = false; // หยุด loading เมื่อโหลดข้อมูลเสร็จสมบูรณ์
+    } else {
+      // กรองข้อมูลเฉพาะที่ตรงกับคำค้นหา
+      this.historyItems = this.historyItems.filter(item => {
+        return (
+          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.room.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.detect.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.status_name.toLowerCase().includes(this.filter.toLowerCase()) 
+        );
       });
-      this.historyItems = response.data.filter(item => {
-        // กรองแถวที่มีข้อความตรงกับที่พิมพ์
-        return item.room.toLowerCase().includes(this.filter.toLowerCase());
-      });
-    } catch (error) {
-      console.error("เกิดข้อผิดพลาดในการดึงข้อมูลที่กรอง:", error);
-    } finally {
-      this.loading = false;
     }
-  }
-},
+  },
 
   async fetchData() {
     const token = localStorage.getItem("accessToken");
@@ -325,7 +331,7 @@ async updateStatus(id, newStatus) {
         color: "green",
         textColor: "white",
         type: "positive",
-        message: "Update  Room  Status ID : "  +  response.data.id  + " Successfully",
+        message: "Update  Status of Room ID : "  +  response.data.id  + " Successfully",
         timeout: 1000
       });
       setTimeout(() => {
@@ -427,6 +433,19 @@ async updateStatus(id, newStatus) {
         console.error("Error deleting record:", error);
       }
     },
+    computed: {
+    filteredItems() {
+      const filtered = this.historyItems.filter(item => {
+        return (
+          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.room.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.detect.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.status_name.toLowerCase().includes(this.filter.toLowerCase()) 
+        );
+      });
+      return filtered;
+    },
+  },
   },
 
   mounted() {

@@ -100,13 +100,49 @@ export default defineComponent({
 
   computed: {
     filteredItems() {
+      // const filterText = this.filter.toLowerCase();
+      // return this.historyItems.filter(item =>
+      //   item.id.toString().toLowerCase().includes(filterText) ||
+      //   item.room.toString().toLowerCase().includes(filterText) ||
+      //   item.detect.toString().toLowerCase().includes(filterText) ||
+      //   item.status_name.toLowerCase().includes(filterText)
+      // );
       const filterText = this.filter.toLowerCase();
-      return this.historyItems.filter(item =>
+  const filterLength = filterText.length;
+
+  return this.historyItems.filter(item => {
+    if (filterLength === 1) {
+      // ถ้าพิมตัวอักษร a ขึ้นต้นให้แสดงActive
+      if (filterText === 'a') {
+        return item.status_name.toLowerCase().includes('active');
+      }
+      // ถ้าพิมตัวอักษร n ขึ้นต้นแสดง non-active
+      else if (filterText === 'n') {
+        return item.status_name.toLowerCase().includes('non-active');
+      }
+      // เช็คเฉพาะ id และ detect เมื่อพิมพ์เลขหนึ่งหลัก
+      else {
+        return (
+          item.id.toString().includes(filterText) ||
+          item.detect.toString().includes(filterText)
+        );
+      }
+    }
+    else if (filterLength === 2) {
+      return (
+        item.id.toString().includes(filterText) ||
+        item.room.toString().includes(filterText)
+      );
+    }
+    else {
+      return (
         item.id.toString().toLowerCase().includes(filterText) ||
         item.room.toString().toLowerCase().includes(filterText) ||
         item.detect.toString().toLowerCase().includes(filterText) ||
         item.status_name.toLowerCase().includes(filterText)
       );
+    }
+  });
     },
   },
 

@@ -18,7 +18,7 @@
     dense
     debounce="300"
     v-model="filter"
-    placeholder="Search by User Id"
+    placeholder="Search user"
     :style="{ width: '300px', maxWidth: '500px' }"
     @input="filterData"
   >
@@ -265,6 +265,7 @@ export default defineComponent({
           item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
           item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
           item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.username.toLowerCase().includes(this.filter.toLowerCase()) ||
           item.role_name.toLowerCase().includes(this.filter.toLowerCase())
         );
       });
@@ -312,6 +313,7 @@ export default defineComponent({
           item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
           item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
           item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.username.toLowerCase().includes(this.filter.toLowerCase()) ||
           item.role_name.toLowerCase().includes(this.filter.toLowerCase())
         );
       });
@@ -492,6 +494,7 @@ computed: {
           item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
           item.name.toLowerCase().includes(this.filter.toLowerCase()) ||
           item.lastname.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.username.toLowerCase().includes(this.filter.toLowerCase()) ||
           item.role_name.toLowerCase().includes(this.filter.toLowerCase())
         );
       });
