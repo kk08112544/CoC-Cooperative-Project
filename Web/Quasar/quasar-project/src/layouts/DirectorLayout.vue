@@ -267,7 +267,6 @@ export default {
   const token = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');
   try {
-    // Iterate over notifications and collect data
     for (const notification of this.notifications) {
       const data = {
         his_id: notification.id,
@@ -280,7 +279,7 @@ export default {
       };
 
       // Make HTTP POST request to the API endpoint
-      const response =await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
+      const response = await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
         headers: {
           "x-access-token": token,
         }
@@ -295,6 +294,7 @@ export default {
     // Handle error as needed
   }
 }
+
   },
   computed: {
   sortedNotifications() {

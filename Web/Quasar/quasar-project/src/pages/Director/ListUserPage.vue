@@ -221,26 +221,10 @@ export default defineComponent({
         { name: "role_name", label: "Role Name", field: "role_name" },
         { name: "action", label: "Action", field: "action", align: "center" },
       ],
-    //   getStatusColor : (role) => {
-    //   const lowerCaseStatus = role.toLowerCase();
-
-    //   if (lowerCaseStatus === "admin") {
-    //     return "green";
-    //   }else if (lowerCaseStatus === "user") {
-    //     return "orange";
-    //   } else {
-    //     return ""; // คืนค่าว่างหากไม่ตรงเงื่อนไขใดๆ
-    //   }
-    // }
-    //   form_add: false,
+   
       form_edit: false,
       form_delete: false,
       role:'',
-      // input: { // สร้าง object input สำหรับเก็บข้อมูลที่ใช้ในการแก้ไข
-      //   id: '',
-      //   role: '',
-      //   inputRole: '',
-      // },
       input: {
   id:'',
   name:'',
@@ -320,27 +304,31 @@ export default defineComponent({
     }
   },
 
-    async fetchData() {
+  async fetchData() {
     if (!this.filter) {
       // โหลดข้อมูลเฉพาะเมื่อไม่มีการค้นหา
       this.loading = true;
       const token = localStorage.getItem("accessToken");
       const userId = localStorage.getItem("userId");
-      console.log(userId);
-      try {
-        const response = await axios.get(`http://localhost:3000/api/auth/`, {
-          headers: {
-            "x-access-token": token,
-          },
-        });
-        this.historyItems = response.data;
-        this.loading = false;
-      } catch (error) {
-        console.error("Error fetching history data:", error);
-        this.loading = false;
+      const roleId = localStorage.getItem("roleId");
+      if(roleId == 1){
+        console.log(userId);
+        try {
+          const response = await axios.get(`http://localhost:3000/api/auth/`, {
+            headers: {
+              "x-access-token": token,
+            },
+          });
+          this.historyItems = response.data;
+          this.loading = false;
+        } catch (error) {
+          console.error("Error fetching history data:", error);
+          this.loading = false;
+        }
       }
     }
   },
+
 
     editRecord(row){
       this.input.id = row.id;

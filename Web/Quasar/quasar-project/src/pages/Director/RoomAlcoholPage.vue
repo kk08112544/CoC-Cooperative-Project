@@ -195,15 +195,31 @@ export default defineComponent({
 
   computed: {
     filteredItems() {
-      const filtered = this.historyItems.filter(item => {
-        return (
-          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.room.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.detect.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.status_name.toLowerCase().includes(this.filter.toLowerCase()) 
+      const filterText = this.filter.toLowerCase();
+  const filterLength = filterText.length;
+
+  return this.historyItems.filter(item => {
+    if (filterLength === 1) {
+      return (
+          item.id.toString().includes(filterText) ||
+          item.detect.toString().includes(filterText)
         );
-      });
-      return filtered;
+    }
+    else if (filterLength === 2) {
+      return (
+        item.id.toString().includes(filterText) ||
+        item.room.toString().includes(filterText)
+      );
+    }
+    else {
+      return (
+        item.id.toString().toLowerCase().includes(filterText) ||
+        item.room.toString().toLowerCase().includes(filterText) ||
+        item.detect.toString().toLowerCase().includes(filterText) ||
+        item.status_name.toLowerCase().includes(filterText)
+      );
+    }
+  });
     },
   },
 
@@ -219,14 +235,31 @@ export default defineComponent({
       this.loading = false; // หยุด loading เมื่อโหลดข้อมูลเสร็จสมบูรณ์
     } else {
       // กรองข้อมูลเฉพาะที่ตรงกับคำค้นหา
-      this.historyItems = this.historyItems.filter(item => {
-        return (
-          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.room.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.detect.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.status_name.toLowerCase().includes(this.filter.toLowerCase()) 
+      const filterText = this.filter.toLowerCase();
+  const filterLength = filterText.length;
+
+  return this.historyItems.filter(item => {
+    if (filterLength === 1) {
+      return (
+          item.id.toString().includes(filterText) ||
+          item.detect.toString().includes(filterText)
         );
-      });
+    }
+    else if (filterLength === 2) {
+      return (
+        item.id.toString().includes(filterText) ||
+        item.room.toString().includes(filterText)
+      );
+    }
+    else {
+      return (
+        item.id.toString().toLowerCase().includes(filterText) ||
+        item.room.toString().toLowerCase().includes(filterText) ||
+        item.detect.toString().toLowerCase().includes(filterText) ||
+        item.status_name.toLowerCase().includes(filterText)
+      );
+    }
+  });
     }
   },
 
@@ -435,15 +468,32 @@ async updateStatus(id, newStatus) {
     },
     computed: {
     filteredItems() {
-      const filtered = this.historyItems.filter(item => {
-        return (
-          item.id.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.room.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.detect.toString().toLowerCase().includes(this.filter.toLowerCase()) ||
-          item.status_name.toLowerCase().includes(this.filter.toLowerCase()) 
+      const filterText = this.filter.toLowerCase();
+  const filterLength = filterText.length;
+
+  return this.historyItems.filter(item => {
+    if (filterLength === 1) {
+      return (
+          item.id.toString().includes(filterText) ||
+          item.detect.toString().includes(filterText)
         );
-      });
-      return filtered;
+    }
+    else if (filterLength === 2) {
+      return (
+        item.id.toString().includes(filterText) ||
+        item.room.toString().includes(filterText)
+      );
+    }
+    else {
+      return (
+        item.id.toString().toLowerCase().includes(filterText) ||
+        item.room.toString().toLowerCase().includes(filterText) ||
+        item.detect.toString().toLowerCase().includes(filterText) ||
+        item.status_name.toLowerCase().includes(filterText)
+      );
+    }
+  });
+      // return filtered;
     },
   },
   },

@@ -319,12 +319,30 @@ export default defineComponent({
   computed: {
     filteredItems() {
       const filterText = this.filter.toLowerCase();
-      return this.historyItems.filter(item =>
+  const filterLength = filterText.length;
+
+  return this.historyItems.filter(item => {
+    if (filterLength === 1) {
+      return (
+          item.id.toString().includes(filterText) ||
+          item.detect.toString().includes(filterText)
+        );
+    }
+    else if (filterLength === 2) {
+      return (
+        item.id.toString().includes(filterText) ||
+        item.room.toString().includes(filterText)
+      );
+    }
+    else {
+      return (
         item.id.toString().toLowerCase().includes(filterText) ||
         item.room.toString().toLowerCase().includes(filterText) ||
         item.detect.toString().toLowerCase().includes(filterText) ||
         item.status_name.toLowerCase().includes(filterText)
       );
+    }
+  });
     },
   },
 

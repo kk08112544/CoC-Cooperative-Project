@@ -112,21 +112,10 @@ export default defineComponent({
 
   return this.historyItems.filter(item => {
     if (filterLength === 1) {
-      // ถ้าพิมตัวอักษร a ขึ้นต้นให้แสดงActive
-      if (filterText === 'a') {
-        return item.status_name.toLowerCase().includes('active');
-      }
-      // ถ้าพิมตัวอักษร n ขึ้นต้นแสดง non-active
-      else if (filterText === 'n') {
-        return item.status_name.toLowerCase().includes('non-active');
-      }
-      // เช็คเฉพาะ id และ detect เมื่อพิมพ์เลขหนึ่งหลัก
-      else {
-        return (
+      return (
           item.id.toString().includes(filterText) ||
           item.detect.toString().includes(filterText)
         );
-      }
     }
     else if (filterLength === 2) {
       return (
