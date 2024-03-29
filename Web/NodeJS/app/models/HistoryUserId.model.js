@@ -127,12 +127,7 @@ HistoryUserId.create = (newHistory,result) => {
 
 HistoryUserId.getAllHistoryLook = (user_id, result) => {
     sql.query(`
-        SELECT AH.id, A.room, AH.detect, DATE_FORMAT(AH.dates, '%Y-%m-%d') AS date, AH.times 
-        FROM AlcoholHistoryRead AHR 
-        INNER JOIN alcohol A ON AHR.alcohol_id = A.id 
-        INNER JOIN AlcoholHistory AH ON AHR.alcohol_id = AH.alcohol_id 
-        WHERE AHR.user_id = ?
-        GROUP BY AH.id, A.room, AH.detect, AH.dates, AH.times;
+       SELECT AH.id, A.room, AH.detect, DATE_FORMAT(AH.dates, '%Y-%m-%d') AS date, AH.times FROM AlcoholHistoryRead AHR INNER JOIN alcohol A ON AHR.alcohol_id = A.id INNER JOIN AlcoholHistory AH ON AHR.alcohol_id = AH.alcohol_id WHERE AHR.user_id = ? AND AH.dates >= DATE_SUB(CURDATE(), INTERVAL 90 DAY) GROUP BY AH.id, A.room, AH.detect, AH.dates, AH.times;
     `, [user_id], (err, res) => {
         if (err) {
             console.log("Query err: " + err);
