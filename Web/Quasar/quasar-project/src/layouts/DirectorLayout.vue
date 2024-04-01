@@ -156,7 +156,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try{
-        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/look/${userId}`, {
+        const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/HistoryUserId/look/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -171,7 +171,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/${userId}`, {
+        const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/HistoryUserId/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -187,7 +187,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/total/${userId}`, {
+        const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/HistoryUserId/total/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -203,7 +203,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`http://localhost:3000/api/auth/profile/${userId}`, {
+        const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/profile/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -216,7 +216,7 @@ export default {
     }
 
     const getImageUrl = (img) => {
-      return `http://localhost:3000/api/file/${img}`;
+      return `https://iot-smart-alcohol-system-backend-project.onrender.com/api/file/${img}`;
     };
 
     name.value = localStorage.getItem('name') || '';
@@ -279,7 +279,7 @@ export default {
       };
 
       // Make HTTP POST request to the API endpoint
-      const response = await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
+      const response = await axios.post('https://iot-smart-alcohol-system-backend-project.onrender.com/api/HistoryUserId/createHistory', data, {
         headers: {
           "x-access-token": token,
         }

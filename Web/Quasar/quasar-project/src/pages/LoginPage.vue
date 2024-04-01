@@ -54,7 +54,7 @@ export default defineComponent({
   methods: {
     async onSubmit() {
       try {
-        const response = await this.$axios.post(`http://localhost:3000/api/auth/login`, { // ส่งข้อมูล username , password ท
+        const response = await this.$axios.post(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/login`, { // ส่งข้อมูล username , password ท
           username: this.username,
           password: this.password,
         });

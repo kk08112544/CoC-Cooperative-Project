@@ -76,7 +76,7 @@ export default defineComponent({
       this.loading = true;
       const token = localStorage.getItem("accessToken");
       try {
-        const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+        const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/alcohol/`, {
           headers: { "x-access-token": token }
         });
         this.historyItems = response.data;
