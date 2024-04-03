@@ -66,7 +66,7 @@ export default defineComponent({
 
   methods: {
     getImageUrl(img) {
-      return `https://iot-smart-alcohol-system-backend-project.onrender.com/api/file/${img}`;
+      return `http://localhost:3000/api/file/${img}`;
     },
     async fetchData() {
       const token = localStorage.getItem("accessToken");
@@ -74,7 +74,7 @@ export default defineComponent({
 
       try {
         const response = await axios.get(
-          `https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/profile/${userId}`,
+          `http://localhost:3000/api/auth/profile/${userId}`,
           {
             headers: {
               "x-access-token": token,

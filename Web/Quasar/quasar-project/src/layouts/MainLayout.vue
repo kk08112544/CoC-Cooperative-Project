@@ -1,22 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <!-- <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar> -->
 
 <div class="row no-wrap shadow-1" style="height: 5px;">
         <q-toolbar class="col-8 col-md-7 bg-negative text-white q-pa-xs">

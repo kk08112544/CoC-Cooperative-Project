@@ -271,10 +271,10 @@ export default defineComponent({
       this.input.inputImg = URL.createObjectURL(this.uploadFile);
     },
     getImageUrl(img) {
-      return `https://iot-smart-alcohol-system-backend-project.onrender.com/api/file/${img}`;
+      return `http://localhost:3000/api/file/${img}`;
     },
     fetchRoles() {
-      axios.get('https://iot-smart-alcohol-system-backend-project.onrender.com/api/role')
+      axios.get('http://localhost:3000/api/role')
         .then(response => {
           this.options = response.data.map(role => ({
             label: role.role_name,
@@ -314,7 +314,7 @@ export default defineComponent({
       if(roleId == 1){
         console.log(userId);
         try {
-          const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/`, {
+          const response = await axios.get(`http://localhost:3000/api/auth/`, {
             headers: {
               "x-access-token": token,
             },
@@ -355,7 +355,7 @@ export default defineComponent({
   const token = localStorage.getItem("accessToken");
   try {
     const response = await axios.delete(
-      `https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/${this.input.id}`, // Send DELETE request with the ID
+      `http://localhost:3000/api/auth/${this.input.id}`, // Send DELETE request with the ID
       {
         headers: {
           "x-access-token": token,
@@ -388,7 +388,7 @@ async onEdit(input){
     console.log(this.uploadFile);
     if(this.uploadFile){
       const fileUploadResponse = await axios.post(
-        "https://iot-smart-alcohol-system-backend-project.onrender.com/api/file/upload",
+        "http://localhost:3000/api/file/upload",
         fileFormData
       );
       img = fileUploadResponse.data.uploadFileName;
@@ -404,7 +404,7 @@ async onEdit(input){
     if(this.input.inputRoleName.value === undefined){
       console.log(this.input.inputRoleName);
       console.log("No");
-      const roleResponse = await this.$axios.get('https://iot-smart-alcohol-system-backend-project.onrender.com/api/role');
+      const roleResponse = await axios.get('http://localhost:3000/api/role');
       const roles = roleResponse.data;
       const selectedRole = roles.find(role => role.role_name === this.input.inputRoleName);
       roleId = selectedRole ? selectedRole.id : null;
@@ -447,7 +447,7 @@ async onEdit(input){
       }
     }
     const response = await this.$axios.put(
-      `https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/${input.id}`,
+      `http://localhost:3000/api/auth/${input.id}`,
        profile,
       {
         headers: {

@@ -1,23 +1,18 @@
 <template>
   <q-page>
-    <q-img src="Building07-scaled.jpg" style="height: 100vh;">  <!-- ภาพพื้นหลังหน้านี้ ความสูง 100 vh-->
-      <!--  form login อยู่ตรงกลาง-->
+    <q-img src="Building07-scaled.jpg" style="height: 100vh;">
       <div class="flex flex-center absolute-full text-subtitle2">
         <q-card class="my-card q-px-md p-py-md" style="background-color: rgba(255, 255, 255, 0.7);">
-          <!-- Adjust the opacity value as needed -->
           <div class="flex flex-center">
             <q-icon name="account_circle" color="grey-6" size="4rem" />
           </div>
           <q-card-section>
-            <!-- เมื่อมีการกดปุ่ม login แล้ว onSubmit จะไปทำ ตรง async onSubmit ตรง Script -->
             <q-form @submit.prevent="onSubmit" class="q-gutter-md">
-              <!-- Your form content -->
               <div>
                 <q-input v-model="username" type="text" label="Username"/>
               </div>
               <div>
                 <q-input v-model="password" :type="isPwd ? 'password' : 'text'" label="Password">
-                   <!--  เปิดปิดเพื่อดู password-->
                   <template v-slot:append>
                     <q-icon @click="togglePwdVisibility" :name="isPwd ? 'visibility_off' : 'visibility'"/>
                   </template>
@@ -28,7 +23,7 @@
               </div>
               <div>
                 <text-caption class="text-cyan-8">Not registered?
-                  <a href="/#/register">Create an Account</a>
+                  <router-link to="/register">Create an Account</router-link>
                 </text-caption>
               </div>
             </q-form>
@@ -48,13 +43,13 @@ export default defineComponent({
     return {
       username: null,
       password: null,
-      isPwd: false, // Added isPwd property
+      isPwd: false,
     };
   },
   methods: {
     async onSubmit() {
       try {
-        const response = await this.$axios.post(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/login`, { // ส่งข้อมูล username , password ท
+        const response = await this.$axios.post(`http://localhost:3000/api/auth/login`, {
           username: this.username,
           password: this.password,
         });
@@ -65,7 +60,7 @@ export default defineComponent({
         const name = response.data.name;
         const lastname = response.data.lastname;
 
-        localStorage.setItem("roleId",roleId);
+        localStorage.setItem("roleId", roleId);
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("userId", userId);
         localStorage.setItem("name", name);
@@ -78,22 +73,19 @@ export default defineComponent({
           message: "Logged in successfully",
         });
 
-        console.log(response.data);
-        // Check if roleId is a number (remove quotes around 1) // ถ้า roleId = 1 ให้ไปหน้า dashboard ถ้า roleId เป็นอื่นๆ ไปหน้า alcohol
         this.$router.push(parseInt(roleId, 10) === 1 ? "/director/dashboard" : "/user/alcohol");
       } catch (error) {
         console.log("Login error", error);
-        //notify ว่า login ไม่สำเร็จ
         this.$q.notify({
           color: "negative",
           textColor: "white",
           type: "negative",
-          message: "This username or password are not matches ",
+          message: "Invalid username or password",
         });
       }
     },
     togglePwdVisibility() {
-      this.isPwd = !this.isPwd; // Toggle password visibility
+      this.isPwd = !this.isPwd;
     },
   },
 });

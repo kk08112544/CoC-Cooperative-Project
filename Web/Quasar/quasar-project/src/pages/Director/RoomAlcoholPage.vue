@@ -267,7 +267,7 @@ export default defineComponent({
     const token = localStorage.getItem("accessToken");
     try {
       this.loading = true;
-      const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/alcohol/`, {
+      const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
         headers: {
           "x-access-token": token,
         },
@@ -304,7 +304,7 @@ export default defineComponent({
             });
           } else {
             const response = await axios.post(
-              `https://iot-smart-alcohol-system-backend-project.onrender.com/api/alcohol/addToAlcohol`,
+              `http://localhost:3000/api/alcohol/addToAlcohol`,
               { room: this.room },
               {
                 headers: {
@@ -352,7 +352,7 @@ async updateStatus(id, newStatus) {
       });
     } else {
       const response = await axios.put(
-        `https://iot-smart-alcohol-system-backend-project.onrender.com/api/alcohol/updateStatusToAlcohol/${id}`,
+        `http://localhost:3000/api/alcohol/updateStatusToAlcohol/${id}`,
         { status_id: newStatus },
         {
           headers: {
@@ -407,7 +407,7 @@ async updateStatus(id, newStatus) {
             });
           } else {
             const response = await this.$axios.put(
-              `https://iot-smart-alcohol-system-backend-project.onrender.com/api/alcohol/updateToAlcohol/${input.id}`,
+              `http://localhost:3000/api/alcohol/updateToAlcohol/${input.id}`,
               { room: input.inputRoom },
               {
                 headers: {
@@ -444,7 +444,7 @@ async updateStatus(id, newStatus) {
       const token = localStorage.getItem("accessToken");
       try {
         const response = await axios.delete(
-          `https://iot-smart-alcohol-system-backend-project.onrender.com/api/alcohol/deleteToAlcohol/${this.input.id}`,
+          `http://localhost:3000/api/alcohol/deleteToAlcohol/${this.input.id}`,
           {
             headers: {
               "x-access-token": token,

@@ -122,12 +122,42 @@
         
       </q-toolbar>
       <q-toolbar class="bg-primary text-white">
-        <q-btn @click="handleDashboard" to="/director/dashboard" style="color: white" no-caps label="Dashboard" class="q-mr-md" />
-        <q-btn @click="handleManagement" to="/director/role" style="color: white" no-caps label="Role" class="q-mr-md" />
-        <q-btn @click="handleAlcohol" to="/director/RoomAlcohol" style="color: white" no-caps label="Alcohol" class="q-mr-md" />
-        <q-btn @click="handleUser" to="/director/user" style="color: white" no-caps label="ListUser" class="q-mr-md" />
-        <q-btn @click="handleProfile" to="/director/profile" style="color: white" no-caps label="Profile" class="q-mr-md" />
-      </q-toolbar>
+    <q-item clickable @click="handleDashboard" to="/director/dashboard">
+        <q-item-section>
+            <q-item-label style="color: white" class="q-mr-md" no-caps>
+                Dashboard
+            </q-item-label>
+        </q-item-section>
+    </q-item>
+    <q-item clickable @click="handleManagement" to="/director/role">
+        <q-item-section>
+            <q-item-label style="color: white" class="q-mr-md" no-caps>
+                Role
+            </q-item-label>
+        </q-item-section>
+    </q-item>
+    <q-item clickable @click="handleAlcohol" to="/director/RoomAlcohol">
+        <q-item-section>
+            <q-item-label style="color: white" class="q-mr-md" no-caps>
+                Alcohol
+            </q-item-label>
+        </q-item-section>
+    </q-item>
+    <q-item clickable @click="handleUser" to="/director/user">
+        <q-item-section>
+            <q-item-label style="color: white" class="q-mr-md" no-caps>
+                ListUser
+            </q-item-label>
+        </q-item-section>
+    </q-item>
+    <q-item clickable @click="handleProfile" to="/director/profile">
+        <q-item-section>
+            <q-item-label style="color: white" class="q-mr-md" no-caps>
+                Profile
+            </q-item-label>
+        </q-item-section>
+    </q-item>
+</q-toolbar>
     </q-header>
 
     <q-page-container>
@@ -139,7 +169,6 @@
 <script>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-
 export default {
   name: 'DirectorLayout',
  
@@ -156,7 +185,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try{
-        const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/HistoryUserId/look/${userId}`, {
+        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/look/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -171,7 +200,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/HistoryUserId/${userId}`, {
+        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -187,12 +216,13 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/HistoryUserId/total/${userId}`, {
+        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/total/${userId}`, {
           headers: {
             "x-access-token": token,
           }
         });
         totals.value = response.data;
+      
         // console.log(notifications.length);
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -203,7 +233,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/profile/${userId}`, {
+        const response = await axios.get(`http://localhost:3000/api/auth/profile/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -216,7 +246,7 @@ export default {
     }
 
     const getImageUrl = (img) => {
-      return `https://iot-smart-alcohol-system-backend-project.onrender.com/api/file/${img}`;
+      return `http://localhost:3000/api/file/${img}`;
     };
 
     name.value = localStorage.getItem('name') || '';
@@ -279,7 +309,7 @@ export default {
       };
 
       // Make HTTP POST request to the API endpoint
-      const response = await axios.post('https://iot-smart-alcohol-system-backend-project.onrender.com/api/HistoryUserId/createHistory', data, {
+      const response = await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
         headers: {
           "x-access-token": token,
         }

@@ -110,7 +110,7 @@ export default defineComponent({
       });
     }
     // Check if username exists
-    const response = await axios.get(`https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/${this.username}`);
+    const response = await axios.get(`http://localhost:3000/api/auth/${this.username}`);
     const db_username = response.data.record ? response.data.record.username : null;
 
     if (this.username === db_username) {
@@ -127,7 +127,7 @@ export default defineComponent({
     fileFormData.append('singlefile', this.uploadFile);
     // Upload file if provided
     if (this.uploadFile != null) {
-      const fileUploadResponse = await axios.post('https://iot-smart-alcohol-system-backend-project.onrender.com/api/file/upload', fileFormData);
+      const fileUploadResponse = await axios.post('http://localhost:3000/api/file/upload', fileFormData);
       console.log(fileUploadResponse.data.uploadFileName);
       img = fileUploadResponse.data.uploadFileName;
       // localStorage.setItem('img', img);
@@ -135,7 +135,7 @@ export default defineComponent({
 
     // Create user
     const role_id = this.role.value;
-    const sendResponse = await axios.post('https://iot-smart-alcohol-system-backend-project.onrender.com/api/auth/signup', {
+    const sendResponse = await axios.post('http://localhost:3000/api/auth/signup', {
       name: this.name,
       lastname: this.lastname,
       username: this.username,
@@ -201,7 +201,7 @@ export default defineComponent({
     },
 
     fetchRoles() {
-      axios.get('https://iot-smart-alcohol-system-backend-project.onrender.com/api/role')
+      axios.get('http://localhost:3000/api/role')
         .then(response => {
           this.options = response.data.map(role => ({
             label: role.role_name,
