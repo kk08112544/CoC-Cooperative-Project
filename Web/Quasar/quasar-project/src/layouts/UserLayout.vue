@@ -66,8 +66,6 @@
 <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 350px; height: 500px;">
   <q-list>
     <q-item v-for="notification in sortedNotifications" :key="notification.id">
-     
-    
       <div class="horizontal-line" v-if="index !== sortedNotifications.length - 1">
       <q-item-section v-if="notification.detect === 0">
         <div style="display: none;">{{ notification.id }}</div>
@@ -225,6 +223,9 @@ export default {
         console.log(error);
       }
     }
+    const handleNotificationClick = (notification) => {
+      console.log(notification); // Log the selected notification data
+    };
 
     const getImageUrl = (img) => {
       return `http://localhost:3000/api/file/${img}`;
@@ -270,6 +271,7 @@ export default {
       profile,
       fetchTotalNotifications,
       getHistoryUserIdLook,
+      handleNotificationClick,
       reads,
     };
   },
@@ -279,7 +281,7 @@ export default {
   const userId = localStorage.getItem('userId');
   try {
     // Iterate over notifications and collect data
-    for (const notification of this.notifications) {
+    for (const notification of this.sortedNotifications) {
       const data = {
         his_id: notification.id,
         alcohol_id: notification.alcohol_id,
@@ -289,6 +291,7 @@ export default {
         detect: notification.detect,
         user_id: userId, // Fix variable name
       };
+      console.log(data);
 
       // Make HTTP POST request to the API endpoint
       const response =await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {

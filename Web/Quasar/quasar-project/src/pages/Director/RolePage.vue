@@ -192,22 +192,6 @@ export default defineComponent({
       });
     }
   },
-    // async fetchData() {
-    //   const token = localStorage.getItem("accessToken");
-    //   try {
-    //     const response = await axios.get(`http://localhost:3000/api/role/`, {
-    //       headers: {
-    //         "x-access-token": token,
-    //       },
-    //     });
-
-    //     this.historyItems = response.data;
-    //     this.loading = false;
-    //   } catch (error) {
-    //     console.error("Error fetching history data:", error);
-    //     this.loading = false;
-    //   }
-    // },
     async fetchData() {
     if (!this.filter) {
       // โหลดข้อมูลเฉพาะเมื่อไม่มีการค้นหา

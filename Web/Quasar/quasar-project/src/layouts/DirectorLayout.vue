@@ -57,7 +57,8 @@
       class="q-mr-md"
       @click="insertDataToDatabase"
     />
-    
+
+
   </div> 
  
   
@@ -307,6 +308,7 @@ export default {
         detect: notification.detect,
         user_id: userId, // Fix variable name
       };
+      console.log(data);
 
       // Make HTTP POST request to the API endpoint
       const response = await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
@@ -314,7 +316,7 @@ export default {
           "x-access-token": token,
         }
       });
-      console.log(response.data);
+      // console.log(response.data);
     }
 
     // If insertion is successful, clear the notifications list
