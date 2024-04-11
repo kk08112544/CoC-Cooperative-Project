@@ -14,7 +14,7 @@ const Dashboard = function(dashboard){
 }
 
 Dashboard.getAll = (result) => {
-    sql.query("SELECT COUNT(*) as total FROM used", (err, res) => {
+    sql.query("SELECT COUNT(*) as total FROM used;", (err, res) => {
         if (err) {
             console.log("Query err: " + err);
             result(err, null);

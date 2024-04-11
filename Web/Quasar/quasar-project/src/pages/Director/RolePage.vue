@@ -198,7 +198,7 @@ export default defineComponent({
       this.loading = true;
       const token = localStorage.getItem("accessToken");
       try {
-        const response = await axios.get(`http://localhost:3000/api/role/`, {
+        const response = await axios.get(`http://localhost:4000/api/role/`, {
           headers: {
             "x-access-token": token,
           },
@@ -240,7 +240,7 @@ export default defineComponent({
       });
     } else {
       const response = await axios.post(
-        `http://localhost:3000/api/role/addToRoles/`,
+        `http://localhost:4000/api/role/addToRoles/`,
         { role_name: this.role }, // ส่งข้อมูลห้องไปยังเซิร์ฟเวอร์
         {
           headers: {
@@ -295,7 +295,7 @@ editRecord(row){
           });
         }else{
           const response = await this.$axios.put(
-      `http://localhost:3000/api/role/updateToRoles/${input.id}`,
+      `http://localhost:4000/api/role/updateToRoles/${input.id}`,
       {role_name:input.inputRole},
       {
         headers:{
@@ -331,7 +331,7 @@ editRecord(row){
   const token = localStorage.getItem("accessToken");
   try {
     const response = await axios.delete(
-      `http://localhost:3000/api/role/deleteToRoles/${this.input.id}`, // Send DELETE request with the ID
+      `http://localhost:4000/api/role/deleteToRoles/${this.input.id}`, // Send DELETE request with the ID
       {
         headers: {
           "x-access-token": token,

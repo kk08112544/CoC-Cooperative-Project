@@ -49,7 +49,7 @@ export default defineComponent({
   methods: {
     async onSubmit() {
       try {
-        const response = await this.$axios.post(`http://localhost:3000/api/auth/login`, {
+        const response = await this.$axios.post(`http://localhost:4000/api/auth/login`, {
           username: this.username,
           password: this.password,
         });

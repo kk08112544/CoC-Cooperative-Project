@@ -62,7 +62,7 @@
   </div> 
  
   
-
+  <!-- v-if="totals && totals.length > 0 && totals[0].total !== 0" -->
 
 <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 350px; height: 500px;">
   <q-list>
@@ -181,12 +181,13 @@ export default {
     const profile = ref(null);
     const totals = ref([]);
     const reads = ref([]);
+    const insertionCompleted = ref(false);
 
     const getHistoryUserIdLook = async () => {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try{
-        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/look/${userId}`, {
+        const response = await axios.get(`http://localhost:4000/api/HistoryUserId/look/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -201,7 +202,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/${userId}`, {
+        const response = await axios.get(`http://localhost:4000/api/HistoryUserId/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -217,7 +218,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/total/${userId}`, {
+        const response = await axios.get(`http://localhost:4000/api/HistoryUserId/total/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -234,7 +235,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`http://localhost:3000/api/auth/profile/${userId}`, {
+        const response = await axios.get(`http://localhost:4000/api/auth/profile/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -247,7 +248,7 @@ export default {
     }
 
     const getImageUrl = (img) => {
-      return `http://localhost:3000/api/file/${img}`;
+      return `http://localhost:4000/api/file/${img}`;
     };
 
     name.value = localStorage.getItem('name') || '';
@@ -291,39 +292,75 @@ export default {
       fetchTotalNotifications,
       getHistoryUserIdLook,
       reads,
+      insertionCompleted,
     };
   },
   methods: {
     async insertDataToDatabase() {
-  const token = localStorage.getItem('accessToken');
-  const userId = localStorage.getItem('userId');
-  try {
-    for (const notification of this.notifications) {
-      const data = {
-        his_id: notification.id,
-        alcohol_id: notification.alcohol_id,
-        room: notification.room,
-        dates: notification.dates,
-        times: notification.times,
-        detect: notification.detect,
-        user_id: userId, // Fix variable name
-      };
-      console.log(data);
+  // const token = localStorage.getItem('accessToken');
+  // const userId = localStorage.getItem('userId');
+  // try {
+   
+  //   for (const notification of this.notifications) {
+  //     const data = {
+  //       his_id: notification.id,
+  //       alcohol_id: notification.alcohol_id,
+  //       room: notification.room,
+  //       dates: notification.dates,
+  //       times: notification.times,
+  //       detect: notification.detect,
+  //       user_id: userId, // Fix variable name
+  //     };
+  //     console.log(data);
 
-      // Make HTTP POST request to the API endpoint
-      const response = await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
-        headers: {
-          "x-access-token": token,
-        }
-      });
-      // console.log(response.data);
+  //     // Make HTTP POST request to the API endpoint
+  //     const response = await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
+  //       headers: {
+  //         "x-access-token": token,
+  //       }
+  //     });
+  //     // console.log(response.data);
+  //   }
+
+  //   // If insertion is successful, clear the notifications list
+  //   this.notifications = [];
+  // } catch (error) {
+  //   console.error('Error inserting data:', error);
+  //   // Handle error as needed
+  // }
+  if (this.notifications.length > 0 && !this.insertionCompleted) {
+    const token = localStorage.getItem('accessToken');
+    const userId = localStorage.getItem('userId');
+    try {
+      // Loop through notifications
+      for (const notification of this.notifications) {
+        const data = {
+          his_id: notification.id,
+          alcohol_id: notification.alcohol_id,
+          room: notification.room,
+          dates: notification.dates,
+          times: notification.times,
+          detect: notification.detect,
+          user_id: userId,
+        };
+        console.log(data);
+
+        // Make HTTP POST request to the API endpoint
+        const response = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
+          headers: {
+            "x-access-token": token,
+          }
+        });
+        // console.log(response.data);
+      }
+
+      // If insertion is successful, clear the notifications list
+      this.notifications = [];
+      this.insertionCompleted = true; // Mark insertion as completed
+    } catch (error) {
+      console.error('Error inserting data:', error);
+      // Handle error as needed
     }
-
-    // If insertion is successful, clear the notifications list
-    this.notifications = [];
-  } catch (error) {
-    console.error('Error inserting data:', error);
-    // Handle error as needed
   }
 }
 

@@ -267,7 +267,7 @@ export default defineComponent({
     const token = localStorage.getItem("accessToken");
     try {
       this.loading = true;
-      const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+      const response = await axios.get(`http://localhost:4000/api/alcohol/`, {
         headers: {
           "x-access-token": token,
         },
@@ -304,7 +304,7 @@ export default defineComponent({
             });
           } else {
             const response = await axios.post(
-              `http://localhost:3000/api/alcohol/addToAlcohol`,
+              `http://localhost:4000/api/alcohol/addToAlcohol`,
               { room: this.room },
               {
                 headers: {
@@ -352,7 +352,7 @@ async updateStatus(id, newStatus) {
       });
     } else {
       const response = await axios.put(
-        `http://localhost:3000/api/alcohol/updateStatusToAlcohol/${id}`,
+        `http://localhost:4000/api/alcohol/updateStatusToAlcohol/${id}`,
         { status_id: newStatus },
         {
           headers: {
@@ -407,7 +407,7 @@ async updateStatus(id, newStatus) {
             });
           } else {
             const response = await this.$axios.put(
-              `http://localhost:3000/api/alcohol/updateToAlcohol/${input.id}`,
+              `http://localhost:4000/api/alcohol/updateToAlcohol/${input.id}`,
               { room: input.inputRoom },
               {
                 headers: {
@@ -444,7 +444,7 @@ async updateStatus(id, newStatus) {
       const token = localStorage.getItem("accessToken");
       try {
         const response = await axios.delete(
-          `http://localhost:3000/api/alcohol/deleteToAlcohol/${this.input.id}`,
+          `http://localhost:4000/api/alcohol/deleteToAlcohol/${this.input.id}`,
           {
             headers: {
               "x-access-token": token,

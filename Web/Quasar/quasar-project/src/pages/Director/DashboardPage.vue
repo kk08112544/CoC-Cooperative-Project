@@ -152,7 +152,7 @@ export default defineComponent({
       console.log(img);
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/dashboard/total`,
+          `http://localhost:4000/api/dashboard/total`,
           {
             headers: {
               "x-access-token": token,
@@ -182,7 +182,7 @@ export default defineComponent({
 
       try{
         const response = await axios.get(
-          `http://localhost:3000/api/dashboard/totalChange`,
+          `http://localhost:4000/api/dashboard/totalChange`,
           {
             headers:{
               "x-access-token":token,
@@ -200,7 +200,7 @@ export default defineComponent({
 
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/dashboard/day`,
+          `http://localhost:4000/api/dashboard/day`,
           {
             headers: {
               "x-access-token": token,
@@ -234,7 +234,7 @@ export default defineComponent({
       const token = localStorage.getItem("accessToken");
       try{
         const response = await axios.get(
-          `http://localhost:3000/api/dashboard/day_zone`,
+          `http://localhost:4000/api/dashboard/day_zone`,
           {
             headers: {
               "x-access-token": token,
@@ -250,7 +250,7 @@ export default defineComponent({
       const token = localStorage.getItem("accessToken");
       try{
         const response = await axios.get(
-          `http://localhost:3000/api/dashboard/total_room`,
+          `http://localhost:4000/api/dashboard/total_room`,
           {
             headers:{
               "x-access-token": token,
@@ -267,7 +267,7 @@ export default defineComponent({
       const token = localStorage.getItem("accessToken");
       try{
         const response = await axios.get(
-          `http://localhost:3000/api/dashboard/totalRoles`,
+          `http://localhost:4000/api/dashboard/totalRoles`,
           {
             headers:{
               "x-access-token": token,
@@ -284,7 +284,7 @@ export default defineComponent({
       const token = localStorage.getItem("accessToken");
       try{
         const response = await axios.get(
-          `http://localhost:3000/api/dashboard/getTotalUser`,
+          `http://localhost:4000/api/dashboard/getTotalUser`,
           {
             headers:{
               "x-access-token": token,
@@ -301,7 +301,7 @@ export default defineComponent({
         const token = localStorage.getItem("accessToken");
       try {
         this.loading = true;
-        const response = await axios.get(`http://localhost:3000/api/alcohol/`, {
+        const response = await axios.get(`http://localhost:4000/api/alcohol/`, {
           headers: {
             "x-access-token": token,
           },

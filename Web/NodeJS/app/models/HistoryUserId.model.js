@@ -19,39 +19,20 @@ const HistoryUserId = function(historyuserid){
 
 HistoryUserId.getHistoryUserId = (user_id, result) => {
     sql.query(
-        `SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times
-        FROM AlcoholHistoryRead AS ahr
-        INNER JOIN (
-            SELECT ah.alcohol_id
-            FROM AlcoholHistoryRead AS ahr1
-            INNER JOIN AlcoholHistory AS ah ON ahr1.alcohol_id = ah.alcohol_id
-            WHERE ahr1.user_id != ?
-            AND ah.alcohol_id NOT IN (
-                SELECT ahr2.alcohol_id
-                FROM AlcoholHistoryRead AS ahr2
-                WHERE ahr2.user_id = ?
-                GROUP BY ahr2.alcohol_id
-                HAVING COUNT(*) > 1
-            )
-        ) AS filtered_alcohols ON ahr.alcohol_id = filtered_alcohols.alcohol_id
-        INNER JOIN alcohol AS a ON ahr.alcohol_id = a.id
-        INNER JOIN AlcoholHistory AS ah ON ah.alcohol_id = ahr.alcohol_id
+        `SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+        FROM AlcoholHistory AS ah 
+        JOIN alcohol AS a ON ah.alcohol_id = a.id 
+        LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
         WHERE ahr.user_id != ?
-        AND NOT EXISTS (
-            SELECT 1
-            FROM AlcoholHistoryRead AS ahr3
-            WHERE ahr3.alcohol_id = ahr.alcohol_id
-            AND ahr3.user_id = ?
-        )
+          AND (SELECT COUNT(*) FROM AlcoholHistoryRead AS ah2 WHERE ah2.his_id = ah.id AND ah2.user_id = ?) = 0 
         
         UNION 
         
-        SELECT ah.id, ah.alcohol_id, a.room, ah.detect, ah.dates, ah.times 
-        FROM AlcoholHistory ah 
-        LEFT JOIN alcohol a ON ah.alcohol_id = a.id 
-        WHERE ah.id NOT IN (SELECT his_id FROM AlcoholHistoryRead) 
-        LIMIT 25;`,
-        [user_id, user_id, user_id, user_id],
+        SELECT ah.id, ah.alcohol_id, NULL AS room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+        FROM AlcoholHistory AS ah 
+        LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
+        WHERE ahr.his_id IS NULL;`,
+        [user_id, user_id],
         (err, res) => {
             if (err) {
                 console.log("Query err: " + err);
@@ -67,41 +48,23 @@ HistoryUserId.gettotalHistoryUserId = (user_id, result) => {
     sql.query(
         `
         SELECT COUNT(*) AS total
-FROM (
-    SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times
-    FROM AlcoholHistoryRead AS ahr
-    INNER JOIN (
-        SELECT ah.alcohol_id
-        FROM AlcoholHistoryRead AS ahr1
-        INNER JOIN AlcoholHistory AS ah ON ahr1.alcohol_id = ah.alcohol_id
-        WHERE ahr1.user_id != ?
-        AND ah.alcohol_id NOT IN (
-            SELECT ahr2.alcohol_id
-            FROM AlcoholHistoryRead AS ahr2
-            WHERE ahr2.user_id = ?
-            GROUP BY ahr2.alcohol_id
-            HAVING COUNT(*) > 1
-        )
-    ) AS filtered_alcohols ON ahr.alcohol_id = filtered_alcohols.alcohol_id
-    INNER JOIN alcohol AS a ON ahr.alcohol_id = a.id
-    INNER JOIN AlcoholHistory AS ah ON ah.alcohol_id = ahr.alcohol_id
-    WHERE ahr.user_id != ?
-    AND NOT EXISTS (
-        SELECT 1
-        FROM AlcoholHistoryRead AS ahr3
-        WHERE ahr3.alcohol_id = ahr.alcohol_id
-        AND ahr3.user_id = ?
-    )
-    
-    UNION 
-    
-    SELECT ah.id, ah.alcohol_id, a.room, ah.detect, ah.dates, ah.times 
-    FROM AlcoholHistory ah 
-    LEFT JOIN alcohol a ON ah.alcohol_id = a.id 
-    WHERE ah.id NOT IN (SELECT his_id FROM AlcoholHistoryRead) 
-    LIMIT 25
-) AS combined_results;`
-,[user_id, user_id, user_id, user_id],
+        FROM (
+            SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+            FROM AlcoholHistory AS ah 
+            JOIN alcohol AS a ON ah.alcohol_id = a.id 
+            LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
+            WHERE ahr.user_id != ?
+            AND (SELECT COUNT(*) FROM AlcoholHistoryRead AS ah2 WHERE ah2.his_id = ah.id AND ah2.user_id = ?) = 0 
+            
+            UNION 
+            
+            SELECT ah.id, ah.alcohol_id, NULL AS room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+            FROM AlcoholHistory AS ah 
+            LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
+            WHERE ahr.his_id IS NULL 
+        ) AS subquery;
+        `
+,[user_id, user_id],
     (err, res) => {
         if (err) {
             console.log("Query err: " + err);

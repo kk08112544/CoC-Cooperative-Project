@@ -165,7 +165,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try{
-        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/look/${userId}`, {
+        const response = await axios.get(`http://localhost:4000/api/HistoryUserId/look/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -180,7 +180,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/${userId}`, {
+        const response = await axios.get(`http://localhost:4000/api/HistoryUserId/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -196,7 +196,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`http://localhost:3000/api/HistoryUserId/total/${userId}`, {
+        const response = await axios.get(`http://localhost:4000/api/HistoryUserId/total/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -212,7 +212,7 @@ export default {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
       try {
-        const response = await axios.get(`http://localhost:3000/api/auth/profile/${userId}`, {
+        const response = await axios.get(`http://localhost:4000/api/auth/profile/${userId}`, {
           headers: {
             "x-access-token": token,
           }
@@ -228,7 +228,7 @@ export default {
     };
 
     const getImageUrl = (img) => {
-      return `http://localhost:3000/api/file/${img}`;
+      return `http://localhost:4000/api/file/${img}`;
     };
 
     name.value = localStorage.getItem('name') || '';
@@ -294,7 +294,7 @@ export default {
       console.log(data);
 
       // Make HTTP POST request to the API endpoint
-      const response =await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
+      const response =await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
         headers: {
           "x-access-token": token,
         }
