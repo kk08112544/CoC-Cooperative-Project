@@ -39,7 +39,6 @@
     <div @click="toggleNotifications" style="position: relative; flex-grow: 1;">
     <div class="row justify-content-end"> 
       <div class="col"> 
-       
         <div @click="toggleNotifications" style="position: relative;">
           <span v-if="notifications.length > 0" style="color: red">
             &nbsp;&nbsp; {{ notifications.length }}
@@ -59,12 +58,9 @@
  
   
   <!-- v-if="totals && totals.length > 0 && totals[0].total !== 0" -->
-
-<q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 350px; height: 500px;">
+  <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 350px; height: 500px;">
   <q-list>
     <q-item v-for="notification in sortedNotifications" :key="notification.id">
-      
-    
       <div class="horizontal-line" v-if="index !== sortedNotifications.length - 1">
       <q-item-section v-if="notification.detect === 0">
         <div style="display: none;">{{ notification.id }}</div>
@@ -166,6 +162,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+
 export default {
   name: 'DirectorLayout',
  
@@ -173,12 +170,11 @@ export default {
     const name = ref('');
     const lastname = ref('');
     const img = ref('');
-    const notifications = ref([]);
     const profile = ref(null);
     const totals = ref([]);
     const reads = ref([]);
-    const insertionCompleted = ref(false);
-
+    const notifications = ref([]);
+  
     const getHistoryUserIdLook = async () => {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
@@ -220,7 +216,6 @@ export default {
           }
         });
         totals.value = response.data;
-      
         // console.log(notifications.length);
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -242,6 +237,9 @@ export default {
         console.log(error);
       }
     }
+    const handleNotificationClick = (notification) => {
+      console.log(notification); // Log the selected notification data
+    };
 
     const getImageUrl = (img) => {
       return `http://localhost:4000/api/file/${img}`;
@@ -257,15 +255,26 @@ export default {
       localStorage.removeItem('accessToken');
     };
 
-    const toggleNotifications = () => {
-      if (notificationsMenu.value) notificationsMenu.value.$refs.notificationsMenu.toggle();
-    };
+    const toggleNotifications = async () => {
+  // Reset the notifications length to 0
+  notifications.value = [];
 
-    const fetchUserData = () => {
-      fetchUserId();
+  // Insert all notifications into the database
+  await insertDataToDatabase();
+};
+
+    // const fetchUserData = () => {
+    //   fetchUserId();
+    // };
+    const fetchUserData = async () => {
+      await fetchUserId();
+      await fetchNotifications();
+      await fetchTotalNotifications();
+      await getHistoryUserIdLook();
     };
 
     const notificationsMenu = ref(null);
+    
 
     onMounted(() => {
       fetchNotifications();
@@ -287,8 +296,9 @@ export default {
       profile,
       fetchTotalNotifications,
       getHistoryUserIdLook,
+      handleNotificationClick,
       reads,
-      insertionCompleted,
+      
     };
   },
   methods: {
@@ -323,7 +333,6 @@ export default {
         console.error('Error inserting data:', error);
       }
     },
-
   },
   computed: {
   sortedNotifications() {

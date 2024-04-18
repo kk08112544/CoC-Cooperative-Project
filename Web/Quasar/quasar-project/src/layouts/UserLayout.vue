@@ -237,9 +237,13 @@ export default {
       localStorage.removeItem('accessToken');
     };
 
-    const toggleNotifications = () => {
-      if (notificationsMenu.value) notificationsMenu.value.$refs.notificationsMenu.toggle();
-    };
+    const toggleNotifications = async () => {
+  // Reset the notifications length to 0
+  notifications.value = [];
+
+  // Insert all notifications into the database
+  await insertDataToDatabase();
+};
 
     // const fetchUserData = () => {
     //   fetchUserId();
