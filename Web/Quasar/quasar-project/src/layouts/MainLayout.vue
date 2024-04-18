@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
 
-<div class="row no-wrap shadow-1" style="height: 5px;">
+      <div class="row no-wrap shadow-1" style="height: 5px;">
         <q-toolbar class="col-8 col-md-7 bg-negative text-white q-pa-xs">
           <!-- Adjusted padding to q-pa-xs -->
         </q-toolbar>
@@ -20,11 +20,11 @@
           spinner-color="primary"
           spinner-size="82px"
           style="width: 270px; height: 75px; margin-left: 20px; margin-right: auto;"
+          @click="handleIndex"
         />
-        
 
-        <q-btn @click="handleLogin" to="/login" style="background: #F24C65; color: white"  no-caps label="Login" class="q-mr-md" />
-        <q-btn @click="handleRegister" to="/register" style="background: #F24C65; color: white"  no-caps label="Register" class="q-mr-md" />
+        <q-btn @click="handleLogin" to="/login" style="background: #F24C65; color: white" no-caps label="Login" class="q-mr-md" />
+        <q-btn @click="handleRegister" to="/register" style="background: #F24C65; color: white" no-caps label="Register" class="q-mr-md" />
         &nbsp;&nbsp;
       </q-toolbar>
        
@@ -37,30 +37,25 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
-
-const linksList = [
- 
-]
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'MainLayout',
 
-  // components: {
-  //   EssentialLink
-  // },
-
-  setup () {
-    // const leftDrawerOpen = ref(false)
-
-    return {
-      // essentialLinks: linksList,
-      // leftDrawerOpen,
-      // toggleLeftDrawer () {
-      //   leftDrawerOpen.value = !leftDrawerOpen.value
-      // }
+  methods: {
+    handleIndex() {
+      this.$router.push({ path: '/' }); // Navigate to the root path
+    },
+    handleLogin() {
+      // handle login logic
+    },
+    handleRegister() {
+      // handle register logic
     }
+  },
+
+  setup() {
+    return {}
   }
 })
 </script>

@@ -39,25 +39,21 @@
     <div @click="toggleNotifications" style="position: relative; flex-grow: 1;">
     <div class="row justify-content-end"> 
       <div class="col"> 
-        
-        <div v-if="totals && totals.length > 0">
-  <template v-for="(total, index) in totals">
-    <span v-if="total.total !== 0" :key="index" style="color: red;">
-     &nbsp;&nbsp; {{ total.total }}
-    </span>
-  </template>
-</div>
-      </div>
-    </div>
-  </div>
-  <q-icon
+        <div @click="toggleNotifications" style="position: relative;">
+          <span v-if="notifications.length > 0" style="color: red">
+            &nbsp;&nbsp; {{ notifications.length }}
+          </span>
+        </div>
+        <q-icon
       name="notifications"
       style="font-size: 30px; width: 15px; height: 20px;"
       color="black"
       class="q-mr-md"
       @click="insertDataToDatabase"
     />
-    
+      </div>
+    </div>
+  </div>
   </div> 
  
   
@@ -156,11 +152,11 @@ export default {
     const name = ref('');
     const lastname = ref('');
     const img = ref('');
-    const notifications = ref([]);
     const profile = ref(null);
     const totals = ref([]);
     const reads = ref([]);
-
+    const notifications = ref([]);
+  
     const getHistoryUserIdLook = async () => {
       const token = localStorage.getItem('accessToken');
       const userId = localStorage.getItem('userId');
@@ -245,11 +241,18 @@ export default {
       if (notificationsMenu.value) notificationsMenu.value.$refs.notificationsMenu.toggle();
     };
 
-    const fetchUserData = () => {
-      fetchUserId();
+    // const fetchUserData = () => {
+    //   fetchUserId();
+    // };
+    const fetchUserData = async () => {
+      await fetchUserId();
+      await fetchNotifications();
+      await fetchTotalNotifications();
+      await getHistoryUserIdLook();
     };
 
     const notificationsMenu = ref(null);
+    
 
     onMounted(() => {
       fetchNotifications();
@@ -273,15 +276,16 @@ export default {
       getHistoryUserIdLook,
       handleNotificationClick,
       reads,
+      
     };
   },
   methods: {
     async insertDataToDatabase() {
-  const token = localStorage.getItem('accessToken');
-  const userId = localStorage.getItem('userId');
-  try {
-    // Iterate over notifications and collect data
-    for (const notification of this.sortedNotifications) {
+      const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+
+      try{
+        for (const notification of this.notifications) {
       const data = {
         his_id: notification.id,
         alcohol_id: notification.alcohol_id,
@@ -291,10 +295,9 @@ export default {
         detect: notification.detect,
         user_id: userId, // Fix variable name
       };
-      console.log(data);
 
       // Make HTTP POST request to the API endpoint
-      const response =await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
+      const response = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
         headers: {
           "x-access-token": token,
         }
@@ -304,11 +307,10 @@ export default {
 
     // If insertion is successful, clear the notifications list
     this.notifications = [];
-  } catch (error) {
-    console.error('Error inserting data:', error);
-    // Handle error as needed
-  }
-}
+      }catch(error){
+        console.error('Error inserting data:', error);
+      }
+    },
   },
   computed: {
   sortedNotifications() {

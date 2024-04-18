@@ -39,26 +39,22 @@
     <div @click="toggleNotifications" style="position: relative; flex-grow: 1;">
     <div class="row justify-content-end"> 
       <div class="col"> 
-        
-        <div v-if="totals && totals.length > 0">
-  <template v-for="(total, index) in totals">
-    <span v-if="total.total !== 0" :key="index" style="color: red;">
-     &nbsp;&nbsp; {{ total.total }}
-    </span>
-  </template>
-</div>
-      </div>
-    </div>
-  </div>
-  <q-icon
+       
+        <div @click="toggleNotifications" style="position: relative;">
+          <span v-if="notifications.length > 0" style="color: red">
+            &nbsp;&nbsp; {{ notifications.length }}
+          </span>
+        </div>
+        <q-icon
       name="notifications"
       style="font-size: 30px; width: 15px; height: 20px;"
       color="black"
       class="q-mr-md"
       @click="insertDataToDatabase"
     />
-
-
+      </div>
+    </div>
+  </div>
   </div> 
  
   
@@ -67,7 +63,7 @@
 <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 350px; height: 500px;">
   <q-list>
     <q-item v-for="notification in sortedNotifications" :key="notification.id">
-     
+      
     
       <div class="horizontal-line" v-if="index !== sortedNotifications.length - 1">
       <q-item-section v-if="notification.detect === 0">
@@ -297,72 +293,36 @@ export default {
   },
   methods: {
     async insertDataToDatabase() {
-  // const token = localStorage.getItem('accessToken');
-  // const userId = localStorage.getItem('userId');
-  // try {
-   
-  //   for (const notification of this.notifications) {
-  //     const data = {
-  //       his_id: notification.id,
-  //       alcohol_id: notification.alcohol_id,
-  //       room: notification.room,
-  //       dates: notification.dates,
-  //       times: notification.times,
-  //       detect: notification.detect,
-  //       user_id: userId, // Fix variable name
-  //     };
-  //     console.log(data);
+      const token = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
 
-  //     // Make HTTP POST request to the API endpoint
-  //     const response = await axios.post('http://localhost:3000/api/HistoryUserId/createHistory', data, {
-  //       headers: {
-  //         "x-access-token": token,
-  //       }
-  //     });
-  //     // console.log(response.data);
-  //   }
+      try{
+        for (const notification of this.notifications) {
+      const data = {
+        his_id: notification.id,
+        alcohol_id: notification.alcohol_id,
+        room: notification.room,
+        dates: notification.dates,
+        times: notification.times,
+        detect: notification.detect,
+        user_id: userId, // Fix variable name
+      };
 
-  //   // If insertion is successful, clear the notifications list
-  //   this.notifications = [];
-  // } catch (error) {
-  //   console.error('Error inserting data:', error);
-  //   // Handle error as needed
-  // }
-  if (this.notifications.length > 0 && !this.insertionCompleted) {
-    const token = localStorage.getItem('accessToken');
-    const userId = localStorage.getItem('userId');
-    try {
-      // Loop through notifications
-      for (const notification of this.notifications) {
-        const data = {
-          his_id: notification.id,
-          alcohol_id: notification.alcohol_id,
-          room: notification.room,
-          dates: notification.dates,
-          times: notification.times,
-          detect: notification.detect,
-          user_id: userId,
-        };
-        console.log(data);
-
-        // Make HTTP POST request to the API endpoint
-        const response = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
-          headers: {
-            "x-access-token": token,
-          }
-        });
-        // console.log(response.data);
-      }
-
-      // If insertion is successful, clear the notifications list
-      this.notifications = [];
-      this.insertionCompleted = true; // Mark insertion as completed
-    } catch (error) {
-      console.error('Error inserting data:', error);
-      // Handle error as needed
+      // Make HTTP POST request to the API endpoint
+      const response = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
+        headers: {
+          "x-access-token": token,
+        }
+      });
+      console.log(response.data);
     }
-  }
-}
+
+    // If insertion is successful, clear the notifications list
+    this.notifications = [];
+      }catch(error){
+        console.error('Error inserting data:', error);
+      }
+    },
 
   },
   computed: {
