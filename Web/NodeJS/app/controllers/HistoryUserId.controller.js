@@ -21,15 +21,22 @@ const createNewHistory = (req,res) => {
     const currentDate = new Date();
     const date = currentDate.toISOString().slice(0, 10); // yyyy-mm-dd
     const time = currentDate.toTimeString().slice(0, 8); // hh:mm:ss
-    const newHistory = new HistoryUserId({
-        his_id: req.body.his_id,
-        alcohol_id : req.body.alcohol_id,
-        detect: req.body.detect,
-        dates: date,
-        times: time,
-        user_id: req.body.user_id,
-    })
-    HistoryUserId.create(newHistory, (err,data)=>{
+    // console.log("History Id:" ,req.body.his_id)
+    // console.log("Alcohol Id:" ,req.body.alcohol_id)
+    // console.log("Detect:" ,req.body.detect)
+    // console.log("Dates:" ,date);
+    // console.log("Times:" ,time);
+    // console.log("User Id:", req.body.user_id)
+    // const newHistory = new HistoryUserId({
+    //     his_id: req.body.his_id,
+    //     alcohol_id : req.body.alcohol_id,
+    //     detect: req.body.detect,
+    //     dates: date,
+    //     times: time,
+    //     user_id: req.body.user_id,
+    // })
+    let user_id = req.body.user_id
+    HistoryUserId.create(user_id, (err,data)=>{
         if (err) {
             res.status(500).send({ message: err.message || "Some error occured while creating" });
         } else res.send(data);

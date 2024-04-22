@@ -303,36 +303,124 @@ export default {
   },
   methods: {
     async insertDataToDatabase() {
-      const token = localStorage.getItem('accessToken');
-      const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('accessToken');
+    const userId = localStorage.getItem('userId');
 
-      try{
-        for (const notification of this.notifications) {
-      const data = {
-        his_id: notification.id,
-        alcohol_id: notification.alcohol_id,
-        room: notification.room,
-        dates: notification.dates,
-        times: notification.times,
-        detect: notification.detect,
-        user_id: userId, // Fix variable name
-      };
+    try {
+        // const response = await axios.get(`http://localhost:4000/api/HistoryUserId/${userId}`, {
+        //     headers: {
+        //         "x-access-token": token,
+        //     }
+        // });
+        
+        // console.log("API Response:", response.data);
 
-      // Make HTTP POST request to the API endpoint
-      const response = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
-        headers: {
-          "x-access-token": token,
-        }
-      });
-      console.log(response.data);
-    }
+        // Adjust property names based on the actual API response structure
+        const data = {
+          // his_id: response.data.id ,
+          // alcohol_id: response.data.alcohol_id,
+          // detect: response.data.detect,
+          // dates: response.data.date,
+          // times: response.data.times,
+          user_id: userId
+        };
 
-    // If insertion is successful, clear the notifications list
-    this.notifications = [];
-      }catch(error){
+        const sendResponse = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
+            headers: {
+                "x-access-token": token,
+            }
+        });
+
+        console.log(sendResponse.data);
+
+        // If insertion is successful, clear the notifications list
+        // notifications.value = [];
+
+    } catch (error) {
         console.error('Error inserting data:', error);
-      }
-    },
+    }
+}
+    // async insertDataToDatabase() {
+    //   const token = localStorage.getItem('accessToken');
+    //   const userId = localStorage.getItem('userId');
+
+    //   try{
+
+    //     const Response = await axios.get(`http://localhost:4000/api/HistoryUserId/${userId}`, {
+    //       headers: {
+    //         "x-access-token": token,
+    //       }
+    //     });
+    //     console.log(Response.data);
+    //     for (const notification of this.notifications) {
+    //   const data = {
+    //     his_id: notification.id,
+    //     alcohol_id: notification.alcohol_id,
+    //     room: notification.room,
+    //     dates: notification.dates,
+    //     times: notification.times,
+    //     detect: notification.detect,
+    //     user_id: userId, // Fix variable name
+    //   };
+
+    //   // Make HTTP POST request to the API endpoint
+    //   const response = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
+    //     headers: {
+    //       "x-access-token": token,
+    //     }
+    //   });
+    //   console.log(response.data);
+    // }
+
+    // // If insertion is successful, clear the notifications list
+    // this.notifications = [];
+    //   }catch(error){
+    //     console.error('Error inserting data:', error);
+    //   }
+    // },
+//     async insertDataToDatabase() {
+//   const token = localStorage.getItem('accessToken');
+//   const userId = localStorage.getItem('userId');
+
+//   try {
+//     // Fetch all notifications
+//     const response = await axios.get(`http://localhost:4000/api/HistoryUserId/${userId}`, {
+//       headers: {
+//         "x-access-token": token,
+//       }
+//     });
+
+//     const notificationsToInsert = response.data.map(notification => ({
+//       his_id: notification.id,
+//       alcohol_id: notification.alcohol_id,
+//       dates: notification.date,
+//       times: notification.times,
+//       detect: notification.detect,
+//       user_id: userId,
+//     }));
+//     const data = {
+//       his_id: his_id,
+//       alcohol_id: alcohol_id,
+//       dates: dates,
+//       times:times,
+//       detect:detect,
+//       user_id: userId,
+//     }
+//     // Insert all notifications into the database
+//     await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', data, {
+//       headers: {
+//         "x-access-token": token,
+//       }
+//     });
+
+//     // Clear the notifications list
+//     this.notifications = [];
+
+//   } catch (error) {
+//     console.error('Error inserting data:', error);
+//   }
+// },
+
   },
   computed: {
   sortedNotifications() {

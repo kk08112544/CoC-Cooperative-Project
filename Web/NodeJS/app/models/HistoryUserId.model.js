@@ -77,15 +77,112 @@ HistoryUserId.gettotalHistoryUserId = (user_id, result) => {
 
 
 
-HistoryUserId.create = (newHistory,result) => {
-    sql.query("INSERT INTO AlcoholHistoryRead SET ?",newHistory,(err,res)=>{
-        if(err){
-            console.log("Query error: " + err);
+// HistoryUserId.create = (user_id,result) => {
+//     sql.query(
+//         `
+//         SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+//         FROM AlcoholHistory AS ah 
+//         JOIN alcohol AS a ON ah.alcohol_id = a.id 
+//         LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
+//         WHERE ahr.user_id != ?
+//           AND (SELECT COUNT(*) FROM AlcoholHistoryRead AS ah2 WHERE ah2.his_id = ah.id AND ah2.user_id = ?) = 0 
+        
+//         UNION 
+        
+//         SELECT ah.id, ah.alcohol_id, NULL AS room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+//         FROM AlcoholHistory AS ah 
+//         LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
+//         WHERE ahr.his_id IS NULL;
+//         `
+// ,[user_id, user_id],
+//     (err, res) => {
+//         if (err) {
+//             console.log("Query err: " + err);
+//             result(err, null);
+//             console.log(res);
+//             return;
+//         }
+//         result(null, res);
+//         const { id, alcohol_id, detect, date, times } = res[0];
+//         const newHistory = {
+//             his_id:id,
+//             alcohol_id:alcohol_id,
+//             detect:detect,
+//             dates:date,
+//             times:times,
+//             user_id:user_id,
+//         }
+//         sql.query("INSERT INTO AlcoholHistoryRead SET ?",newHistory,(err,res)=>{
+//         if(err){
+//             console.log("Query error: " + err);
+//             result(err, null);
+//             return;
+//         }
+//     })
+//     })
+
+// }
+
+HistoryUserId.create = (user_id, result) => {
+    sql.query(
+        `
+        SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+        FROM AlcoholHistory AS ah 
+        JOIN alcohol AS a ON ah.alcohol_id = a.id 
+        LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
+        WHERE ahr.user_id != ?
+          AND (SELECT COUNT(*) FROM AlcoholHistoryRead AS ah2 WHERE ah2.his_id = ah.id AND ah2.user_id = ?) = 0 
+        
+        UNION 
+        
+        SELECT ah.id, ah.alcohol_id, NULL AS room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+        FROM AlcoholHistory AS ah 
+        LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
+        WHERE ahr.his_id IS NULL;
+        `
+    ,[user_id, user_id],
+    async (err, res) => {
+        if (err) {
+            console.log("Query err: " + err);
             result(err, null);
             return;
         }
-    })
+
+        try {
+            // Map the result to create newHistory array
+            const newHistory = res.map(row => ({
+                his_id: row.id,
+                alcohol_id: row.alcohol_id,
+                detect: row.detect,
+                dates: row.date,
+                times: row.times,
+                user_id: user_id
+            }));
+
+            // Insert all newHistory records into AlcoholHistoryRead
+            await Promise.all(
+                newHistory.map(history => {
+                    return new Promise((resolve, reject) => {
+                        sql.query("INSERT INTO AlcoholHistoryRead SET ?", history, (err, res) => {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve(res);
+                            }
+                        });
+                    });
+                })
+            );
+
+            result(null, res);
+
+        } catch (error) {
+            console.error("Error during INSERT operation: ", error);
+            result(error, null);
+        }
+    });
 }
+
 
 
 HistoryUserId.getAllHistoryLook = (user_id, result) => {
