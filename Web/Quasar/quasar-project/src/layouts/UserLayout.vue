@@ -289,7 +289,7 @@ export default {
       profile,
       fetchTotalNotifications,
       getHistoryUserIdLook,
-      handleNotificationClick,
+      // handleNotificationClick,
       reads,
     };
   },
