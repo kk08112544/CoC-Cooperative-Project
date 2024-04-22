@@ -61,7 +61,7 @@
 
 <q-menu ref="notificationsMenu" style="position: absolute; top: 100%; left: 0; width: 350px; height: 500px;">
   <q-list>
-    <q-item v-for="notification in sortedNotifications" :key="notification.id">
+    <q-item v-for="notification in sortedNotifications" :key="notification.id" @click="handleNotificationClick(notification)">
       <div class="horizontal-line" v-if="index !== sortedNotifications.length - 1">
       <q-item-section v-if="notification.detect === 0">
       
@@ -221,9 +221,6 @@ export default {
         console.log(error);
       }
     }
-    const handleNotificationClick = (notification) => {
-      console.log(notification); // Log the selected notification data
-    };
 
     const getImageUrl = (img) => {
       return `http://localhost:4000/api/file/${img}`;
@@ -238,112 +235,15 @@ export default {
       localStorage.removeItem('lastname');
       localStorage.removeItem('accessToken');
     };
-//     const insertDataToDatabase = async () => {
-//   if (!notifications.value || notifications.value.length === 0) {
-//     console.warn('No notifications to insert.');
-//     return;
-//   }
-
-//   const token = localStorage.getItem('accessToken');
-//   const userId = localStorage.getItem('userId');
-
-//   try {
-//     // Validate required fields for each notification
-//     const response = await axios.get(`http://localhost:4000/api/HistoryUserId/${userId}`, {
-//     headers: {
-//       "x-access-token": token,
-//     }
-//   });
-//   notifications.value = response.data;
-//   console.log(notifications.value);
-   
-
-//     // if (validNotifications.length === 0) {
-//     //   console.warn('No valid notifications to insert.');
-//     //   return;
-//     // }
-
-//     // // Batch insertion using axios
-//     // const response = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', validNotifications, {
-//     //   headers: {
-//     //     "x-access-token": token,
-//     //   },
-//     // });
-
-//     // console.log('Successfully inserted data:', response.data);
-
-//   } catch (error) {
-//     console.error('Error inserting data:', error.response ? error.response.data : error.message);
+//     const handleNotificationClick = (notification) => {
+//   console.log(notification); // Log the selected notification data
+  
+//   // Insert data into the database if notifications.length is greater than 0
+//   if (notifications.value.length > 0) {
+//     insertDataToDatabase();
 //   }
 // };
-
-// const insertDataToDatabase = async () => {
-//   // if (!notifications.value || notifications.value.length === 0) {
-//   //   console.warn('No notifications to insert.');
-//   //   return;
-//   // }
-
-//   const token = localStorage.getItem('accessToken');
-//   const userId = localStorage.getItem('userId');
-
-//   try {
-//     // Prepare batch data for insertion
-//     // const batchData = notifications.value.map(notification => ({
-//     //   his_id: notification.id,
-//     //   alcohol_id: notification.alcohol_id,
-//     //   room: notification.room,
-//     //   dates: notification.dates,  // Fixed variable name from "date" to "dates"
-//     //   times: notification.times,
-//     //   detect: notification.detect,
-//     //   user_id: userId,  // Fixed variable name
-//     // }));
-//     const batchData = notifications.value
-//   .filter(notification => notification.id !== null && notification.id !== undefined)
-//   .map(notification => ({
-//     his_id: notification.id,
-//        alcohol_id: notification.alcohol_id,
-//       room: notification.room,
-//       dates: notification.dates,  // Fixed variable name from "date" to "dates"
-//       times: notification.times,
-//       detect: notification.detect,
-//        user_id: userId,  // Fixed variable name
-//     // ... other properties
-//   }));
-
-//     console.log('Batch Data:', batchData); // Log the batch data
-
-//     if (batchData.length === 0) {
-//       console.warn('No valid notifications to insert.');
-//       return;
-//     }
-
-//     // Batch insertion using axios
-//     const response = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', batchData, {
-//       headers: {
-//         "x-access-token": token,
-//       },
-//     });
-
-//     if (response.data.success) {
-//       console.log('Data successfully inserted:', response.data);
-//       // Clear notifications after successful insertion
-//       notifications.value = [];
-//     } else {
-//       console.error('Failed to insert data:', response.data.message || 'Unknown error');
-//     }
-
-//   } catch (error) {
-//     console.error('Error inserting data:', error);
-
-//     if (error.response) {
-//       console.error('Response Data:', error.response.data);
-//     }
-//   }
-// };
-
-
-
-
+    
 
 
 
@@ -399,21 +299,8 @@ export default {
     const userId = localStorage.getItem('userId');
 
     try {
-        // const response = await axios.get(`http://localhost:4000/api/HistoryUserId/${userId}`, {
-        //     headers: {
-        //         "x-access-token": token,
-        //     }
-        // });
-        
-        // console.log("API Response:", response.data);
-
         // Adjust property names based on the actual API response structure
         const data = {
-          // his_id: response.data.id ,
-          // alcohol_id: response.data.alcohol_id,
-          // detect: response.data.detect,
-          // dates: response.data.date,
-          // times: response.data.times,
           user_id: userId
         };
 
@@ -425,55 +312,10 @@ export default {
 
         console.log(sendResponse.data);
 
-        // If insertion is successful, clear the notifications list
-        // notifications.value = [];
-
     } catch (error) {
         console.error('Error inserting data:', error);
     }
 }
-
-// async insertDataToDatabase() {
-//     const token = localStorage.getItem('accessToken');
-//     const userId = localStorage.getItem('userId');
-
-//     try {
-//         // Fetch data from the API
-//         const response = await axios.get(`http://localhost:4000/api/HistoryUserId/${userId}`, {
-//             headers: {
-//                 "x-access-token": token,
-//             }
-//         });
-//         console.log(response.data.alcohol_id)
-//         // Map the fetched data to the desired structure
-//         const mappedData = {
-//             his_id: response.data.id,
-//             alcohol_id: response.data.alcohol_id,
-//             detect: response.data.detect,
-//             dates: response.data.dates,
-//             times: response.data.times,
-//             user_id: userId,
-//         };
-
-//         console.log("Mapped Data:", mappedData);
-
-//         // Make HTTP POST request to the API endpoint to insert data into MySQL
-//         const postResponse = await axios.post('http://localhost:4000/api/HistoryUserId/createHistory', mappedData, {
-//             headers: {
-//                 "x-access-token": token,
-//             }
-//         });
-
-//         console.log(postResponse.data);
-
-//         // Clear the notifications list if needed
-//         // notifications.value = [];
-
-//     } catch (error) {
-//         console.error('Error inserting data:', error);
-//     }
-// }
-
   },
   computed: {
   sortedNotifications() {
