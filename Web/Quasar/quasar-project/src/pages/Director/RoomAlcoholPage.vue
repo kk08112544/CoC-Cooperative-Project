@@ -136,7 +136,7 @@
         <q-card>
           <q-card-section class="row items-center">
             <q-avatar icon="delete" color="primary" text-color="white" />
-            <span class="q-ml-sm">Delete Equipment ID: {{ input.id }}</span>
+            <span class="q-ml-sm">Delete Room ID: {{ input.id }}</span>
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
           <q-card-actions align="right">

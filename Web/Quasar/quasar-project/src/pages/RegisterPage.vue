@@ -20,22 +20,22 @@
             <!-- <div v-if="uploadFile">
                 <q-img :src="getObjectUrl(uploadFile)" style="max-width: 200px;" />
               </div> -->
-              <div>
+              <div  class="input-field">
                 <q-input v-model="name" type="text" label="Name" lazy-rules />
               </div>
-              <div>
+              <div  class="input-field">
                 <q-input v-model="lastname" type="text" label="Lastname" lazy-rules />
               </div>
-              <div>
+              <div  class="input-field">
                 <q-input v-model="username" type="text" label="Username" lazy-rules :rules="usernameRules" />
               </div>
-              <div>
+              <div  class="input-field">
                 <q-input v-model="password" :type="isPwd ? 'password' : 'text'" label="Password" />
               </div>
-              <div>
+              <div  class="input-field">
                 <q-input v-model="cpassword" type="password" label="Confirm Password" />
               </div>
-              <div>
+              <div  class="input-field">
                 <q-select v-model="role" :options="options" label="Role" option-label="label" />
               </div>
               <div>
@@ -215,3 +215,9 @@ export default defineComponent({
   },
 });
 </script>
+<style scoped>
+  /* Add margin or padding to input fields */
+  .input-field {
+    margin-bottom: 20px; /* Adjust as needed */
+  }
+</style>

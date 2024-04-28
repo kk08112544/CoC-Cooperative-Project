@@ -2,4 +2,3 @@ git init
 git add .
 git commit -m "Suwarakk"
 git remote set-url origin https://github.com/kk08112544/CoC-Cooperative-Project.git
-git push origin main

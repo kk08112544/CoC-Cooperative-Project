@@ -24,8 +24,10 @@
 
 // Update these with values suitable for your network.
 //กากด๋อยยย
-const char* ssid = "Kk";
-const char* password = "123456789";
+// const char* ssid = "กากด๋อยยย";
+// const char* password = "12345678";
+const char* ssid = "Kookoo_2.4G";
+const char* password = "2511251125";
 const char* mqtt_server = "broker.hivemq.com";
 const char* LINE_TOKEN = "NOpjDTUyVYmTWcupEn7Dn6mTBzMwQ7rF0u6CW0LrJly";
 
@@ -35,12 +37,12 @@ unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE	(50)
 char msg[MSG_BUFFER_SIZE];
 
-int irPin = 16;
-int lqPin = 13;
-int buzzer = 4;
+int irPin = 5;
+int lqPin = 0;
+int buzzer = 12;
 
-const int pingPin = 0;
-int inPin = 12;
+// const int pingPin = 0;
+// int inPin = 12;
 
 
 
@@ -102,10 +104,14 @@ void reconnect() {
       client.publish("Alcohol/Notify/258", "Connected 1");
       client.publish("Alcohol/Have/258", "Connected 2");
       client.publish("Alcohol/NotHave/258", "Connected 3");
+      client.publish("Alcohol/HistoryHave/258", "Connected 4");
+      client.publish("Alcohol/HistoryNotHave/258", "Connected 5");
       // ... and resubscribe
-      client.subscribe("Alcohol/NotifyZone/258");
-      client.subscribe("Alcohol/HaveZone/258");
-      client.subscribe("Alcohol/NotHaveZone/258");
+      // client.subscribe("Alcohol/NotifyZone/258");
+      // client.subscribe("Alcohol/HaveZone/258");
+      // client.subscribe("Alcohol/NotHaveZone/258");
+      // client.subscribe("Alcohol/HistoryHaveRoom/258");
+      // client.subscribe("Alcohol/HistoryNotHaveRoom/258");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -134,8 +140,12 @@ void loop() {
     reconnect();
   }
   client.loop();
-
+  int Id = 1;
   int lqVal = digitalRead(lqPin);
+  Serial.print("Liquid Value : ");
+  Serial.print(lqVal);
+  Serial.print("\n");
+  delay(10000);
 
   static bool notified = 0;
   static bool publishNotify = 0;
@@ -146,24 +156,15 @@ void loop() {
  // bool notified = 0;
   if(lqVal == 0){
     int irVal = digitalRead(irPin);
+    Serial.print(irVal);
+    Serial.print("\n");
+    delay(10000);
     static bool user = false; // เริ่มต้นด้วยค่าเป็น false
     static bool publishedOnce = false; // เริ่มต้นด้วยค่าเป็น false
 
-    long duration, cm;
-
-    pinMode(pingPin,OUTPUT);
-    digitalWrite(pingPin,LOW);
-    delayMicroseconds(2);
-    digitalWrite(pingPin,HIGH);
-    delayMicroseconds(5);
-    digitalWrite(pingPin,LOW);
-    pinMode(inPin,INPUT);
-
-    duration = pulseIn(inPin,HIGH);
-    cm = microsecondsToCentimeters(duration);
-
-    if (irVal == 0 && !user && !publishedOnce) {
-      client.publish("Alcohol/Notify/258", ("IR Value: " + String(irVal)).c_str());
+    if (irVal == 0  && !user && !publishedOnce) {
+      client.publish("Alcohol/Notify/258", (" Alcohol ID: " + String(Id)).c_str());
+      
       user = true;
       publishedOnce = true; // เมื่อ publish แล้วให้เปลี่ยนค่า publishedOnce เป็น true
       digitalWrite(buzzer, LOW);
@@ -176,8 +177,9 @@ void loop() {
     }
   }else if(lqVal == 1 && !notified && !publishNotify) {
     digitalWrite(buzzer,HIGH);
-    //delay(5);
-    client.publish("Alcohol/NotHave/258", ("Liquid Value: " + String(lqVal)).c_str());
+    delay(1);
+    client.publish("Alcohol/NotHave/258", ("Liquid Value: " + String(lqVal) + " Alcohol ID: " + String(Id)).c_str());
+    client.publish("Alcohol/HistoryNotHave/258", ("Liquid Value: " + String(lqVal) + " Alcohol ID: " + String(Id)).c_str());
     LINE.notify("258 room No Alcohol");
     notified = true;
     publishNotify = true;
@@ -187,7 +189,9 @@ void loop() {
     publishNotify = false;
   }
   if(lqVal == 0 && !update && !publishUpdate){
-    client.publish("Alcohol/Have/258", ("Liquid Value: " + String(lqVal)).c_str());
+    client.publish("Alcohol/Have/258", ("Liquid Value: " + String(lqVal) + " Alcohol ID: " + String(Id)).c_str());
+    client.publish("Alcohol/HistoryHave/258", ("Liquid Value: " + String(lqVal) + " Alcohol ID: " + String(Id)).c_str());
+    LINE.notify("258 room have Alcohol");
     update = true;
     publishUpdate = true;
   }
@@ -197,6 +201,6 @@ void loop() {
   }
 }
 
-long microsecondsToCentimeters(long microseconds){
-  return microseconds / 29 / 2;
-}
+// long microsecondsToCentimeters(long microseconds){
+//   return microseconds / 29 / 2;
+// }
