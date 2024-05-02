@@ -145,8 +145,7 @@ User.updateUser = (id, data, result)=>{
         updateValues.push(data.img);
     }
 
-    sql.query(`UPDATE user SET ${updateFields.map(field => `${field}=?`).join(',')} WHERE id=?`, 
-    [...updateValues, id], (err, res)=>{
+    sql.query(`UPDATE user SET ${updateFields.map(field => `${field}=?`).join(',')} WHERE id=?`, [...updateValues, id], (err, res)=>{
         if(err){
             console.log("Error: " + err);
             result(err, null);
@@ -165,7 +164,9 @@ User.updateUser = (id, data, result)=>{
 
 
 User.removeUser = (id, result)=>{
+
     removeOldImage(id);
+    
     sql.query("DELETE FROM user WHERE id=?", [id], (err, res)=>{
         if(err){
             console.log("Query error: " + err);

@@ -44,36 +44,36 @@ HistoryUserId.getHistoryUserId = (user_id, result) => {
     );
 };
 
-HistoryUserId.gettotalHistoryUserId = (user_id, result) => {
-    sql.query(
-        `
-        SELECT COUNT(*) AS total
-        FROM (
-            SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
-            FROM AlcoholHistory AS ah 
-            JOIN alcohol AS a ON ah.alcohol_id = a.id 
-            LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
-            WHERE ahr.user_id != ?
-            AND (SELECT COUNT(*) FROM AlcoholHistoryRead AS ah2 WHERE ah2.his_id = ah.id AND ah2.user_id = ?) = 0 
+// HistoryUserId.gettotalHistoryUserId = (user_id, result) => {
+//     sql.query(
+//         `
+//         SELECT COUNT(*) AS total
+//         FROM (
+//             SELECT DISTINCT ah.id, ah.alcohol_id, a.room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+//             FROM AlcoholHistory AS ah 
+//             JOIN alcohol AS a ON ah.alcohol_id = a.id 
+//             LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
+//             WHERE ahr.user_id != ?
+//             AND (SELECT COUNT(*) FROM AlcoholHistoryRead AS ah2 WHERE ah2.his_id = ah.id AND ah2.user_id = ?) = 0 
             
-            UNION 
+//             UNION 
             
-            SELECT ah.id, ah.alcohol_id, NULL AS room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
-            FROM AlcoholHistory AS ah 
-            LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
-            WHERE ahr.his_id IS NULL 
-        ) AS subquery;
-        `
-,[user_id, user_id],
-    (err, res) => {
-        if (err) {
-            console.log("Query err: " + err);
-            result(err, null);
-            return;
-        }
-        result(null, res);
-    })
-}
+//             SELECT ah.id, ah.alcohol_id, NULL AS room, ah.detect, DATE_FORMAT(ah.dates, '%Y-%m-%d') AS date, ah.times 
+//             FROM AlcoholHistory AS ah 
+//             LEFT JOIN AlcoholHistoryRead AS ahr ON ahr.his_id = ah.id 
+//             WHERE ahr.his_id IS NULL 
+//         ) AS subquery;
+//         `
+// ,[user_id, user_id],
+//     (err, res) => {
+//         if (err) {
+//             console.log("Query err: " + err);
+//             result(err, null);
+//             return;
+//         }
+//         result(null, res);
+//     })
+// }
 
 HistoryUserId.create = (user_id, result) => {
     sql.query(
@@ -138,9 +138,11 @@ HistoryUserId.create = (user_id, result) => {
 
 
 HistoryUserId.getAllHistoryLook = (user_id, result) => {
-    sql.query(`
-       SELECT AH.id, A.room, AH.detect, DATE_FORMAT(AH.dates, '%Y-%m-%d') AS date, AH.times FROM AlcoholHistoryRead AHR INNER JOIN alcohol A ON AHR.alcohol_id = A.id INNER JOIN AlcoholHistory AH ON AHR.alcohol_id = AH.alcohol_id WHERE AHR.user_id = ? AND AH.dates >= DATE_SUB(CURDATE(), INTERVAL 90 DAY) GROUP BY AH.id, A.room, AH.detect, AH.dates, AH.times;
-    `, [user_id], (err, res) => {
+    sql.query(
+      `SELECT AH.id, A.room, AH.detect, DATE_FORMAT(AH.dates, '%Y-%m-%d') AS date, AH.times FROM AlcoholHistoryRead AHR INNER JOIN alcohol A ON 
+       AHR.alcohol_id = A.id INNER JOIN AlcoholHistory AH ON AHR.alcohol_id = AH.alcohol_id WHERE AHR.user_id = ? AND AH.dates >= DATE_SUB(CURDATE(), 
+       INTERVAL 90 DAY) GROUP BY AH.id, A.room, AH.detect, AH.dates, AH.times;`, [user_id], 
+       (err, res) => {
         if (err) {
             console.log("Query err: " + err);
             result(err, null);

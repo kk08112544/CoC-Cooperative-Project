@@ -13,7 +13,7 @@ app.get("/", (req, res)=>{
 });
 require("./app/routes/user.routes")(app);
 require("./app/routes/dashboard.routes")(app);
-require("./app/routes/notify.routes")(app);
+// require("./app/routes/notify.routes")(app);
 require("./app/routes/alcohol.routes")(app);
 require("./app/routes/file.routes")(app);
 require("./app/routes/role.routes")(app);

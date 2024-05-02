@@ -77,7 +77,6 @@
 
   @keydown.enter="updateStatus(props.row.id, props.row.edit)"
 />
-
       </q-td>
             <q-td key="action" :props="props">
               <q-btn

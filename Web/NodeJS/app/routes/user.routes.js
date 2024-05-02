@@ -11,3 +11,5 @@ module.exports = (app)=>{
     router.delete("/:id", authJwt, user_controller.deleteUser);
     app.use("/api/auth", router);
 };
+
+

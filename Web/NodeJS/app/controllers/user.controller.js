@@ -85,6 +85,7 @@ const updateUserCtrl = (req, res)=>{
     if(!req.body){
         res.status(400).send({message: "Content can not be empty."});
     }
+    const id = req.params.id;
     const data = {
         name: req.body.name,
         lastname: req.body.lastname,
@@ -92,7 +93,7 @@ const updateUserCtrl = (req, res)=>{
         role_id: req.body.role_id,
         img: req.body.img
     };
-    User.updateUser(req.params.id, data, (err, result)=>{
+    User.updateUser(id, data, (err, result)=>{
         if(err){
             if(err.kind == "not_found"){
                 res.status(401).send(
@@ -110,7 +111,10 @@ const updateUserCtrl = (req, res)=>{
 };
 
 const deleteUser = (req, res)=>{
-    User.removeUser(req.params.id, (err, result)=>{
+
+    const id = req.params.id;
+    
+    User.removeUser(id, (err, result)=>{
         if(err){
             if(err.kind == "not_found"){
                 res.status(401).send(

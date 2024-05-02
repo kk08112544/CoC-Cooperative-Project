@@ -43,50 +43,7 @@ Dashboard.getDay = (result)=>{
     });
 };
 
-Dashboard.getAllZone = (result) => {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so add 1
-    const day = currentDate.getDate().toString().padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    console.log(formattedDate);
-    sql.query("SELECT u.room_id, a.room, COUNT(*) as Total FROM used u JOIN alcohol a ON u.room_id = a.id GROUP BY u.room_id, a.room",[formattedDate],(err, res)=>{
-        if(err){
-            console.log("Query err: " + err);
-            result(err,null);
-            return;
-        }
-        result(null, res);
-    });
-}
 
-Dashboard.getDayZone = (result) => {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so add 1
-    const day = currentDate.getDate().toString().padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    console.log(formattedDate);
-    sql.query("SELECT a.room, COUNT(*) as Total_of_Day_Room FROM used u JOIN alcohol a ON u.room_id = a.id WHERE DATE(date) = ? GROUP BY a.room",[formattedDate],(err, res)=>{
-        if(err){
-            console.log("Query err: " + err);
-            result(err,null);
-            return;
-        }
-        result(null, res);
-    });
-}
-
-Dashboard.getAmount = (result) => {
-    sql.query('SELECT alcohol.id, alcohol.room, alcohol.detect, status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id',(err,res)=>{
-        if(err){
-            console.log("Query err: " + err);
-            result(err,null);
-            return;
-        }
-        result(null, res);
-    })
-}
 
 Dashboard.getRole = (result) => {
     sql.query('SELECT COUNT(*) as Total_Role FROM role',(err,res)=>{
@@ -122,19 +79,6 @@ Dashboard.getAllRoom = (result) => {
     })
 }
 
-
-
-Dashboard.getRoom = (result) =>{
-    sql.query("SELECT * FROM alcohol", (err, res) => {
-        if (err) {
-            console.log("Query err: " + err);
-            result(err, null);
-            return;
-        }
-        // ส่งผลลัพธ์เฉพาะตัวเลข total กลับไป
-        result(null, res);
-    });
-}
 
 Dashboard.ChangeAlcohol = (result) => {
     sql.query('SELECT COUNT(*) as Total_Change FROM AlcoholHistory WHERE detect = 0',(err,res)=>{

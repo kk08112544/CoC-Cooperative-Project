@@ -2,20 +2,23 @@ const HistoryUserId = require('../models/HistoryUserId.model');
 const bcrypt = require("bcryptjs");
 
 const getHistoryUserId = (req,res) => {
-    HistoryUserId.getHistoryUserId(req.params.user_id,(err,data)=>{
+    
+    const user_id = req.params.user_id;
+
+    HistoryUserId.getHistoryUserId(user_id,(err,data)=>{
         if(err){
             res.status(500).send({message: err.message || "Some error ocurred."});
         }else res.send(data);
     })
 }
 
-const gettotalHistoryUserId = (req,res) => {
-    HistoryUserId.gettotalHistoryUserId(req.params.user_id,(err,data)=>{
-        if(err){
-            res.status(500).send({message: err.message || "Some error ocurred."});
-        }else res.send(data);
-    })
-}
+// const gettotalHistoryUserId = (req,res) => {
+//     HistoryUserId.gettotalHistoryUserId(req.params.user_id,(err,data)=>{
+//         if(err){
+//             res.status(500).send({message: err.message || "Some error ocurred."});
+//         }else res.send(data);
+//     })
+// }
 
 const createNewHistory = (req,res) => {
     const currentDate = new Date();
@@ -55,6 +58,6 @@ const getHistoryUserIdLook = (req,res) => {
 module.exports = {
     getHistoryUserId,
     createNewHistory,
-    gettotalHistoryUserId,
+    // gettotalHistoryUserId,
     getHistoryUserIdLook,
 }

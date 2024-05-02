@@ -1,6 +1,6 @@
-import { route } from '/node_modules/.q-cache/vite/spa/deps/quasar_wrappers.js?v=cdbea60f'
-import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from '/node_modules/.q-cache/vite/spa/deps/vue-router.js?v=cdbea60f'
-import routes from '/src/router/routes.js?t=1713750597309'
+import { route } from 'quasar/wrappers'
+import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
+import routes from './routes'
 
 /*
  * If not building with SSR mode, you can

@@ -12,7 +12,8 @@ const Alcohol = function(alcohol){
 }
 // SELECT alcohol.id, alcohol.room, alcohol.detect, status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id
 Alcohol.getAlcohol = (result)=>{
-    sql.query("SELECT alcohol.id, alcohol.room, alcohol.detect,alcohol.status_id ,status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id", (err,res)=>{
+    sql.query(`SELECT alcohol.id, alcohol.room, alcohol.detect,alcohol.status_id ,
+               status.status_name FROM alcohol JOIN status ON alcohol.status_id = status.id`,  (err,res)=>{
         if(err){
             console.log("Query err: " + err);
             result(err,null);
@@ -23,21 +24,21 @@ Alcohol.getAlcohol = (result)=>{
 }
 
 
-Alcohol.checkRoom = (room,result) =>{
-    sql.query("SELECT * FROM alcohol WHERE room='"+room+"'",(err,res)=>{
-        if(err){
-            console.log("Error: " + err);
-            result(err, null);
-            return;
-        }
-        if(res.length){
-            console.log("Found username: " + res[0]);
-            result(null, res[0]);
-            return;
-        }
-        result({ kind: "not_found"}, null);
-    });
-}
+// Alcohol.checkRoom = (room,result) =>{
+//     sql.query("SELECT * FROM alcohol WHERE room='"+room+"'",(err,res)=>{
+//         if(err){
+//             console.log("Error: " + err);
+//             result(err, null);
+//             return;
+//         }
+//         if(res.length){
+//             console.log("Found username: " + res[0]);
+//             result(null, res[0]);
+//             return;
+//         }
+//         result({ kind: "not_found"}, null);
+//     });
+// }
 
 
 Alcohol.addAlcohol = (AlcoholObj,result)=>{
@@ -52,16 +53,16 @@ Alcohol.addAlcohol = (AlcoholObj,result)=>{
     });
 }
 
-Alcohol.getAlcoholId = (id,result) => {
-    sql.query("SELECT * FROM alcohol WHERE id = ?",[id],(err,res)=>{
-        if(err){
-            console.log("Query err: " + err);
-            result(err,null);
-            return;
-        }
-        result(null, res);
-    })
-}
+// Alcohol.getAlcoholId = (id,result) => {
+//     sql.query("SELECT * FROM alcohol WHERE id = ?",[id],(err,res)=>{
+//         if(err){
+//             console.log("Query err: " + err);
+//             result(err,null);
+//             return;
+//         }
+//         result(null, res);
+//     })
+// }
 
 
 

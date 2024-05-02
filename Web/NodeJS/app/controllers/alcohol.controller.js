@@ -11,25 +11,25 @@ const getAllAlcohol = (req,res) => {
 
 
 
-const validRoom = (req,res) => {
-    Alcohol.checkRoom(req.params.room,(err,data)=>{
-        if(err) {
-            if(err.kind == "not_found"){
-                res.send({
-                    message: "Not Found: " + req.params.room,
-                    valid: true
-                });
-            }
-            else {
-                res.status(500).send({ 
-                    message: "Error query: " + req.params.room,
-                });
-            }
-        }else{
-            res.send({record: data, valid: false});
-        }
-    })
-}
+// const validRoom = (req,res) => {
+//     Alcohol.checkRoom(req.params.room,(err,data)=>{
+//         if(err) {
+//             if(err.kind == "not_found"){
+//                 res.send({
+//                     message: "Not Found: " + req.params.room,
+//                     valid: true
+//                 });
+//             }
+//             else {
+//                 res.status(500).send({ 
+//                     message: "Error query: " + req.params.room,
+//                 });
+//             }
+//         }else{
+//             res.send({record: data, valid: false});
+//         }
+//     })
+// }
 
 const addToAlcohol = (req,res) => {
     if(!req.body){
@@ -48,14 +48,14 @@ const addToAlcohol = (req,res) => {
 }
 
 
-const getById = (req,res) => {
-    const id = req.params.id;
-    Alcohol.getAlcoholId(id,(err,data)=>{
-        if(err){
-            res.status(500).send({message:err.message || "Some error ocurred."});
-        }else res.send(data);
-    })
-}
+// const getById = (req,res) => {
+//     const id = req.params.id;
+//     Alcohol.getAlcoholId(id,(err,data)=>{
+//         if(err){
+//             res.status(500).send({message:err.message || "Some error ocurred."});
+//         }else res.send(data);
+//     })
+// }
 
 
 const updateToAlcohol = (req,res) => {
@@ -123,9 +123,9 @@ const updateStatusToAlcohol = (req,res) => {
 
 module.exports = {
     getAllAlcohol,
-    validRoom,
+    // validRoom,
     addToAlcohol,
-    getById,
+    // getById,
     updateToAlcohol,
     deleteToAlcohol,
     updateStatusToAlcohol,

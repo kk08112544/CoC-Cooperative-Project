@@ -137,7 +137,7 @@ export default defineComponent({
   mounted() {
     this.fetchTotal();
     this.fetchDay();
-    this.fetchRoom();
+    // this.fetchRoom();
     this.fetchRoomDay();
     this.fetchTotalRoom();
     this.fetchTotalRoles();
@@ -214,22 +214,22 @@ export default defineComponent({
       }
     },
 
-    async fetchRoom(){
-      const token = localStorage.getItem("accessToken");
-      try{
-        const response = await axios.get(
-          `http://localhost:3000/api/dashboard/zone`,
-          {
-            headers: {
-              "x-access-token": token,
-            }
-          }
-        );
-        this.room =response.data;
-      }catch(error){
-        console.error("Error fetching day data:", error);
-      }
-    },
+    // async fetchRoom(){
+    //   const token = localStorage.getItem("accessToken");z
+    //   try{
+    //     const response = await axios.get(
+    //       `http://localhost:3000/api/dashboard/zone`,
+    //       {
+    //         headers: {
+    //           "x-access-token": token,
+    //         }
+    //       }
+    //     );
+    //     this.room =response.data;
+    //   }catch(error){
+    //     console.error("Error fetching day data:", error);
+    //   }
+    // },
     async fetchRoomDay(){
       const token = localStorage.getItem("accessToken");
       try{
